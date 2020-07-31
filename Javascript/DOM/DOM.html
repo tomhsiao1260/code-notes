@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+
+<head>
+    <title>getElementsByTagName example</title>
+  </head> 
+  <body>
+    <p>Some outer text</p>     
+  
+    <div id='d1'>
+      <p class='c1' name='n1'>Hello World</p>
+      <p class='c1' id='p1'>text</p><p>Hi</p>
+      <p class='c1'>Some div1 text</p>    
+  
+      <div id='d2'>
+        <p>Some div2 text</p>
+        <p>Some div2 text</p>
+      </div>
+    </div>
+
+    <div id='Bubble_DIV'>
+      Bubble List
+      <ul class='Bubble_ul'>
+        <li data-num='1'>Bubble 1</li>
+        <li data-num='2'>Bubble 2</li>
+      </ul>
+    </div>
+
+    <div id='d3'></div>
+
+    <div id='d4'>
+      Delegation List
+      <ul class='Delegation'>
+        <li data-count='1' id='hii'>Delegation 1</li>
+        <li data-count='2'>Delegation 2</li>
+      </ul>
+    </div>
+
+    <div id='d5'>
+      <button id='theone'>Does nothing...</button>
+      <button id='bind'>Add Click</button>
+      <button id='unbind'>Remove Click</button>
+      <div style='display:none;'>Click!</div>
+    </div>
+
+    <div id='e'>
+      <p id='e1' style='display:none;'>effect 1</p>
+      <p id='e2' style='display:none;'>effect 2</p>
+      <p id='e3' style='display:none;'>effect 3</p>
+      <p id='e4' style='display:none;'>effect 4</p>
+      <p id='e5'>effect 5</p>
+    </div>
+
+    <!-- jQuery 要放在 main script 前先執行 -->
+    <script src='./plugin/jquery-3.5.1.min.js'></script>
+    <script src='./DOM.js'></script>
+    
+  </body>
+</html>
