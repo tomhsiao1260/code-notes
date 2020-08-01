@@ -8,14 +8,14 @@ Watch Mode
 ------
 執行 : npm run watch
 
-並開啟 dist 下的 index.html，按按鈕會輸出 console
+並開啟 dist 下的 index.html，按按鈕會輸出 console <br>
 修改 src 下的 print.js，重新整理看看 console 的變化
 
 webpack-dev-server
 ------
 執行 : npm start
 
-會自動開啟 localhost:8080，按按鈕會輸出 console
+會自動開啟 localhost:8080，按按鈕會輸出 console <br>
 修改 src 下的 print.js，不用重新整理看看 console 的變化
 
 webpack-dev-middleware
@@ -24,7 +24,7 @@ webpack-dev-middleware
 
 執行 : npm run server
 
-開啟 localhost:3000，按按鈕會輸出 console
-修改 src 下的 print.js，重新整理看看 console 的變化
+開啟 localhost:3000，按按鈕會輸出 console <br>
+修改 src 下的 print.js，重新整理看看 console 的變化 <br>
 測試完記得再把 publicPath: '/' 加回註解
 
