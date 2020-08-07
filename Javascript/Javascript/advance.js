@@ -42,9 +42,13 @@ var ID3 = setInterval(() => ++n , 1000);
 // 使用完記得清除 (setTimeout 不一定要，會自動清除)
 clearInterval(ID3);
 
-// // Arrow Function
+// Arrow Function
 var multiply = function(a, b) {return a * b;}
-var multiply = (a, b) => a * b;  // 與上方寫法等價
+var multiply = (a, b) => a * b;           // 與上方寫法等價
+var multiply = (a, b) => {return a * b};  // 有 {} 記得要加 return
+var multiply = (a, b) => {a * b};         // 有 {} 卻沒 return 值會回傳 undefined
+var multiply = (a, b) => {};              // undefined
+var multiply = (a, b) => ({});            // {} 物件
 
 // callback 用 Arrow Functions 更精簡
 var n = [1, 2, 3];
@@ -466,6 +470,16 @@ var promise = new Promise(function(resolve, reject) {
 promise.catch(function(e) {e;})
 // 也可以用 then 的第二個 function 參數接收 rejected 的值
 promise.then(function(message) {message;},function(e) {e;})
+
+// fetch 語法
+// 接收了一個 url 作參數，並用 then 接收此次請求的相關資訊
+// 會回傳一個包含 response 的 promise
+// 只能在瀏覽器環境執行，在 node 環境要使用外部模塊
+
+// fetch('https://httpbin.org/get')
+//    .then((res) => res.json()) // 將 response 轉為 json 形式
+//    .then((myJson) => myJson)  // myJson 為 json 形式
+                                 // 線上的資料傳輸大多為 json 形式
 
 
 // Chaining 寫法
