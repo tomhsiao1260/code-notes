@@ -1,0 +1,81 @@
+/* 
+參考： https://www.w3schools.com/cssref/css_selectors.asp
+
+-----------------------------------------------------------------------------
+selector             example                description
+
+.class               .intro                 選擇所有 class="intro" 的元素
+.class1.class2       .name1.name2           選擇所有同時有 name1, name2 的 class 的元素
+.class1 .class2      .name1 .name2          選擇所有 class 為 name1 下的子元素中 class 為 name2 的元素
+#id                  #firstname             選擇 id="firstname" 的元素
+*                    *                      選擇所有元素
+element              p                      選擇所有 p 元素
+element.class        p.intro                選擇所有 p 元素下的 class="intro" 元素
+element,element      p, div                 選擇所有 p 和 div 元素
+element element      div p                  選擇所有在 div 內部的 p 元素
+element>element      div > p                選擇所有父元素為 div 的 p 元素
+element+element      div + p                選擇所有直接在 div 後方第一位的 p 元素 (被包的 p 不算)
+element1~element2    div ~ p                選擇所有在 div 後方的 p 元素 (被包的 p 不算)
+ 
+[attribute]          [target]               選擇所有具有 target 屬性的元素
+[attribute=value]    [target=_blank]        選擇所有具有 target="_blank" 的元素
+[attribute~=value]   [title~=hi]	        選擇所有具有 title 屬性且其值內有 flower 的元素 (hi 選/hi yao 選/ hii 不選)
+[attribute|=value]   [lang|=en]	            選擇所有具有 lang 屬性且其值開頭為 en 的元素    (en 選/en-us 選/ens 不選)
+[attribute^=value]   a[href^="https"]	    選擇所有具有 href 屬性且其值開頭為 https 的 a 元素 
+[attribute$=value]   a[href$=".pdf"]	    選擇所有具有 href 屬性且其值結尾為  .pdf 的 a 元素 
+[attribute*=value]   a[href*="abcd"]	    選擇所有具有 href 屬性且其值裡面含  abcd 的 a 元素 
+
+:first-child	     p:first-child	        選擇所有恰好是其父元素下第一個位置的 p 元素
+:last-child	         p:last-child	        選擇所有恰好是其父元素下的最後一個位置的 p 元素
+:first-of-type	     p:first-of-type	    選擇所有 p 元素剛好是其父元素下的第一個 p 元素 (不一定要在第一個位置)
+:last-of-type	     p:last-of-type	        選擇所有 p 元素剛好是其父元素下的最後一個 p 元素 (不一定要在最後一個位置)
+:nth-child(n)	     p:nth-child(2)	        選擇所有恰好是其父元素下第二個位置的 p 元素
+:nth-last-child(n)   p:nth-last-child(2)    選擇所有恰好是其父元素下倒數第二個位置的 p 元素
+:nth-of-type(n)	     p:nth-of-type(2)	    選擇所有 p 元素剛好是其父元素下的第二個 p 元素 (不一定要在第二個位置)
+:nth-last-of-type(n) p:nth-last-of-type(2)  選擇所有 p 元素剛好是其父元素下的倒數第二個 p 元素 (不一定要在最後第二個位置)
+:only-of-type	     p:only-of-type	        選擇剛好是其父元素下唯一一個的 p 元素
+:only-child	         p:only-child	        選擇剛好是其父元素下唯一一個元素，且該元素為 p 元素
+:not(selector)	     :not(p)	            選擇所有非 p 的元素
+
+::first-letter	     p::first-letter	    選擇所有 p 元素內容的第一個單字
+::first-line	     p::first-line	        選擇所有 p 元素內容的第一行字
+::after	             p::after	            在每個 p 元素的後方加入內容，裡面可寫 content="加入的字串";
+::before	         p::before	            在每個 p 元素的前方加入內容，裡面可寫 content="加入的字串";
+::selection	         ::selection	        選擇被使用者選擇的部分 (為元素的某個部份或段落)
+::placeholder	     input::placeholder	    選擇有 placeholder 屬性的 input
+
+:visited	         a:visited	            選擇所有 visited 的 link
+:link	             a:link	                選擇所有 unvisited 狀態的 link
+:checked	         input:checked          選擇所有 checked 的 input 元素
+:hover	             a:hover	            選擇游標在上方的 link
+:active	             a:active	            選擇 active 的 link
+:disabled	         input:disabled	        選擇所有 disabled 的 input 元素
+:empty	             p:empty	            選擇所有沒有子元素節點的 p 元素 (包含 text nodes)
+:enabled	         input:enabled	        選擇所有 enabled 的 input 元素
+:focus	             input:focus	        選擇有 focus 的 input 元素
+:in-range	         input:in-range	        選擇 value 屬性值在某個範圍的 input 元素
+:indeterminate	     input:indeterminate    選擇在 indeterminate 狀態的 input 元素
+:invalid	         input:invalid	        選擇 value 屬性值無效的 input 元素
+:optional	         input:optional	        選擇沒有 required 屬性的 input
+:out-of-range	     input:out-of-range	    選擇 value 屬性值在某個範圍外的 input 元素
+:read-only	         input:read-only	    選擇有 readonly 屬性的 input
+:read-write	         input:read-write	    選擇沒有 readonly 屬性的 input
+:required	         input:required	Selects 選擇有 required 屬性的 input
+:root	             :root	                選擇 document 的 root 元素
+:target	             #news:target	        選擇被 active 且 id="news" 的元素 (也許是透過 a 元素的點擊被 target 的 url)
+:valid	             input:valid	        選擇所有輸入有效的 input 元素
+
+-----------------------------------------------------------------------------
+ID 選擇器在一個 HTML 文件中只能被使用一次
+Class 選擇器在一個 HTML 文件中可以被使用多次
+
+可在 HTML 內寫 class="c1 c2"，建立多個 class
+
+單冒號  (:) 用在偽類
+雙冒號 (::) 用在偽元素
+
+偽類 (pseudo class) 就是在選已經存在的東西，比方說 a:hover 就是選了已經存在的 <a> 的某一個狀態
+偽元素 (pseudo element) 就是在創造一個新的、不在 DOM 裡面的假元素，比如說 ::first-line
+                       第一行並沒有被任何的 tag 包住卻可用偽元素選取
+-----------------------------------------------------------------------------
+ */

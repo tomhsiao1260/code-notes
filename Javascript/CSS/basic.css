@@ -1,0 +1,388 @@
+/* 
+參考： https://zh-tw.learnlayout.com/display.html
+
+-----------------------------------------------------------------------------
+display 屬性
+
+block  : 區塊元素會讓其內容從新的一行開始顯示，並盡可能的撐滿容器，例如：div、p、li
+inline : 行內元素可以在段落中包裹一些文字片段，且不會打亂段落原本的版面配置，例如：span、a
+none   : 把 display: none 用以隱藏或顯示該元素，例如：script
+         不會保留元素原本該顯示的空間，而不是將元素從頁面中刪除或重建
+         但 visibility: hidden 會讓元素的內容看不見，但會保留原本內容應該顯示的空間
+-----------------------------------------------------------------------------
+設定區塊元素的 width 屬性，可以避免該元素從左到右撐滿容器
+設定左右 margin 為 auto 來使其水平居中
+當瀏覽器視窗寬度比元素的寬度還要窄時，瀏覽器就會出現水平捲軸
+
+.main {
+  width: 600px;
+  margin: 0 auto; 
+}
+-----------------------------------------------------------------------------
+*/
+.simple {
+    width: 500px;
+    margin: 20px auto;
+  }
+  
+.fancy {
+    width: 500px;
+    margin: 20px auto;
+    padding: 50px;
+    border-width: 10px;
+}
+
+/*
+以 border 間寬度而言，上方 fancy 會比 simple 寬出 2*padding
+但文字可放的空間寬度相同都是 500px
+可加入 box-sizing 屬性，設定 border 的左右外緣間距為 width 的寬度
+但文字內容就會因為 padding 而有縮減
+
+-webkit-box-sizing: border-box;
+   -moz-box-sizing: border-box;
+        box-sizing: border-box;
+
+-webkit- 和 -moz- 為前綴（Prefixes），為了啟用特定瀏覽器實驗中的 CSS 特性
+
+-----------------------------------------------------------------------------
+position 屬性
+
+static  : 為預設值，元素「不會被特別定位」在頁面上特定位置，而是照著瀏覽器預設的配置自動排版在頁面上
+
+relative: 表現的和 static 一樣，除非增加了額外的屬性
+          設定 top、right、bottom、left 屬性，會使其元素「相對地」調整其原本該出現的所在位置
+          相對位置都是從最近的 margin 外圍開始算起
+          且下一個元素會排在預設此元素為 static 時接續該擺放的位置
+          不會跟其他元素的配置互相干擾
+
+fixed   : 元素會相對於瀏覽器視窗來定位，意味著即便頁面捲動，仍會在視窗固定的位置
+          和 relative 一樣，會使用 top、right、bottom、left 屬性定位
+          不會跟其他元素的配置互相干擾
+
+absolute: 與 fixed 的行為很像，不一樣的地方在於元素的定位是在他所處上層容器的相對位置
+          若讓層元素為 <body>，會定位在網頁最左上角的絕對位置
+          不會跟其他元素的配置互相干擾
+
+-----------------------------------------------------------------------------
+float 屬性
+
+有 left、right 等值，分別為靠左和靠右，可用於實現文繞圖
+使用該屬性，元素本身的 block 不會影響其他 block 的位置
+但會將其他被覆蓋到的的內容移到它的外圍
+兩個 float 相接不會換行而是並排
+-----------------------------------------------------------------------------
+clear 屬性
+
+可用 clear 屬性去除被其他元素 float 的影響
+有 left、right、both 等值，可去除元素的 float 為左、右、左右其一的效用
+-----------------------------------------------------------------------------
+overflow 屬性
+
+visible: 內容不被修剪，超出元素的範圍時內容會呈現在元素框之外
+hidden : 內容會被修剪，但不會顯示捲軸，當超出元素的範圍時隱藏內容
+scroll : 內容會被修剪，當超出範圍時自動變成捲軸呈現方式
+auto   : 由瀏覽器決定如何顯示(預設值)，當超出範圍時自動變成捲軸呈現方式
+-----------------------------------------------------------------------------
+float 常用來製作版面配置，例如：
+
+<div class='container'>
+    <div class='a'>xxxxx</div>
+    <div class='b'>ooooo</div>
+    <div class='b'>ooooo</div>
+</div>
+*/
+
+.a {
+    float: left;
+    width: 25%;
+}
+.b {
+    margin-left: 25%;
+}
+
+/* 
+a 會在最左，b 會在右，緊貼著 a，結果如下：
+xxxxxooooo
+     ooooo
+
+若 b 沒有 margin-left，則 a 會被 b 包覆，結果如下：
+xxxxxooooo
+ooooo 
+
+-----------------------------------------------------------------------------
+display: inline-block
+
+若要建立一堆區塊自動填滿瀏覽器，過去多使用多個 float 串接來做流動式的自動排版
+但現在可以選擇 inline-block 實作更加簡單
+inline-block 的元素就像 inline 的元素一樣，但可以設定 width 與 height 屬性
+如此一來，後面的元素也不需使用 clear 屬性，會自動換行，使用上需注意：
+
+1. vertical-align 會影響到 inline-block 元素，建議設定為 top
+2. 需設定每一欄寬度
+*/
+
+.a {
+    display: inline-block;
+    vertical-align: top;
+    width: 25%;
+  }
+.b {
+    display: inline-block;
+    vertical-align: top;
+    width: 74%;
+}
+
+/* 
+同上例子，結果如下：
+xxxxxooooo
+ooooo
+
+-----------------------------------------------------------------------------
+media queries
+
+是完成「響應式設計」最強大的工具，可設定在不同裝置下的顯示方式
+另外還可以使用 meta viewport 讓版面配置在行動裝置上呈現得更完美
+*/
+
+@media screen and (min-width:600px) {
+    .a {
+      float: left;
+      width: 25%;
+    }
+    .b{
+      margin-left: 25%;
+    }
+}
+/*
+-----------------------------------------------------------------------------
+<div class='hi'>Hello</div>
+
+above 為 element   (元素)
+div   為 tag       (標籤)
+class 為 attribute (屬性)
+Hello 為 content   (內容)
+
+-----------------------------------------------------------------------------
+可以用以下四種方式，將 CSS 套用入 HTML 文件中
+
+1. 行內套用 (Inline)：直接在 HTML 標籤上輸入
+
+<p style='font-family:verdana; font-size:16;'>This is font size 16.</p>
+
+2. 嵌入套用 (Embed)：嵌入於 HTML 文件中，通常在 <head> 內宣告
+                <style type="text/css">
+                    div {
+                        background-color:#FF0000;
+                    }
+                </style>
+
+3. 匯入套用 (Import): 外部的 CSS 樣式也可以被匯入進 HTML 文件，利用 @import 指令
+
+                <STYLE TYPE="text/css">
+                <!--
+                    @import url(http://www.mysite.com/style.css);
+                -->
+                </STYLE>
+
+4. 外部連接套用 (External Link)：寫在 .css 檔內再匯入 HTML
+<link rel=stylesheet type='text/css' href='style.css'>
+
+-----------------------------------------------------------------------------
+CSS 的全名為 Cascading Style Sheets
+串接是指當不同樣式表中對相同屬性有不同定義時，應該要用哪一個樣式表中的定義的規則
+
+越接近 HTML 本身的樣式越有優先權，優先順位為
+1 > 2 > 3 > 4
+而且同種匯入型態下，越後被匯入的越有優先權
+
+-----------------------------------------------------------------------------
+!important
+
+有時候樣式內會加入 !important 表示優先採用此樣式，不論匯入型態優先採用
+但同時有多個地方使用 !important，則越後被匯入的越有優先權
+
+顯示藍色
+#example p { color: blue !important; }
+#example p { color: red; }
+
+顯示紅色
+#example p { color: blue !important; }
+#example p { color: red !important; }
+
+顯示藍色
+CSS : #example p { color: blue !important; }
+HTML: <div id="example"><p style="color:green;">Text</p></div>
+
+-----------------------------------------------------------------------------
+繼承 (inheritance) 的意思就是說子標籤的樣式會跟父標籤一樣，除非子標籤本身另有自訂的樣式
+字體大小、字體顏色、背景顏色 遇到特定的標籤 (例如：inline) 會繼承
+padding、margin、border 等屬性則都不會繼承
+
+HTML：<p>這是一個 <strong>繼承的例子</strong></p>
+
+CSS： p { color: #00FF00; }
+      strong { font-size:20px; }
+
+stong 因為繼承的關係也會是綠色
+-----------------------------------------------------------------------------
+在 CSS ，長度單位可以分為兩大類，絕對 (absolute) 單位以及相對 (relative) 單位
+絕對單位在各個裝置或印刷結果的長度是一致的，相對單位則否
+除非是印刷需要，否則不建議用絕對單位，因為螢幕大小的差異，在小型裝置字體會太大
+
+< 相對單位 >
+px: pixels 像素大小 (default)
+%: 每個子元素透過「百分比」乘以父元素的 px 值
+em: 每個子元素透過「倍數」乘以父元素的 px 值
+rem: 每個元素透過「倍數」乘以根元素的 px 值
+
+vw: viewport 的寬度的 1%
+vh: viewport 的高度的 1%
+vmin: viewport 中比較小的那個邊的 1%
+vmax: viewport 中比較大的那個邊的 1%
+
+< 絕對單位 > 
+cm: 公分
+mm: 公厘, 1 mm = 0.1 cm
+in: 吋, 1 in = 2.54 cm
+pt: points, 1 pt = 1/72 吋
+pc: picas, 1 pc = 12 pt
+
+假設父元素字體大小為 16px，則子元素字體大小 1.2em = 120% = 16px * 1.2 = 19.2px
+若根元素字體大小為 16px (default)，則 1.2rem = 16px * 1.2 = 19.2px
+若 viewpoint 的寬為 1600px，則 1vw = 1600px * 0.01 = 16px
+
+px, em, rem 不會隨螢幕大小縮放，vw, vh 則會
+可使用 media query 將父元素字體大小隨媒體大小更改，子元素大小則用 em, rem 定義
+如此一來子元素的字體大小也會跟著父元素連動更改
+-----------------------------------------------------------------------------
+盒子模式 (box model)
+
+由內到外為：Content -> Padding -> Border -> Margin
+-----------------------------------------------------------------------------
+margin 屬性
+
+在 border 之外，並且是用來設定各個元素之間的距離
+左右預設為 0 ，但上下會預設會因為元素而有所不同，例如：h1、p 不為 0
+
+margin-top    (上邊界)
+margin-right  (右邊界)
+margin-bottom (下邊界)
+margin-left   (左邊界)
+
+margin: [上下左右]
+margin: [上下] [左右]
+margin: [上] [右] [下] [左]
+
+若與其他 box 相接，則會保留最大的那個 margin 作為間隔
+使用 em, % 會根據父元素大小給予相對的數值
+*/
+
+#container {
+    margin-top:5px;
+    margin-left:10%;
+    margin-right:auto;
+    margin-bottom:20px;
+    border: 1px solid #000000;
+}
+
+/* 
+-----------------------------------------------------------------------------
+邊框 border
+
+1. border-style 屬性
+表邊框的風格，有下面幾種選擇
+solid：實線     dashed：虛線
+double：雙線    dotted：點線
+groove：凹線    ridge：凸線
+inset：嵌入線   outset：浮出線
+
+2. border-width 屬性
+表邊寬，可輸入數值或 thin、medium、thick
+
+3. border-color 屬性
+邊框顏色，可用色碼或顏色的英文輸入
+
+上下左右也可以分開設定
+p {border-top-style:solid; border-bottom-style:dotted;}
+p {border-top-style:solid; border-top-width:medium;}
+
+屬性值也可以一起設定
+p {border:#0000FF 5px solid;}
+
+-----------------------------------------------------------------------------
+padding 屬性
+
+為 content 外，border 內的部分，上下左右預設皆為 0
+
+padding: [上下左右]
+padding: [上下] [左右]
+padding: [上] [右] [下] [左]
+*/
+
+#container {
+    padding-top:15px;
+    padding-left:10px;
+    padding-right:30px;
+    padding-bottom:40px;
+    border: 1px solid #000000;
+}
+
+/* 
+-----------------------------------------------------------------------------
+在 CSS 中常見的背景 (background) 屬性有以下幾種：
+
+background-color：填色碼或顏色名稱
+background-image：選圖片作為背景，語法為 url(img.jpg)
+background-repeat：是否重複充滿整個邊框，預設為 repeat，也可輸入 no-repeat
+                   或是 repeat-x 或 repeat-y 表示不重複或只在某個軸上重複
+background-attachment：用來指定背景圖案是否在螢幕上固定，值為 fixed 或 scroll
+background-position：用來指定背景圖案的位置，有兩個輸入
+                     第一個字為 [top,center,bottom] 三選一
+                     第二個字為 [left,center,right] 三選一
+                     也可個別輸入 % 數，會從左上角開始算
+*/
+
+#container { 
+    background-color:#ece1ea;
+    background-image: url("img.jpg");
+    background-repeat: repeat-x;
+    background-position: bottom center;
+}
+
+/* 
+-----------------------------------------------------------------------------
+顏色 color
+
+p {color:#FF0000;}         6位的十六進位代碼
+p {color:rgb (255,0,255);} rbg值
+p {color:green;}           顏色名稱
+-----------------------------------------------------------------------------
+字體 font
+
+font-family：字體的類別，例如 arial、verdana
+font-size：字體的大小，例如 3px、small、medium、large
+font-weight：字體的厚度，例如 100～900、normal、bold、bolder
+font-style：是否為斜體字，例如 italic 為斜體
+-----------------------------------------------------------------------------
+z-index 屬性是用來決定元素重疊的順序，值比較大的元素會被放在上面
+-----------------------------------------------------------------------------
+text-align：     left(靠左對齊)              right(靠右對齊) 
+                 center(向中間對齊)          justify(左右填滿對齊)
+
+text-decoration：underline(底線)            overline(頂線) 
+                 line-through(劃掉)         blink(文字閃爍)
+
+text-transform： capitalize(每個字的開頭大寫) uppercase(全大寫) 
+                 lowercase(全小寫)          none(不改變)
+
+text-indent   ：每段的第一行要留多少空間(輸長度)
+direction     ：ltr(左到右) rtl(右到左)
+word-spacing  ：單字與單字的間距
+letter-spacing：字母間距
+line-height   ：行距
+-----------------------------------------------------------------------------
+cursor 屬性
+
+鼠標的圖案，屬性有點多，可以上網查查
+-----------------------------------------------------------------------------
+*/
