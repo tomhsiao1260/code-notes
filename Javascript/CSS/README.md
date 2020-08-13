@@ -11,23 +11,23 @@
 
 常用工具
 ------
-色碼表：https://cubic-bezier.com/
-cubic-bezier：https://www.w3schools.com/colors/colors_picker.asp
+色碼表：https://cubic-bezier.com/ </br>
+cubic-bezier：https://www.w3schools.com/colors/colors_picker.asp </br>
 
 特效範例
 ------
-* Transition
-方形轉圓形：https://codepen.io/donovanh/pen/NPYNGa?editors=110
-按鈕文字轉換：https://codepen.io/donovanh/pen/YPMGpJ
-圖文切換：https://codepen.io/donovanh/pen/LEvjJg
-按鈕搭配JS：https://codepen.io/donovanh/pen/YPbxqa
+* Transition </br>
+方形轉圓形：https://codepen.io/donovanh/pen/NPYNGa?editors=110 </br>
+按鈕文字轉換：https://codepen.io/donovanh/pen/YPMGpJ </br>
+圖文切換：https://codepen.io/donovanh/pen/LEvjJg </br>
+按鈕搭配JS：https://codepen.io/donovanh/pen/YPbxqa </br>
 
-* Animation
-擺動圓：https://codepen.io/donovanh/pen/vMPgmd
-基本變色：https://codepen.io/donovanh/pen/WbqNwd?editors=110
-跳動按鈕：https://codepen.io/donovanh/pen/KwEQdQ
-紅綠燈：https://codepen.io/donovanh/pen/ogRRdR?editors=010
-頁面滑動：https://codepen.io/donovanh/pen/LEwedW?editors=110
+* Animation </br>
+擺動圓：https://codepen.io/donovanh/pen/vMPgmd </br>
+基本變色：https://codepen.io/donovanh/pen/WbqNwd?editors=110 </br>
+跳動按鈕：https://codepen.io/donovanh/pen/KwEQdQ </br>
+紅綠燈：https://codepen.io/donovanh/pen/ogRRdR?editors=010 </br>
+頁面滑動：https://codepen.io/donovanh/pen/LEwedW?editors=110 </br>
 
 * 效果整理：https://codepen.io/collection/AxKOdY/?cursor=ZD0wJm89MSZwPTEmdj0zMDI1NzE1
 
