@@ -31,10 +31,10 @@ cubic-bezier：https://www.w3schools.com/colors/colors_picker.asp </br>
 
 * 效果整理：https://codepen.io/collection/AxKOdY/?cursor=ZD0wJm89MSZwPTEmdj0zMDI1NzE1
 
-* 進階效果
-星際大戰：https://codepen.io/donovanh/pen/pJzwEw?editors=110
-按鈕西瓜：https://codepen.io/nxtonic/pen/gbZNKJ
-Mac Plus：https://cssanimation.rocks/macplus/
+* 進階效果 </br>
+星際大戰：https://codepen.io/donovanh/pen/pJzwEw?editors=110 </br>
+按鈕西瓜：https://codepen.io/nxtonic/pen/gbZNKJ </br>
+Mac Plus：https://cssanimation.rocks/macplus/ </br>
 
 
 
