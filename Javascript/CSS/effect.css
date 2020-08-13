@@ -1,0 +1,199 @@
+/* 
+參考： https://cssanimation.rocks/css-animation-101/#now-you-know-css-animation
+
+-----------------------------------------------------------------------------
+transitions: 狀態的改變，通常被 action 觸發 (ex: hover)
+animations : 用 keyframes 描述動畫，會自動觸發，而且可以不斷重複
+-----------------------------------------------------------------------------
+*/
+
+/* 移到 button 上會由白轉綠 */
+button {
+  background: white;
+  transition: background 0.5s linear;
+}
+
+button:hover {
+  background: green;
+}
+
+/* 一起寫 */
+.a{
+	transition: background 0.5s 0s linear; 
+}
+
+/* 分開寫 */
+.a{
+	transition-property: background;
+	transition-duration: 0.5s;
+	transition-delay: 0s;
+	transition-timing-function: linear;
+}
+
+/*
+-----------------------------------------------------------------------------
+transition: [property] [duration] [delay] [timing-function];
+
+1. transition-property
+輸入要發生 transition 的屬性，all 表全部的屬性
+也可數入 color, padding, transform ...
+但有些屬性無法 transition ，例如 font-family
+
+2. transition-duration
+完成狀態改變的時間
+
+3. transition-delay
+可略，也可寫負數，表示從週期的某個階段開始
+
+4. transition-timing-function
+下面有整理
+-----------------------------------------------------------------------------
+需要加 prefix，以支援其他較舊的瀏覽器
+但也可在 build 的時候使用第三方的 Autoprefixer 幫忙加入 prefix
+
+-webkit-transition: ...;
+-moz-transition: ...;
+transition: ...;
+-----------------------------------------------------------------------------
+timing-function：transition 和 animation 都會用到，有下面幾種：
+
+linear: 線性的移動
+ease-in: 快到邊界時會加速
+ease-out: 快到邊界時會減速
+ease-in-out: 接近時先加速，快到邊界時再減速;
+cubic-bezier: 輸入兩個點的 xy 座標，可到下面網站試參數
+              https://cubic-bezier.com/
+steps: 用法為 step(5)，表移動 5 步完成半個週期
+-----------------------------------------------------------------------------
+可以次對單一元素輸入多個 transition
+transition: background 1s ease-out, border 0.5s linear;
+-----------------------------------------------------------------------------
+一些小技巧
+
+< 畫圓 > border-radius: 50%;
+
+< 平移 > 平移的 % 數是相對於自身的長寬
+		transform: translateX( 2em );
+		transform: translateY( -2em );
+		往左上平移，中心點成為參考點
+		transform: translate(-50%, -50%);
+		沒有位移，可和 transition 搭配回到初始位置
+		transform: none;
+
+< 置中 > position: absolute;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+
+< 旋轉 > transform: rotateZ(45deg);
+
+< 轉軸 > transform-origin: center;
+        transform-origin: left top;
+        transform-origin: 1em 2em;  (x軸 y軸)
+
+< 放大 > transform: scale(2);
+
+< 偽元素 > 可用 ::before ::after 增加偽元素在本體的前後
+          但要加上 content=""; 屬性，否則不會顯現
+
+< 計算 > 數字計算可使用 calc(); 例如 top: calc(10%-3em);
+
+< overflow > 可活用 overflow: hidden;
+			 就可放心設計動畫將子元素移出 box，也不會顯示或作用
+-----------------------------------------------------------------------------
+Animation
+
+*/
+
+/* 一起寫 */
+.a{
+	animation: myName 4s linear infinite;
+}
+
+
+/* 分開寫 */
+.a{
+	animation-name: myName;
+	animation-duration: 4s;
+	animation-timing-function: linear;
+	animation-repeat: infinite;
+}
+
+@keyframes myName {
+  0% {
+    background: blue;
+  }
+  50% {
+    background: orange;
+  }
+  100% {
+    background: green;
+  }
+}
+
+/*
+-----------------------------------------------------------------------------
+1. animation-delay
+延遲時間，也可為負值，表示從週期的某個階段開始
+
+2. animation-direction
+normal           : 從 0% -> 100% (下次從 0% 開始)
+reverse          : 從 100% -> 0% (下次從 100% 開始)
+alternate        : 從 0 -> 100% -> 0%
+alternate-reverse: 從 100% -> 0% -> 100%
+
+3. animation-duration 動畫長度
+
+4. animation-fill-mode
+動畫只執行一次，值為 forwards 會停在 100% 處，backwards 會回到並停在 0% 處
+
+5. animation-iteration-count
+執行次數，預設為 1 次，可輸入其他數，infinite 則為無限次
+
+6. animation-name
+動畫名稱，與 @keyframs 後的名稱相同
+
+7. animation-play-state
+值為 running 時執行，paused 時停止
+
+8. animation-timing-function
+time-function 用來計算不同狀態之間如何轉換
+
+-----------------------------------------------------------------------------
+time-function 也可放在 排程內，下面寫法會讓前半為 linear，後半為 ease-out
+
+@keyframes myName {
+  0% {
+  ...
+  	animation-timing-function: linear;
+  }
+  50% {
+  	...
+  	animation-timing-function: ease-out;
+  }
+}
+-----------------------------------------------------------------------------
+也有下面這種寫法，但用前面提到的 % 寫法比較好理解
+
+@keyframes myName {
+  from {
+    ...
+  }
+  to {
+    ...
+  }
+}
+-----------------------------------------------------------------------------
+需要加 prefix，以支援其他較舊的瀏覽器
+但也可在 build 的時候使用第三方的 Autoprefixer 幫忙加入 prefix
+
+-webkit-animation: ...;
+-moz-animation: ...;
+animation: ...;
+-----------------------------------------------------------------------------
+參考文章最後還有提到一些常用的工具，例如：Wow.js、Animate.css、Modernizr
+以及一些設計上的建議，還有後續可深入閱讀的地方～
+
+*/
+
+
