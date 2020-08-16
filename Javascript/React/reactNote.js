@@ -153,5 +153,6 @@ export {F};
 
 // react 檔案介紹和使用方法
 // https://www.digitalocean.com/community/tutorials/how-to-set-up-a-react-project-with-create-react-app
+// 在 public 資料夾下不會被 webpack 打包，而是直接被放在 build 後的根目錄下
 // push 到 Github Page 方法
 // https://medium.com/@yystartup/%E7%94%A8-github-pages-%E8%A3%BD%E4%BD%9C-react-demo-site-7840fcb9cc33
