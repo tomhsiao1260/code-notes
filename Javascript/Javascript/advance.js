@@ -34,11 +34,13 @@ function f() {
 // setTimeout(), setInerval()
 var n = 0;
 // 第一項通常是 callback function，第二項要等幾 ms，會回傳一個 object
+// 若有更多項，後面的項為輸入函數內的參數
 // setTimeout：過了某段時間，執行一次
 // setInerval：每隔一段時間，執行函數
-var ID1 = setTimeout(function f(){ ++n; }, 1000);
-var ID2 = setTimeout(() => ++n, 1000);
-var ID3 = setInterval(() => ++n , 1000);
+var ID1 = setTimeout(function f(){ ++n; }, 1000); // 1s 後 n++
+var ID2 = setTimeout(() => ++n, 1000);            // 1s 後 n++
+var ID3 = setInterval(() => ++n , 1000);          // 每過 1s 則 n++ 
+var ID4 = setTimeout(function f(i){ ++i; }, 1000, 10); // i 初始為 10， 1s 後變 11
 // 使用完記得清除 (setTimeout 不一定要，會自動清除)
 clearInterval(ID3);
 
@@ -481,20 +483,18 @@ promise.then(function(message) {message;},function(e) {e;})
 //    .then((myJson) => myJson)  // myJson 為 json 形式
                                  // 線上的資料傳輸大多為 json 形式
 
-
 // Chaining 寫法
 var promise = new Promise(function(resolve, reject) {
     resolve('Hello');
 }); 
 // catch 和 then 會回傳 Promise 物件本身，可以用 chaining 寫法
 // 比起用 ES6 以前用 callback function 去寫來的易讀且好維護
-promise.then((str) => {return str + ' World';}
-      ).then((str) => {return str;}
-      ).then((str) => {str;} // str = 'Hello World'
-      ); 
+promise.then((str) => {return str + ' World';})
+       .then((str) => {return str;})
+       .then((str) => {str;}); // str = 'Hello World'
 
 // Promise.all 語法
-var p1 = Promise.resolve(1);
+var p1 = Promise.resolve(1); // 此寫法可以直接產生一個 resolve 後的 Promise
 var p2 = 2;
 var p3 = new Promise(function(resolve, reject) {
                 setTimeout(resolve, 100, 'foo');
