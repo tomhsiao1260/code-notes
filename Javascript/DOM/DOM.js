@@ -33,9 +33,11 @@ Node.DOCUMENT_FRAGMENT_NODE === 11; // 表示 DocumentFragment 節點
 // 返回元素 ex: <div id='d1'>...</div>
 var d1 = document.getElementById('d1');
 
-var f = d1.firstChild; // d1 裡第一個 child 節點
-var l = d1.lastChild;  // d1 裡最後得 child 節點
-var p = d1.parentNode; // d1 的 parent 元素
+var f = d1.firstChild;          // d1 裡第一個 child 節點
+var l = d1.lastChild;           // d1 裡最後得 child 節點
+var p = d1.parentNode;          // d1 的 parent 元素
+var f_ = d1.firstElementChild;  // d1 裡第一個 child 元素
+var l_ = d1.lastElementChild;   // d1 裡最後得 child 元素
 
 d1.nodeType; // 1
 d1.nodeName; // 'DIV'
@@ -84,15 +86,24 @@ var c1  = d1.getElementsByClassName('c1');
 var n1 = document.getElementsByName('n1');
 n1[0];         // 第一個 name='n1' 的元素
 
+// 用 CSS 的一部份 selector 來選取
+var target = document.querySelector("#d2");
+var arr = document.querySelectorAll(".c1");
+var arr = document.querySelectorAll("p");
+// arr 為矩陣，內部元素為 element
+
 // 判斷是否有子元素
 if (d1.hasChildNodes()) {
-    // 取得元素下的所有子元素集合，為一個 NodeList
-    var children = d1.childNodes;
+    // 取得元素下的所有 子節點 集合，為一個 NodeList
+    var children = d1.childNodes; 
+    // 取得元素下的所有 子元素 集合，為一個 HTMLCollection
+    var children_ = d1.children;
 
     for (var i=0; i<children.length; ++i) {
         // 用 children[i] 來取得遍歷到子元素
         // 會依序遍歷到 文字(換行)、元素 等
         // 若為單一元素，childNodes 語法為其內容
+        // 若只想要元素本身，則改使用 d1.children 語法
     }
 }
 
@@ -182,10 +193,10 @@ d1.appendChild(btn);
 
 // 取消綁定
 btn.onclick = null;
-// // 也可寫成
+// 也可寫成
 btn.onclick = Click;
 
-// // 相較於 setAttribute 方法， listener 可設定多個 
+// 相較於 setAttribute 方法， listener 可設定多個 
 btn.addEventListener('click', Click);
 btn.addEventListener('click', Hi);
 // 刪除 listener

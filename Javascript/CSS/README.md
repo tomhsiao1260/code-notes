@@ -3,6 +3,7 @@
 * basic.css : 包含 CSS Layout、基本語法
 * selector.css : 選擇器彙整
 * effect.css : 基本動態特效
+* main.scss : SCSS 基本語法
 
 其他
 ------

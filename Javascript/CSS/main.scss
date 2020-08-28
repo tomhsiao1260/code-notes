@@ -1,0 +1,263 @@
+//---------------------------------------------------
+// 安裝
+// https://sass-lang.com/install
+
+// 轉譯語法
+// sass main.scss main.css
+// 也在 VScode 載 Extension，讓轉譯更方便
+
+//---------------------------------------------------
+// Varible
+$color: rgba(255,255,255,0.3);
+$standard-border: 4px solid black;
+$font-style-1: Helvetica, Arial, sans-serif;
+
+//---------------------------------------------------
+// Nesting
+
+.parent {     
+  color: blue;
+  .child {
+    font : {
+      family: $font-style-1;
+      size: 12px;
+    }
+  }
+}
+
+// 轉譯後
+.parent {
+  color: blue;
+}
+.parent .child {
+  font-family: Roboto, sans-serif;
+  font-size: 12px;
+}
+
+//---------------------------------------------------
+// Mixins
+
+// ::before、::after、:hover，在 Sass 中使用 & 代表父元素
+.notecard{       
+  &:hover{
+    transform: rotatey(-180deg);
+  }
+}
+
+// 轉譯後
+.notecard:hover {
+  transform: rotatey(-180deg);
+}
+
+//---------------------------------------------------
+// 重用群組的 CSS，例如跨瀏覽器的 prefix，使用 @include 加入群組
+@mixin backface-visibility {         
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+.notecard {
+  .front, .back {
+    width: 100%;
+    height: 100%;
+  
+    @include backface_visibility;
+  }
+}
+
+// 轉譯後 
+.notecard .front, .notecard .back { 
+  width: 100%;
+  height: 100%;
+  
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden; 
+}
+
+//---------------------------------------------------
+// @mixin 也可以透過 @include 使用參數，也可以使用預設值
+@mixin backface-visibility($visibility:hidden) {
+  backface-visibility: $visibility;
+  -webkit-backface-visibility: $visibility;
+}
+.front, .back {
+    @include backface-visibility(hidden);
+}
+
+//---------------------------------------------------
+// 可以使用 Lists、Maps 資料型態當輔助
+@mixin stripes($direction, $width-percent, $stripe-color, $stripe-background: #FFF) {
+  background: repeating-linear-gradient(
+    $direction,
+    $stripe-background,
+    $stripe-background ($width-percent - 1),
+    $stripe-color 1%,
+    $stripe-background $width-percent
+  );
+}
+// 用 Maps 存欲傳入變數：
+$college-ruled-style: ( 
+  direction: to bottom,
+  width-percent: 15%,
+  stripe-color: blue,
+  stripe-background: white
+);
+// 使用 ... 進行傳遞
+.definition {
+  width: 100%;
+  height: 100%;
+  @include stripes($college-ruled-style...);
+}
+
+// 轉譯後
+.definition {
+  width: 100%;
+  height: 100%;
+  background: repeating-linear-gradient(to bottom, white, white 14%, blue 1%, white 15%);
+}
+
+//---------------------------------------------------
+// #{} 會把參數傳入當作字串 (string interpolation)
+@mixin photo-content($file) {
+  content: url(#{$file}.jpg);
+} 
+.photo { 
+  @include photo-content('img');
+  width: 60%;
+  margin: 0px auto; 
+}
+
+// 轉譯後
+.photo {
+  content: url(img.jpg);
+  width: 60%;
+  margin: 0px auto; 
+}
+
+//---------------------------------------------------
+// 搭配 Nesting 使用 @mixin
+@mixin hover-color($color) {
+  &:hover {
+   color: $color;
+  }
+}
+.word {
+  @include hover-color(red);
+}
+
+//---------------------------------------------------
+// 有內建一些好用 functions 可以簡單設定色相、漸層
+// 例如：adjust-hue($color, $degrees)、fade-out
+$lagoon-blue: fade-out(#62fdca, 0.5);
+// https://sass-lang.com/documentation/modules
+
+$num: 100px;
+.font{
+  width: $num/5;           // 20px
+  line-height: (600px)/10; // 6px
+  margin-left: 20-10px/2;  // 15px (注意 px 和數字間要相連)
+  // font-size: 10px/8px;  // 語法錯誤
+}
+
+//---------------------------------------------------
+// 使用 @each 語法迭代 list 內容
+
+$sizes: (40px, 50px, 80px);
+// 也可寫為 $sizes: 40px, 50px, 80px;
+
+@each $size in $sizes {
+  .icon-#{$size} {
+    font-size: $size;
+  }
+}
+
+// 轉譯後
+.icon-40px {font-size: 40px;}
+.icon-50px {font-size: 50px;}
+.icon-80px {font-size: 80px;}
+
+//---------------------------------------------------
+// 使用 @for 迭代，並加入條件判斷
+
+$total: 3;
+$step: 5;
+@for $i from 1 through $total {
+  .ray:nth-child(#{$i}) {
+    background: adjust-hue(blue, $i * $step);
+    width: if($i % 2 == 0, 300px, 350px);
+    margin-left: if($i % 2 == 0, 0px, 50px);
+  }
+}
+// 轉譯後
+.ray:nth-child(1) {
+  background: #1500ff;
+  width: 350px;
+  margin-left: 50px;
+}
+.ray:nth-child(2) {
+  background: #2b00ff;
+  width: 300px;
+  margin-left: 0px;
+}
+.ray:nth-child(3) {
+  background: #4000ff;
+  width: 350px;
+  margin-left: 50px;
+}
+//---------------------------------------------------
+// 可以用 @include 引入其他 Sass、SCSS 檔案
+// 會將引用檔裡的所有變數和樣式一起涵蓋進來
+
+// 以下是引用 _import.scss 檔案範例
+// 檔名前的 _ 表示引用前要先 compile
+// @import "import";
+
+//---------------------------------------------------
+// @extend 共用
+
+.lemonade {
+  border: 1px yellow;
+}
+.strawberry {
+  @extend .lemonade;
+  border-color: pink;
+}
+
+// 轉譯後
+.lemonade, .strawberry {
+  border: 1px yellow;
+}
+.strawberry {
+  border-color: pink;
+}
+
+// 搭配 placeholder
+div%drink {
+  font-size: 2em;
+}
+.lemonade {
+  @extend %drink;
+}
+
+// 轉譯後
+div.lemonade{
+  font-size: 2em;
+}
+
+//---------------------------------------------------
+// @mixin 和 @extend 比較
+
+@mixin no-variable {
+  font-size: 12px;
+} 
+%placeholder {
+  font-size: 12px;
+} 
+span { @extend %placeholder; } 
+div { @extend %placeholder; } 
+p { @include no-variable; }  
+h1 { @include no-variable; }
+
+// 轉譯後 
+span, div{ font-size: 12px; }
+p { font-size: 12px; } 
+h1 { font-size: 12px; }

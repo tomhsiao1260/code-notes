@@ -78,6 +78,11 @@ var user = loginUser("abc@gmail.com", user => {
 // 若想要在非同步的語法能照著順序先後執行，則需要一直 callback 下去
 // 這樣會出現 callback hell，是個不一維護、不易懂的結構
 
+// 要讓 callback 易讀可以
+// 1. 拆成多個較小的函式 shallow code
+// 2. 模組化 modularize
+// 3. 例外處理 handle every single error
+
 // -------------------------------------------------------------
 
 // 用 Promise 取代 callback 為較好的寫法

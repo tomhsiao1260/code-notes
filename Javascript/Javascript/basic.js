@@ -5,13 +5,14 @@
 const { clear } = require("console");
 
 // JavaScript 是一種動態 (dynamically typed)
-// 弱型別 (weakly typed)
+// 弱型別 (weakly typed)，只有 var 型別 (或 const、let)
 // 基於原型 (prototype based)
 // 的物件導向程式語言 (object oriented programming language)
+// 除了內建型別 (primitive types) 外，其他都是物件(objects) 
 
 // 由 ECMA 組織來制定標準，因此也命名為 ECMAScript
 
-var a = 100;
+var a = 100; // 數字都是 double
 var b = 'hello';
 var c;
 typeof a;   // number
@@ -21,10 +22,10 @@ a = b;      // 會自動轉換型別
 typeof a;   // string
 typeof NaN; // number
 
-// 基本資料型態： Boolean, Number, String, 
-//              null, undefined, Symbol (ES6 語法)
+// 內建型別   ： Boolean, Number, String, 
+//             null, undefined, Symbol (ES6 語法)
 
-// 複合資料型態： Array, Object                 
+// 複合資料型態： Array, Object              
 
 // 運算子
 // +(加) -(減) *(乘) /(除)
@@ -64,6 +65,20 @@ else if (1=='1') {
 else {
     var result = 'else';
 } 
+
+// primitive type 為 call by value
+// 其他的 object 都是 call by reference
+
+var a = 3;
+var b = a;  // {a, b} = {3, 3}
+b = 4;      // {a, b} = {3, 4}
+a = 5;      // {a, b} = {5, 4} 
+
+var i = { a:3 };
+var j = i;
+j.a = 4;   // i.a = 4
+i.a = 5;   // j.a = 5
+
 
 // switch 判斷式
 var fruit = 'Banana';
@@ -145,11 +160,16 @@ while (true) {
 }
 
 // function 函數
+
+// 在 JS 中 function 為 First-Class Functions
+// 也就是說 functions 被當成是一般的變數(物件)
+// 可以當成其他 function 的參數或是回傳值，也可以被 assigned 給別的變數
 var n1 = 20;
 var n2 = 3;
-// 在 JS 中，function 為一種物件 object
 
 // 若沒 return 則回傳 undefined
+// function 內也可以 return function
+// function 不能跟 var 撞名，不然會被覆蓋
 function multiply() {
     return n1 * n2;
 }
@@ -160,12 +180,24 @@ function multiply(a, b) {
 }
 multiply(1,2);
 
+// 注意函式不能跟其他資料型態撞名，會報錯
+// 下面為 expression 定義的 function 的寫法
+// 因為是物件，所以可以被存入 var 中
 var result = function multiply(a, b) {
+    // 此時的 multiply 只能在函式內被呼叫，在外呼叫會無效
+    typeof multiply; // function
+    return a * b;
+}
+result(1,2); // 注意不能使用 multiply(1,2) 呼叫
+
+// 也可用此寫法，為匿名 (anonymously) 函式(沒有函式名)
+var result = function (a,b) {
+    // 透過自定義的變數名稱取得 function
+    // 所以沒有一定要替這個函式取名的理由
+    typeof result; // function
     return a * b;
 }
 result(1,2);
-
-// 注意函式不能跟其他資料型態撞名，會報錯
 
 // default function (為 ES6 才有的語法)
 function multiply(a, b = 1) {
@@ -174,8 +206,16 @@ function multiply(a, b = 1) {
 multiply(5, 2); // 10
 multiply(5);    // 5
 
+// Immediately Invokable Function Expression (IIFE)
+// 當 function 只用一次，就可以用匿名的寫法，並且即時的呼叫 (evoke) 它
+var i = 10;
+(function(x) {
+    // x = 10;
+})(i);
+
 // 在 js 裡 function 為一種 object (function object)
 // function 內可以有屬性或方法，也可以用 new 語法
+// 事實上除了基本型別以外的都是物件
 
 // scope 範圍
 
@@ -211,6 +251,39 @@ num4;       // 6 函式的全域變數
 // var 為 function scope
 // 若沒有加 var 會成為 global scope
 // let, const 為 block scope 僅在 for, if, while, switch 內 (即{}內)
+// const 表示變數不會再被重新指定更改，let 則會 (例如在 for loop 中)
+// 盡量使用 const 或 let 嚴謹的宣告變數而非 var ，可增加開發專案的穩定和可讀性
+
+// Hoisting
+a = 1;
+var a = 2;
+// 上面寫法 Variable 定義的位置會自動抬升 (Hoisting) 到最前面，即
+var a;
+a = 1;
+a = 2;
+
+var something = function() {
+    // 只會提升到這個 scope 裡的最上方
+    // 所以為 u 為 undefined 而非 ReferenceError 變數尚未宣告的錯誤
+    console.log(u);
+    var u = 2;
+    return u;
+};
+// 所以變數都盡量在 scope 的最上面先宣告完成後再使用會比較易讀
+// 注意只有 var 有 hoisting， let、const 則沒有
+
+// 函數也有 Hoisting，與變數提升的差別在於不只是提升宣告本身，函數的內容也會跟著提升
+square(2);  // 4
+
+function square(number) {
+  return number * number;
+}
+
+// 但下面的函數寫法是不會自動提升的
+// square(2);  // TypeError: square is not a function
+var square = function (number) {
+  return number * number;
+};
 
 // error handle
 try {
@@ -230,9 +303,25 @@ try {
 }
 
 // 物件 object
-// 宣告物件
-var myObj = new Object();
-var myObj = {}; // object literal 寫法
+// 宣告物件有三種方法
+
+// 1. new 寫法
+var myObj = new Object; 
+// 2. object literal 寫法
+var myObj = {};
+var myObj = { name:"Ric", score:100 };
+// 3. Constructor function
+function Student(name, score) {
+  this.name = name;
+  this.score = score;
+}
+var myObj = new Student('Ric', 100); // myObj.name = 'Ric'
+                                     // myObj.score = 100
+
+// JS 為 Prototype-Based object construction，即
+// 不用先定義 class 即可建置物件
+// 以上面例子來說，就是 name:'Ric' 不一定要在建置時先定義好
+// 且一旦一個物件被建置好，後續的物件可以用它來當作原型來建置類似的物件
 
 // 加入屬性，鍵值必須是字串
 var key = 'something';
@@ -362,6 +451,16 @@ arr.pop();              // 最後面移除   [10, 'Apple', 1]
 arr.shift();            // 最前面移除   ['Apple', 1] 
 delete arr[0];          // 移除指定位置 [undefined, 1] 
 arr.length;             // 2
+typeof arr;             // object
+Array.isArray(arr);     // true
+
+// Array 也是物件
+var arr = [];
+arr[0] = "John";        // ['John']
+arr["Name"] = "Ric";    // ['John', Name: 'Ric']
+arr[1] = "Tom"          // ['John', 'Tom', Name:'Ric']
+Array.isArray(arr);     // true
+arr.length;             // 2 鍵值對不會被算進去
 
 // setTimeout  一秒後執行函數 
 // setInterval 每秒執行一次函數

@@ -7,8 +7,9 @@
 
 // var 為 function scope
 // let, const 為 block scope 僅在 for, if, while, switch 內 (即{}內)
-// let, const 不能重複宣告，var 可以
+// let, const 不能重複宣告，var 可以會覆蓋
 // 用 let 寫法宣告物件，可以避免名字不小心重複使用
+// 盡量多多使用 const 寫法讓程式易讀且易維護
 
 function f() {
     var x = 1;
@@ -575,4 +576,125 @@ var obj = {
     }
 };
 obj.foo();
+
+// 模組化
+
+/////////////////////////////////
+// require / exports 模組化寫法如下
+/////////////////////////////////
+
+// exports
+var text = 'hi';
+module.exports = text;
+// require
+var example = require("./module.js"); // 'hi'
+                                      // .js 可略
+
+// exports
+var text = "hello";
+module.exports = {
+  getText: function() {return text;}
+};
+// require
+var example = require("./module.js");
+example.getText(); // 'hello'
+example.text;      // undefined
+                   // 所以 module 為 closure
+
+// exports
+var text = {
+  value: "hello"
+};
+module.exports = {
+  getText: function() {
+    // 若直接回傳 return text; 則為 call by sharing，外部能夠修改 text
+    // 若想避免這種情況可以建立物件深層 clone 的副本
+    // 等同於自己做 call by value，避免外部修改到 text 本身的值
+    return Object.assign({}, text);
+  }
+};
+// require
+var example = require("./module.js");
+var text = example.getText();
+text.value = 123;
+// 若使用 return text; 則 example.getText().value 會被改為 123
+// 使用 return Object.assign({}, text); 則仍會保留原本的 'hello'
+
+// 也可以在 export 下實作多個方法，例如：
+var a = 1;
+var b = 2;
+module.exports.m1 = a;
+module.exports.m2 = b;
+var example = require("./module.js"); // {m1: 1, m2: 2}
+
+
+///////////////////////////////
+// import / export 模組化寫法如下
+///////////////////////////////
+
+// 有兩種 export 方法，分別是 default export 和 named export
+// default export: 一個檔案僅能有唯一的 default export，而此類型不一定要給予名稱
+
+// export 數值
+export default 1;
+// export 物件
+const obj = { name: 'obj' };
+const obj2 = { name: 'obj2' };
+export default { obj, obj2 };
+// export 函數
+export default function() {
+  console.log('this is a function');
+}
+// export class
+export default class {
+  constructor(name) {this.name = name;}
+  callName() {console.log(this.name);}
+}
+
+// named export  : 可匯獨立的物件、變數、函式等等
+//                 匯出前必須給予特定名稱，而匯入時也必須使用相同的名稱
+//                 且一個檔案中可以有多個 named export
+
+// export 數值
+export let a = 1;
+// export 物件
+export let obj = { name: 'obj'};
+// export 函數
+export function fn() {
+  console.log('this is a function');
+}
+// export 統一
+export { a, obj, fn };
+
+// import 方法
+
+// default import
+export default function() {
+  console.log('this is a function');
+}
+// import 則輸入
+import fn from './module.js';
+fn(); // 直接執行函式
+      // .js 可略
+
+// 非 default import
+export function fn() {
+  console.log('this is a function')
+}
+// 要用 {} import 進來
+import { fn } from './module.js';
+fn(); // 直接執行函式
+// import 全部ㄥ
+import * as name from './module.js';
+name.fn();
+// 重新命名
+import { fn as newFn } from './module.js';
+newFn();
+
+// import 是編譯中執行，CommonJS 的 require 是同步加載
+// import 無論在 node 或是瀏覽器都不能直接使用，透過 Webpack、Babel 轉譯後或使用 CommonJS 加載
+// 所以兩者其實透過轉譯後是一樣的，只是遵循的規範及出現的時間點不同而已
+// 在效能上基本上沒區別，因為轉譯過後還是一樣的東西
+// require / exports 出生在野生規範，也就是 JavaScript 社群開發者自己草擬的規則
+// import / export 跟隨著新的 ECMAScript 版本，也就是 ES5 / ES6
 
