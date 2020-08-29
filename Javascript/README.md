@@ -2,7 +2,7 @@
 ------
 * basic.js : JS 基本語法
 * advance.js : ES6 標準下的新語法
-* DOM.js : 與 DOM 操作相關的語法，包含 jQuery
+* DOM.js : 與 DOM 操作的相關語法，包含 jQuery
 * DOM.html : 搭配 DOM.js 一起使用
 * CSS :  基本教學整理
 * reactNote.js : react 的基本語法
