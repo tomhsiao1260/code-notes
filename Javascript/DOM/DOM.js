@@ -142,6 +142,8 @@ d1.getAttribute('id');         // 'd1'
 d1.setAttribute('class','d1'); // 建立屬性 class='d1'
 d1.className;                  // 'd1'
 d1.className = 'd'             // 更改屬性 class='d'
+d1.classList.add('new')        // 新增名 new 的 class
+d1.classList.remove('new')     // 刪除名 new 的 class (可用來動態更改樣式)
 d1.removeAttribute('class');   // 移除屬性
 d1.attributes['id'].name;      // 'id'
 d1.attributes['id'].value;     // 'd1'
