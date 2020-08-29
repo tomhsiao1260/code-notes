@@ -1,0 +1,35 @@
+command: c
+ctrl:    cl
+option:  op
+shift:   sh
+
+-------快捷鍵-------
+c+w: 關閉頁面
+c+t: 新增頁面
+c+a: 全選
+c+m: 最小化
+c+s: 存擋
+c+o: 開啟舊檔
+c+n: 新增視窗
+c++: 字體放大
+c+a: 全選
+c+x: 剪下
+c+r: 重新整理
+c+f3: 檔案移到邊界
+cl+tab: 下個標籤頁
+c+sh+5: 擷取螢幕
+
+c+l: 選取整行
+c+/: 程式內容註解
+c+[: 向左縮排
+c+]: 向右縮排
+c+enter: 下一行插入新行
+c+sh+enter: 上一行插入新行
+c+left: 跳到句尾
+c+sh+f:搜尋或取代關鍵字
+op+left: 跳到下個連字
+c+d: 選取其他與框選相同的字
+cl+sh+m: 選取括號內的內容
+sh+left: 選取
+sh+c+left: 選取到底
+cl+sh+k: 刪除整行

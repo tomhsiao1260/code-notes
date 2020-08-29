@@ -1,0 +1,37 @@
+-----------------------------------------------------------
+
+touch      建立檔案
+mkdir      建立目錄
+rm         刪除檔案
+rmdir      刪除目錄
+rm -rf     刪除目錄和檔案
+rm *.py    刪除此目錄下所有.py檔
+ls         列表 
+ls -alpt   詳細列表： a(隱藏檔) l(完整資訊) p(顯示較清楚) t(依修改時前排序)
+clear      清空畫面
+cp [a] [b] 複製 a 到 b 目錄，或複製 a 取名為 b
+mv [a] [b] 移動 a 移動到 b 目錄
+cat        輸出檔案內容在終端機上
+pwd        查看位置
+&&         執行多個指令 (寫在兩指令中間)
+ctr + D    退出當下終端指令
+vi [a]     顯示 a 檔內容(沒檔會自動創建)，可按 i 鍵編輯(顯示INSERT)，按 exe 退出編輯，再輸入 :wq 存檔 
+
+cd /file   到 file 資料夾 (絕對路徑)
+cd file    到 file 資料夾 (相對路徑)
+cd ..      回到前目錄
+cd ~       回到 home 目錄
+cd Desktop 回到桌面  
+
+history               終端機紀錄
+history | grep clear  檢視搜尋終端機有 clear 的指令
+find . -iname '*.py'  尋找 .py 結尾的檔案
+
+python -m SimpleHTTPServer 在本地端架一個簡易的server (監聽 port 8000)
+
+-----------------------------------------------------------
+
+
+
+
+

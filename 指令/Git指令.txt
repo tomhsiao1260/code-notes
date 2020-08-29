@@ -1,0 +1,94 @@
+-----------------------------------------------------------
+
+git init                     初始化 git，記得加 .gitignore 檔
+git config --list            觀看環境設定
+git remote add origin [link] 要遠端的網址(.git結尾)
+git remote rm origin         刪除綁定的遠端網址
+
+touch .gitignore             寫入要忽略上傳的檔名(.DS_Store 和 .gitignore)
+touch README.md              新增 README.md
+
+git add [file]               加到暫存區
+git add .                    將所有檔案加到暫存區
+git add -u                   加入所有更動到暫存區，包含刪除
+git commit -m "message"      commit 到版本庫，並附註
+git push origin [branch]     push 版本庫到 GitHub (master, gh-pages)
+git push origin [branch] -f  不論是否有遺漏的新版本，直接 push 覆蓋遠端的版本
+
+邀請->對方clone->對方push->點pull request
+
+-----------------------------------------------------------
+
+git status                   查看 git 狀態
+git log                      查看 commit 紀錄，按 q 退出
+git show [commit]            查看某次 commit 的修改 (複製六碼或以上)，按 q 退出
+git rm --cached [file]       將不在版本庫的檔案移出暫存區
+git reset HEAD [file]        將已經在版本庫的檔案移出暫存區(而不會取消版本庫的 tracked)
+git diff                     查看檔案內容修改變化
+
+git clone [repository]       clone 下專案(若不想衝突記得刪除原始的.git)
+git branch [branch]          建立一個新branch (master, gh-pages)
+git checkout [branch]        切換 branch (master, gh-pages)
+git branch -a                查看所有的 branch
+git branch -d [branch]       刪除某個 branch (記得先跳到其他 branch)
+git merge [branch]           將所在的 branch 和指定的 branch 合併到本地資料庫
+git pull origin [branch]     pull 遠端資料到本地資料夾
+                             若使用 push 失敗，代表本地端有遺漏的新版本
+                             可在 pull 語法後加上 --rebase
+                             先將遠端與本地的版本 pull 下且合併然後 push
+
+-----------------------------------------------------------
+
+重來步驟
+
+刪除 repo. 並重建一個新的，刪除下方本地端的檔案
+rm -rf .git
+rm -rf node_modules
+rm package-lock.json
+執行 npm install
+執行 git init 即回到上方的初始狀態
+-----------------------------------------------------------
+
+若在 npm 環境下開發則
+
+1. npm install gh-pages --save-dev
+
+2. ls -a
+   先查看是否有 .git .gitignore
+
+3. git config --list
+   git remote add origin [link]
+
+4. 在 package.json 加入
+   "homepage": "https://[userName].github.io/[repoName]/",
+
+5. 在 npm script 加入下面這段
+
+   "predeploy": "npm run build",
+   "deploy": "gh-pages -d build"
+
+   (predeploy 中的 build 是指 script 中的 build 指令)
+   (deploy 中的 build 是指 npm run build 後產生的資料夾名稱)
+
+6. 先把 develop 的版本 push 到 master branch，此步可略
+   git status 確定在 master branch
+   git add .
+   git commit -m "message"
+   git push origin master
+
+7. 並執行 npm run deploy
+   會把 build 的版本 push 到 gh-pages branch
+   可拜訪網址 https://[userName].github.io/[repoName]/
+
+8. 下次只要執行 6. 7. 步即可
+
+
+參考：
+https://medium.com/@yystartup/%E7%94%A8-github-pages-%E8%A3%BD%E4%BD%9C-react-demo-site-7840fcb9cc33
+
+-----------------------------------------------------------
+
+
+
+
+
