@@ -9,6 +9,7 @@
 // 2. 定義了 HTML 元素有哪些屬性 (properties) 可以來做存取
 // 3. 定義了 HTML 元素有哪些方法 (methods) 可以來被操作
 // 4. 定義了 HTML 元素事件 (events)，可以針對特定元素來綁定事件處理函式
+// another test
 
 // DOM nodeType
 Node.ELEMENT_NODE === 1;            // 表示 HTML 元素
