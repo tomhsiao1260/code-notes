@@ -149,7 +149,7 @@ d1.attributes['id'].name;      // 'id'
 d1.attributes['id'].value;     // 'd1'
 d1.attributes.id.name;         // 'id'
 d1.attributes.id.value;        // 'd1'
-d1.id = 'd1';                  // 修改 id 的值
+// d1.id = 'd1';                  // 修改 id 的值
 
 // 也可用迴圈遍歷所有屬性
 for (var i=0; i<d1.attributes.length; ++i) {
