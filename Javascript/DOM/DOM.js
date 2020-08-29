@@ -19,7 +19,7 @@ Node.DOCUMENT_TYPE_NODE === 10;     // 表示 <!DOCTYPE html> 節點
 Node.DOCUMENT_FRAGMENT_NODE === 11; // 表示 DocumentFragment 節點
 
 // nodeName
-// 不同形態的 node 會有不同的名稱
+// 不同形態的 node 會有不同名稱
 
 // Attr： 值同 Attr.name
 // Comment：值為 '#comment'
