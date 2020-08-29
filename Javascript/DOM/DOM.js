@@ -1,5 +1,5 @@
 // DOM (Document Object Model) 定義了一組標準 API
-// 讓 JS 能夠對 HTML 文件做操作
+// 讓 JS 能對 HTML 文件操作
 
 // DOM 將一份 HTML 文件看作是一個樹狀結構的物件
 // 可以方便直觀的存取樹中的節點 (node) 來改變其結構、樣式 (CSS) 或內容等
