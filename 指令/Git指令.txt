@@ -18,11 +18,17 @@ git push origin [branch]     push 儲存庫到 GitHub (master, gh-pages)
 git push origin [branch] -f  不論是否有遺漏的新版本，直接 push 覆蓋遠端的版本
 git push --all               push 所有分支
 git pull origin [branch]     pull 遠端資料到本地資料夾，origin 為遠端儲存庫的預設別名
-                             若使用 push 失敗 (rejected)，代表本地端有遺漏的新版本
-                             可用 pull 將遠端版本和本地版本合併 (fetch + merge)
-                             再 push 上遠端
 
-邀請->對方clone->對方push->點pull request
+-----------------------------------------------------------
+
+push 失敗 (rejected)
+
+代表本地端有遺漏的新版本，使用 pull 
+將遠端版本和本地版本合併 (fetch + merge)
+
+pull 成功：即可 push 上遠端
+pull 失敗：發生衝突 (conflict)，必須手動合併後
+          執行 add -> commit -> push
 
 -----------------------------------------------------------
 
@@ -45,8 +51,9 @@ git branch -a                查看所有的 branch (-a 會顯示 origin 開頭�
 git branch -d [branch]       刪除某個 branch (記得先跳到其他 branch)
 git push origin :[branch]    刪除某個本地追蹤分支 origin/[branch]
 git merge [branch]           將所在的 branch 和指定的 branch 合併 (更動了目前的 branch)
-                             merge 警訊有 conflict 的部分必須手動合併後
-                             執行 add -> commit -> push 即可 (沒 conflict 可直接 push)
+                             merge 成功：即可 push 上遠端
+                             merge 失敗：發生衝突 (conflict)，必須手動合併後
+                                        執行 add -> commit -> push
 git fetch origin [branch]    將遠端的儲存庫更新到本地的 origin/[branch] 分支裡
                              其實 git pull origin master 等同於執行了下面兩個指令：
                              git fetch origin master 和 git merge origin/master
@@ -138,6 +145,9 @@ rm package-lock.json
 執行 git init 即回到最上方的基本建置的一開始
 
 -----------------------------------------------------------
+
+
+邀請->對方clone->對方push->點pull request
 
 
 
