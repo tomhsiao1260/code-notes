@@ -35,8 +35,7 @@ git branch -d [branch]       刪除某個 branch (記得先跳到其他 branch)
 git merge [branch]           將所在的 branch 和指定的 branch 合併到本地儲存庫
 git pull origin [branch]     pull 遠端資料到本地資料夾，origin 為遠端儲存庫的別名
                              若使用 push 失敗 (rejected)，代表本地端有遺漏的新版本
-                             可在 pull 語法後加上 --rebase
-                             先將遠端與本地的版本 pull 下且合併然後 push
+                             可用此語法先將遠端版本和本地版本合併 (merge)
 
 -----------------------------------------------------------
 
