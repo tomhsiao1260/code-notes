@@ -1,5 +1,7 @@
 -----------------------------------------------------------
 
+基本建置
+
 git init                     初始化 git，記得加 .gitignore 檔
 git config --list            觀看環境設定
 git remote add origin [link] 要遠端的網址(.git結尾)
@@ -14,42 +16,80 @@ git add -u                   加入所有更動到暫存區，包含刪除
 git commit -m "message"      commit 到儲存庫，並附註
 git push origin [branch]     push 儲存庫到 GitHub (master, gh-pages)
 git push origin [branch] -f  不論是否有遺漏的新版本，直接 push 覆蓋遠端的版本
+git push --all               push 所有分支
+git pull origin [branch]     pull 遠端資料到本地資料夾，origin 為遠端儲存庫的預設別名
+                             若使用 push 失敗 (rejected)，代表本地端有遺漏的新版本
+                             可用 pull 將遠端版本和本地版本合併 (fetch + merge)
+                             再 push 上遠端
 
 邀請->對方clone->對方push->點pull request
 
 -----------------------------------------------------------
 
+其他語法
+
 git status                   查看 git 狀態
 git log                      查看 commit 紀錄，按 q 退出
 git show [commit]            查看某次 commit 的修改 (複製六碼或以上)，按 q 退出
+git diff                     查看檔案內容修改變化
 git rm --cached [file]       將不在版本庫的檔案移出暫存區
 git reset HEAD [file]        將已經在版本庫的檔案移出暫存區(而不會取消版本庫的 tracked)
-git diff                     查看檔案內容修改變化
+git reset HEAD --hard        將本地版本重置到與 origin/HEAD 相同 (發生版本衝突時使用)
+git reset ORIG_HEAD --hard   回到 merge 前的版本
 
 git clone [repository]       clone 下專案(若不想衝突記得刪除原始的.git)
 git branch [branch]          建立一個新branch (master, gh-pages)
 git checkout [branch]        切換 branch (master, gh-pages)
-git branch -a                查看所有的 branch
+git branch -a                查看所有的 branch (-a 會顯示 origin 開頭分支)
                              origin/master、origin/HEAD 為本地追蹤分支
 git branch -d [branch]       刪除某個 branch (記得先跳到其他 branch)
-git merge [branch]           將所在的 branch 和指定的 branch 合併到本地儲存庫
-git pull origin [branch]     pull 遠端資料到本地資料夾，origin 為遠端儲存庫的別名
-                             若使用 push 失敗 (rejected)，代表本地端有遺漏的新版本
-                             可用此語法先將遠端版本和本地版本合併 (merge)
+git push origin :[branch]    刪除某個本地追蹤分支 origin/[branch]
+git merge [branch]           將所在的 branch 和指定的 branch 合併 (更動了目前的 branch)
+                             merge 警訊有 conflict 的部分必須手動合併後
+                             執行 add -> commit -> push 即可 (沒 conflict 可直接 push)
+git fetch origin [branch]    將遠端的儲存庫更新到本地的 origin/[branch] 分支裡
+                             其實 git pull origin master 等同於執行了下面兩個指令：
+                             git fetch origin master 和 git merge origin/master
 
 -----------------------------------------------------------
 
-重來步驟
+多人協作
 
-刪除 repo. 並重建一個新的，刪除下方本地端的檔案
-rm -rf .git
-rm -rf node_modules
-rm package-lock.json
-執行 npm install
-執行 git init 即回到上方的初始狀態
+1. 先完成基本建置 (git init 和 git remote add origin 等等)
+
+2. 在 master  下新增名為 develop        的分支 (master 為主體、develop 為開發)
+   在 master  下新增名為 hotfix/[name]  的分支 (即時修改 master 的問題)
+   在 develop 下新增名為 feature/[name] 的分支 (一些小功能)
+
+   若開發告一段落，可在 master 加 tags:
+   git tag 1.0.0-beta1 -a -m "some description" 
+
+3. 將建置發佈到 GitHub:
+   git push --all 
+   git push --tags
+
+4. 團隊成員下載遠端資料庫，首先 clone 下儲存庫，然後：
+   git fetch --all --tags 
+   git branch -a
+   此時可以看到對應建置的所有本地追蹤分支 origin/[branch]
+   若要產生對應建置的 branch，只要執行：
+   git checkout [branch]
+   git branch -a
+
+5. 若做完 develop 分支，先 add -> commit -> push
+   若想進一步 merge 到 master，則在 master 分支下執行：
+   git merge develop
+   git push origin master
+   其他分支的合併也是同樣方法，遇到版本衝突先 pull 下遠端儲存庫
+
+6. 想換分支作業，可以：
+   git checkout [branch]
+   git pull origin [branch]
+   整理完可回到 5. 上傳或是 merge
+
 -----------------------------------------------------------
 
-若在 npm 環境下開發則
+npm 環境下開發
 
 1. npm install gh-pages --save-dev
 
@@ -85,6 +125,17 @@ rm package-lock.json
 
 參考：
 https://medium.com/@yystartup/%E7%94%A8-github-pages-%E8%A3%BD%E4%BD%9C-react-demo-site-7840fcb9cc33
+
+-----------------------------------------------------------
+
+重建遠端儲存庫
+
+刪除 repo. 並重建一個新的，刪除下方本地端的檔案
+rm -rf .git
+rm -rf node_modules
+rm package-lock.json
+執行 npm install
+執行 git init 即回到最上方的基本建置的一開始
 
 -----------------------------------------------------------
 
