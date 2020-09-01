@@ -1,3 +1,8 @@
+<!-- 文字搭配連結 -->
+<h4 align="center">
+Personal Website | <a href="https://tomhsiao1260.github.io/" target="_blank">View It<a/>
+</h4>
+
 <!-- 標題 -->
 # Title
 ## Title
@@ -13,11 +18,6 @@
 <p align="center">
   <img src="./assets/img.gif" height="600px"/>
 </p>
-
-<!-- 文字搭配連結 -->
-<h4 align="center">
-Personal Website | <a href="https://tomhsiao1260.github.io/" target="_blank">View It<a/>
-</h4>
 
 <!-- 輸入不換行文字 -->
 <!-- 空一格才會換行 -->
