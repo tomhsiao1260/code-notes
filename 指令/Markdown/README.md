@@ -23,9 +23,11 @@ Personal Website | <a href="https://tomhsiao1260.github.io/" target="_blank">Vie
 <!-- 空一格才會換行 -->
 This is a Markdown note.
 
-<!-- 加入網址 -->
+<!-- 加入連結 -->
 This is my [personal website](https://tomhsiao1260.github.io/).
+https://tomhsiao1260.github.io/
 [Go to title_1][#Title 1]
+
 
 <!-- 加入 Emoji -->
 Add some Emoji 👉 [here](https://tw.piliapp.com/emoji/list/).
@@ -38,4 +40,9 @@ Add some Emoji 👉 [here](https://tw.piliapp.com/emoji/list/).
 - list 2
 * list 3
 * list 4
+
+<!-- 文字加入灰色背景 -->
+```
+npm run build
+```
 
