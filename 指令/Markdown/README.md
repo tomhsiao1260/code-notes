@@ -28,7 +28,17 @@ This is my [personal website](https://tomhsiao1260.github.io/).
 
 personal website: https://tomhsiao1260.github.io/
 
-- [Go to title_1][#title-1]
+- [People to Follow](#people-to-follow)
+- [Projects](#projects)
+- [Articles and Talks](#articles-and-talks)
+- [Learning Resources](#learning-resources)
+- [Libraries](#libraries)
+- [TODO](#todo)
+
+
+
+
+## People to Follow
 
 ## content
 
