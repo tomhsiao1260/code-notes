@@ -28,7 +28,7 @@ This is my [personal website](https://tomhsiao1260.github.io/).
 
 personal website: https://tomhsiao1260.github.io/
 
-- [Go to title_1][#content]
+- [Go to title_1][#title-1]
 
 ## content
 
