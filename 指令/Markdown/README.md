@@ -12,7 +12,7 @@ Personal Website | <a href="https://tomhsiao1260.github.io/" target="_blank">Vie
 <!-- 只有 # 和 ## 有隔線 -->
 
 <!-- 用 Markdown 使用圖片 -->
-![alt](./assets/img.png =100x)
+![alt](./assets/img.png){:height="100px" width="100px"}
 
 <!-- 用元素使用圖片 -->
 <p align="center">
