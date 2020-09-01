@@ -11,12 +11,6 @@ Personal Website | <a href="https://tomhsiao1260.github.io/" target="_blank">Vie
 ##### Title 5
 <!-- 只有 # 和 ## 有隔線 -->
 
-Title
-======
-
-Title
-------
-
 <!-- 用 Markdown 使用圖片 -->
 ![alt](./assets/image.png)
 
@@ -45,8 +39,6 @@ Add some Emoji 👉 [here](https://tw.piliapp.com/emoji/list/).
 <!-- 列表 -->
 - list 1
 - list 2
-* list 3
-* list 4
 
 <!-- 文字加入灰色背景 -->
 ```
