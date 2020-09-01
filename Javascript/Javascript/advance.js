@@ -232,6 +232,7 @@ s.clear();     // 清空 Set
 // JS 使用函數 (function) 做為類別 (class) 的建構子 (constructor) 來定義一個類別
 
 class Animal { 
+	// 用 constructor 來宣告變數
     constructor(name) {
         this.name = name;
         this.num = 0;
@@ -240,6 +241,7 @@ class Animal {
     count() {return this.num;}
 }
 // 將 'Elephant' 傳給建構子初始化
+// 注意 class 的寫法沒有 hoisting 的功能
 var a = new Animal('Elephant');
 a.name;        // Elephant
 a.speak();     // Elephant

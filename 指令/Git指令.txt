@@ -47,7 +47,7 @@ git clone [repository]       clone 下專案(若不想衝突記得刪除原始�
 git branch [branch]          建立一個新branch (master, gh-pages)
 git checkout [branch]        切換 branch (master, gh-pages)
 git branch -a                查看所有的 branch (-a 會顯示 origin 開頭分支)
-                             origin/master、origin/HEAD 為本地追蹤分支
+                             origin/[branch]、origin/HEAD 為本地追蹤分支
 git branch -d [branch]       刪除某個 branch (記得先跳到其他 branch)
 git push origin :[branch]    刪除某個本地追蹤分支 origin/[branch]
 git merge [branch]           將所在的 branch 和指定的 branch 合併 (更動了目前的 branch)
@@ -60,7 +60,7 @@ git fetch origin [branch]    將遠端的儲存庫更新到本地的 origin/[bra
 
 -----------------------------------------------------------
 
-多人協作
+邀請協作 (Invite a collaborator)
 
 1. 先完成基本建置 (git init 和 git remote add origin 等等)
 
@@ -75,7 +75,10 @@ git fetch origin [branch]    將遠端的儲存庫更新到本地的 origin/[bra
    git push --all 
    git push --tags
 
-4. 團隊成員下載遠端資料庫，首先 clone 下儲存庫，然後：
+4. 到資料庫下的 setting 左側的 Manage access 點選
+   Invite a collaborator (對方會收到 mail 的邀請)
+
+5. 團隊成員下載遠端資料庫，首先 clone 下儲存庫，然後：
    git fetch --all --tags 
    git branch -a
    此時可以看到對應建置的所有本地追蹤分支 origin/[branch]
@@ -83,16 +86,45 @@ git fetch origin [branch]    將遠端的儲存庫更新到本地的 origin/[bra
    git checkout [branch]
    git branch -a
 
-5. 若做完 develop 分支，先 add -> commit -> push
+6. 若做完 develop 分支，先 add -> commit -> push
    若想進一步 merge 到 master，則在 master 分支下執行：
    git merge develop
    git push origin master
    其他分支的合併也是同樣方法，遇到版本衝突先 pull 下遠端儲存庫
 
-6. 想換分支作業，可以：
+7. 想換分支作業，可以：
    git checkout [branch]
    git pull origin [branch]
    整理完可回到 5. 上傳或是 merge
+
+-----------------------------------------------------------
+
+用 Pull Request 協作
+
+1. fork 專案到自己的目錄
+
+2. git clone 把自己目錄底下的專案抓下來開發
+
+3. 完成後， push 上自己目錄
+
+4. 發 Pull Request 到原本的專案上， 讓主專案的 Owner 合併
+   先設定 compare across forks (左邊為 Owner 目錄 <- 右邊為自己目錄)
+
+5. merge 成功： Able to merge -> creare pull request
+   merge 失敗： 選 Resolve conflicts 手動合併，完成後走回成功步驟
+   Owner 收到後按 merge pull request 表同意合併
+
+6. 可加入 Owner 的本地追蹤分支，以便 pull 下最新專案
+   自己的預設為 origin，Owner 分支命名為 upstream：
+   git remote add upstream [Owner Git URL]
+
+   檢查是否有追蹤到
+   git remote -v
+
+   本地工作到一段可以 pull 下 Owner 的最新專案
+   git pull upstream [branch]
+
+7. 除了 merge 方法以外 (需經過 Owner 同意)，其他大致上和 邀請協作 相同
 
 -----------------------------------------------------------
 
@@ -145,9 +177,6 @@ rm package-lock.json
 執行 git init 即回到最上方的基本建置的一開始
 
 -----------------------------------------------------------
-
-
-邀請->對方clone->對方push->點pull request
 
 
 

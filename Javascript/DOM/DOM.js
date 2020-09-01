@@ -171,7 +171,8 @@ for (var i=0; i<d1.attributes.length; ++i) {
 var p1 = document.getElementById('p1');
 p1.style.color = 'white';
 p1.style.background = 'gray';
-p1.style.marginTop = '30px';
+p1.style.marginTop = '30px'; // '-' 後第一個字改為大寫
+p1.style.backgroundColor = 'white'; // '-' 後第一個字改為大寫
 p1.style['color'] = 'white';  // 等效
 
 // 可寫入和讀取 style 屬性
@@ -182,7 +183,7 @@ var cssAll = window.getComputedStyle(p1);
 // 取得屬性值
 cssAll.getPropertyValue('color'); 
 
-// 事件處理
+// event handle
 function Click(){alert('click !');}
 function Hi(){alert('Hi !');}
 
@@ -191,6 +192,7 @@ btn.innerHTML = 'Button';
 btn.setAttribute('onClick','Click()');
 // 即 <button onclick='Click()'>Button</button>
 // 可用 onclick='Click(this)' 寫法，this 傳入 btn 物件本身
+// 可用 onclick='Click(event)' 寫法，event 傳入事件本身
 d1.appendChild(btn);
 
 // 取消綁定
@@ -215,7 +217,7 @@ var child = B_ul[0].childNodes;
 // 將 div 加上一個 event
 B_div.addEventListener('click', Hi);
 // 將 div 內的 li 加上一個 event
-for (B_li of child){
+for (let B_li of child){
     if(B_li.nodeType === Node.ELEMENT_NODE){
         B_li.addEventListener('click', Click);
     }
@@ -241,6 +243,10 @@ B_div.addEventListener('click', e => {
   
     alert('Bubble' + li.dataset.num);
 })
+
+// 假設 div 下有個 button，想使用 Delegation 在 div 上實作 click 時
+// 會觸發到 button 的預設 click 事件，等於會意外的觸發兩次 click event
+// 可用 preventDefault(); 避免 button 的預設事件觸發
 
 // event 事件
 

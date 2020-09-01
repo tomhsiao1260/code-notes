@@ -18,6 +18,8 @@ none   : 把 display: none 用以隱藏或顯示該元素，例如：script
   width: 600px;
   margin: 0 auto; 
 }
+
+也可用 max-width 和 min-width 屬性來限制最大最小寬度
 -----------------------------------------------------------------------------
 */
 .simple {
@@ -32,6 +34,21 @@ none   : 把 display: none 用以隱藏或顯示該元素，例如：script
     border-width: 10px;
 }
 
+.center {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.list {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+}
+
 /*
 以 border 間寬度而言，上方 fancy 會比 simple 寬出 2*padding
 但文字可放的空間寬度相同都是 500px
@@ -43,6 +60,10 @@ none   : 把 display: none 用以隱藏或顯示該元素，例如：script
         box-sizing: border-box;
 
 -webkit- 和 -moz- 為前綴（Prefixes），為了啟用特定瀏覽器實驗中的 CSS 特性
+
+另外，可使用 flex 做到垂直置中的排版，如 .center 所示
+也可使用 flex 讓內部的元素垂直且緊密得排版，如 .list 所示
+可看 flex 的教學了解更多有用的排版技巧～
 
 -----------------------------------------------------------------------------
 position 屬性
@@ -361,7 +382,7 @@ p {color:green;}           顏色名稱
 
 font-family：字體的類別，例如 arial、verdana，可輸入多個替代字體，用 , 隔開
 font-size：字體的大小，例如 3px、small、medium、large
-font-weight：字體的厚度，例如 100～900、normal、bold、bolder
+font-weight：字體的厚度，例如 100～900、normal、bold、bolder
 font-style：是否為斜體字，例如 italic 為斜體
 -----------------------------------------------------------------------------
 z-index 屬性是用來決定元素重疊的順序，值比較大的元素會被放在上面
@@ -388,8 +409,13 @@ line-height   ：行距
 :focus   active 後即為 focus (效用會在 active 其他元素後結束)
          聚焦時可寫 outline: none; 去除邊框的藍框
 -----------------------------------------------------------------------------
+list-style 屬性
+
+使用 ul 作為 list 時可用 list-style: none; 去掉前面的點點
+-----------------------------------------------------------------------------
 cursor 屬性
 鼠標的圖案，屬性有點多，可看 document
+cursor: pointer; 鼠標會出現手的圖樣
 
 box-shadow 屬性
 產生陰影，可看 document

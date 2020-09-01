@@ -18,7 +18,7 @@ var c;
 typeof a;   // number
 typeof b;   // string
 typeof c;   // undefined
-a = b;      // 會自動轉換型別
+a = b;      // 會自動轉換型別 (弱型別)
 typeof a;   // string
 typeof NaN; // number
 

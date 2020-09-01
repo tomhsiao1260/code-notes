@@ -2,4 +2,3 @@
 * Git 基礎教學 2: https://kopu.chat/2017/01/18/git新手入門教學-part-2/
 * Git 協作基礎 1: https://ithelp.ithome.com.tw/m/articles/10140133
 * Git 協作分支 2: https://ithelp.ithome.com.tw/m/articles/10140223
-* Git 協作權限 3: https://ithelp.ithome.com.tw/m/articles/10140305
