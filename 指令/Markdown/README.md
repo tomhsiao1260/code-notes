@@ -9,7 +9,7 @@
 <!-- 使用圖片 -->
 ![alt](./assets/img.png)
 
-** USE IT WITH CAUTION. The app is pure client side rendering. The downloading and inference take ~30 seconds to finish.**
+* USE IT WITH CAUTION. The app is pure client side rendering. The downloading and inference take ~30 seconds to finish.*
 
 ✨ Create sounds, notes, and music with machine learning algorithms interactively.
 
