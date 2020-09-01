@@ -26,9 +26,11 @@ This is a Markdown note.
 <!-- 加入連結 -->
 This is my [personal website](https://tomhsiao1260.github.io/).
 
-https://tomhsiao1260.github.io/
+personal website: https://tomhsiao1260.github.io/
 
-[Go to title_1][#Title 1]
+[Go to title_1][#content]
+
+## content
 
 
 <!-- 加入 Emoji -->
