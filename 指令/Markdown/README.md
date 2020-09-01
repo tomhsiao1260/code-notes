@@ -1,7 +1,7 @@
 <!-- 文字搭配連結 -->
-<h4 align="center">
+<h1 align="center">
 Personal Website | <a href="https://tomhsiao1260.github.io/" target="_blank">View It<a/>
-</h4>
+</h1>
 
 <!-- 標題 -->
 # Title 1
@@ -11,13 +11,13 @@ Personal Website | <a href="https://tomhsiao1260.github.io/" target="_blank">Vie
 ##### Title 5
 <!-- 只有 # 和 ## 有隔線 -->
 
-<!-- 用 Markdown 使用圖片 -->
-![alt](./assets/image.png)
-
-<!-- 用元素使用圖片 -->
+<!-- 用元素顯示圖片 -->
 <p align="center">
   <img src="./assets/img.gif" height="100px"/>
 </p>
+
+<!-- 用 Markdown 顯示圖片 -->
+![alt](./assets/image.png)
 
 <!-- 輸入不換行文字 -->
 This is a Markdown note.
@@ -33,12 +33,12 @@ personal website: https://tomhsiao1260.github.io/
 <!-- 加入 Emoji -->
 Add some Emoji 👉 [here](https://tw.piliapp.com/emoji/list/).
 
-<!-- 左邊界 -->
-> Text with left border.
-
 <!-- 列表 -->
 - list 1
 - list 2
+
+<!-- 左邊界 -->
+> Text with left border.
 
 <!-- 文字加入灰色背景 -->
 ```
