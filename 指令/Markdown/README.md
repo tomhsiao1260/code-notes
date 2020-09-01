@@ -16,7 +16,7 @@ Personal Website | <a href="https://tomhsiao1260.github.io/" target="_blank">Vie
 
 <!-- 用元素使用圖片 -->
 <p align="center">
-  <img src="./assets/img.gif" height="600px"/>
+  <img src="./assets/img.gif" height="10px"/>
 </p>
 
 <!-- 輸入不換行文字 -->
