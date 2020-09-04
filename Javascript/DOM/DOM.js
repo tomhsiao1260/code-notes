@@ -10,6 +10,29 @@
 // 3. 定義了 HTML 元素有哪些方法 (methods) 可以來被操作
 // 4. 定義了 HTML 元素事件 (events)，可以針對特定元素來綁定事件處理函式
 
+// 常用整理
+// document.getElementById('myId');
+// document.getElementsByTagName('div')[0];
+// document.getElementsByClassName('myClass')[0];
+// document.querySelector(".myClass");
+// document.querySelectorAll(".myClass")[0];
+
+// let element = (id) => document.getElementById(id);
+// let e_class = (cl) => document.getElementsByClassName(cl);
+
+// const myDIV = document.createElement("DIV");
+// myDIV.setAttribute("class","myClass");
+// myDIV.getAttribute("class");     
+// myDIV.setAttribute('onClick','myFun()');
+// myDIV.addEventListener('click', myFun);
+// myDIV.className = "myClass";
+// myDIV.id = "myId";
+// myDIV.style.backgroundColor = "blue";
+// myDIV.innerText = "Hello World";
+// myNode.appendChild(myDIV);
+
+// myNode.children; 回傳 HTMLCollection
+
 // DOM nodeType
 Node.ELEMENT_NODE === 1;            // 表示 HTML 元素
 Node.TEXT_NODE === 3;               // 表示文字 (Text) 或屬性 (Attr)
@@ -87,8 +110,8 @@ var n1 = document.getElementsByName('n1');
 n1[0];         // 第一個 name='n1' 的元素
 
 // 用 CSS 的一部份 selector 來選取
-var target = document.querySelector("#d2");
-var arr = document.querySelectorAll(".c1");
+var target = document.querySelector("#d2"); 
+var target = document.querySelector(".c1");
 var arr = document.querySelectorAll("p");
 // arr 為矩陣，內部元素為 element
 
@@ -191,8 +214,10 @@ var btn = document.createElement('button');
 btn.innerHTML = 'Button';
 btn.setAttribute('onClick','Click()');
 // 即 <button onclick='Click()'>Button</button>
-// 可用 onclick='Click(this)' 寫法，this 傳入 btn 物件本身
-// 可用 onclick='Click(event)' 寫法，event 傳入事件本身
+// 可用 'Click(this)' 寫法，this 傳入 btn 物件本身
+// 可用 'Click(event)' 寫法，event 傳入事件本身
+// 寫在 元素上 或 JS 內都 work
+// 此時的函式只要用變數導入 function Click(e){ something... }
 d1.appendChild(btn);
 
 // 取消綁定
@@ -205,6 +230,13 @@ btn.addEventListener('click', Click);
 btn.addEventListener('click', Hi);
 // 刪除 listener
 btn.removeEventListener('click', Hi);
+// 傳入 event ，可將函數改寫， e 可為任意名稱
+// function Click(e) { something... }
+// const Click = e => { something... }
+// 也可直接寫在內部
+// btn.addEventListener('click', e => { something... });
+// 若想傳入更多參數
+// btn.addEventListener('click', e => myFun(e, params));
 
 // Event Bubbling & Event Capturing
 
@@ -249,8 +281,6 @@ B_div.addEventListener('click', e => {
 // 可用 preventDefault(); 避免 button 的預設事件觸發
 
 // event 事件
-
-// 可將函數改為 Click(event)，event 會自動傳入事件物件，屬性列表：
 
 // type: 事件類型
 // target: 指向觸發事件源頭的 DOM

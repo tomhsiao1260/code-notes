@@ -1,0 +1,21 @@
+input[type='checkbox'] {
+    visibility: hidden;
+}
+
+.todo-app__root {
+    margin: 0 auto;
+    /* margin-top: 7em; */
+    width: 50em;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    padding: 1em;
+    color: #4d4d4d;
+    font-weight: 300;
+}
+
+.todo-app__main {
+    width: 100%;
+    background: rgb(254, 254, 254);
+}

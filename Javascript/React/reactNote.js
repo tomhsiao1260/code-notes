@@ -1,14 +1,40 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
+import React, {Component} from 'react';
+import p from 'prop-types';
 
 // 1.建立一個 react 的 functional component
 // props 是一個物件，傳入 element 的屬性
-// JSX 語法可在 js 裡撰寫 react element，但遇到 js 語法處要加 {}
+// JSX 語法可在 js 裡撰寫 react element
 // JSX 最終會透過 webpack 或 Babel 轉成 js 的語法
 // 但在 public 資料夾下的檔案不會被 webpack 打包，而是直接被放在 build 後的根目錄下
 function A(props) {
     return <p>Hi, {props.name}</p>;
 }
+// 可寫為 :
+// const A = (props) => {
+//     return <p>Hi, {props.name}</p>;
+// }
+// 注意 component 名稱第一個字要大寫
+
+// JSX 語法遇到 js 語法處要加 {}
+// 例如： <div>{true ? <p>Hi</p> : "Hello"}</div>
+// props 也可傳入 component (因為都是物件)
+// 例如 : 在屬性欄加入 attr = {<myEle />}
+
+// 在 component 內加入方法 :
+// function A(props) {
+//    // 兩種寫法擇一
+//	  function click(){ something... }
+//	  const click = () => { something... }
+//	  return <p onClick={click}>Hi, {props.name}</p>;
+// }
+// 也可寫成：onClick={()=>click()}
+
+// 傳入事件：
+// const click = (e) => { something... }
+// function click(e) { something... } // 與上一列語法擇一
+// onClick={click}           
+// onClick={(e) => click(e)}          // 與上一列語法擇一
+// onClick={(e) => click(e,id)}       // 也可同時傳入其他變數
 export default A;
 
 // 或建立一個 react 的 class component
@@ -19,8 +45,19 @@ class D extends React.Component {
         return <p>Hi, {this.props.name}</p>;
     }
 }
-//非默認值時加{}
-export {D};
+// 加入方法
+// class D extends React.Component {
+//     // 兩種寫法擇一
+//     click(){ something... }
+//     click = () => { something... }
+//     render() {
+//         return <p onClick={this.click}>Hi, {this.props.name}</p>;
+//     }
+// }
+// 也可寫成：onClick={()=>this.click()}
+// 這樣寫會自動綁定 click(){ ... } 函數的 this 到 class 本身
+// 除了要注意 this 以外，傳入事件的方法和 functional 的相同
+export {D};  //非默認值時加{}
 
 // 2.外部使用默認值時輸入 
 // import A from './reactNote';
@@ -49,6 +86,7 @@ function B(props) {
             <div>{props.children}</div>
         </div>
     );
+    // 注意 return 多行用 () 包起來
 }
 function C(props){ // 不需傳入 props 也可寫為 C()
     return(
@@ -117,8 +155,10 @@ class E extends React.Component {
     // 也可用 arrow function 會自動把 this 綁定到建立的環境下，就不需 bind 語法
     // tick 不需要事先 bind 是因為呼叫時用了 arrow 自動綁定了
     // 傳入事件可寫為 click_ = e => {console.log(e);}
+    // 可用 e.target 去找出 node
     click_ = () => {console.log(this);}
     render() {
+        // render 和 return 間可以寫一些 JS 的語法或條件判斷
         return (
             <>
                 <p>{this.state.date.toLocaleTimeString()}</p>
@@ -127,8 +167,6 @@ class E extends React.Component {
             </>
         );
     }
-    // 也可寫成：<button onClick={()=>this.handleClick()}>press</button>
-    // 傳入事件：<button onClick={e =>this.handleClick(e)}>press</button>
 }
 export {E};
 // 產生元素 <E start={0} />，動態渲染出當下時間
@@ -140,10 +178,12 @@ export {E};
 
 // state 只可使用在宣告的 component 本身
 // 若想在 child component 使用 parent 的 state，可用 props 傳遞下去給 child
-// 所以 state 要盡量往上提到，需要看到該資訊的所有 components 的 (lowest) common root component
-// 讓所有需要該資訊的 components 可以透過 state 的往下傳而得到資訊
-// 若 root component 不存在，可以建立一個 wrapper component 儲存這些 state 資訊
+// state 是專門給會改變的資料使用的，所以靜態的文字不建議使用
+// 且使用 state 上儘量以最少化為原則，找出 App 需要最關鍵會變化的參數
 
+// 有一些 component 需要反映相同的資料變化，可以將共享的 state 提升到最靠近它們的共同 ancestor
+// 讓所有需要該資訊的 components 可以透過 state 的往下傳而得到資訊
+// 若這樣的 ancestor 不存在，可以建立一個 wrapper component 儲存這些 state 資訊
 
 // 事件處理
 // HTML  語法： onclick='function()'
@@ -158,16 +198,75 @@ function F() {
         console.log('The link was clicked.');
     } 
     return (
+      // 注意不能寫 this.click 在 functional component 裡
       <a href="#" onClick={click}>Click me</a>
     );
 }
 export {F};
 
+// 條件式 render
+function G(props) {
+    const login = props.isLoggedIn;
+    if (login) { return <Case1 /> }
+    else       { return <Case2 /> }
+}
+function Case1(){return null;}
+function Case2(){return null;}
+// 使用 <G isLoggedIn={true} />
+// 也可搭配使用 return null; 不render，來實作條件式 render
+export {G};
+
+// 表單
+const numbers = [1, 2, 3, 4, 5];
+const listItems = numbers.map((number) => 
+    // react 需要給每個 li 一個 key 的屬性
+    // 每個元素的 key 值不同，以遍區分彼此增加渲染的效能
+    <li key={number.toString()}>{number}</li> 
+    // 只要在這個 array 操作內的 key 值唯一即可，array 以外可以重複
+    // key 並不會被當作 props 傳遞下去，僅供 react 內部使用
+);
+// 使用 <ul>{listItems}</ul>
+
 // 建議可以在 src 目錄下放下面兩個資料夾，存放不同性質的 Component：
 // Containers: 存著 state/props 以及一些主要的邏輯，主要用 Class Component 撰寫
 // Components: 沒有自己的 states, 也沒有什麼複雜的邏輯，建議改寫成 Functional Component 寫法上較簡潔
 
+// 如果 子component 想要改變 父component 的 state，可參考下面寫法：
+// 下方例子會在按鈕的外觀會從點擊後，從原本的 Press It 轉變為 Pressed
+class H extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {btnText: 'Press It'};
+    }
+    // 先在 父component 寫好改變 state 的方法
+    btnPress = () => {this.setState({btnText:'Pressed'})}
+
+    render() {
+        // 將 btnPress 方法用 props 傳給 子component
+        return <Btn text={this.state.btnText} press={this.btnPress}/>
+    }
+}
+function Btn(props) {
+    // 子component 用 props 呼叫 父component 的方法去更新父的 state
+    function Click(){ props.press() }
+    // 父component 的 state 被更新的當下 (按鈕點擊)
+    // 子component 的 props.text 也會隨之 update
+    return <button onClick={Click}>{ props.text }</button>
+}
+// 所以，若 state 發生改變，跟 state 有關被傳下去的 props 對應的 component 外觀也會隨之 update
+export {H};
+
+// 加入樣式
+const style = {
+    margin: '20px auto',
+    fontSize: '20px',
+    fontWeight: 'bold'
+};
+// 使用 <div style={style}>text</div>
+
+
 // 為了避免 JS 的自動型別轉換，可以用 propTypes 語法限制 props 的型態，以便提前報錯好找 bugs
+// import PropTypes from 'prop-types';
   
 // MyClass.propTypes = {
 //     Prop1: PropTypes.string,
@@ -175,16 +274,49 @@ export {F};
 //     Prop3: PropTypes.bool.isRequired
 // };
 
-// 注意 'p' 的大小寫， MyClass 為 class 名稱
-// Prop1、Prop2 為 props 名稱
+// MyClass 為 class 名稱，Prop1、Prop2 為 props 名稱
 // 任何屬性都可加上 .isRequired，若沒有出現此 props 會跳出 warning
+// 注意 PropTypes 的 p 大小寫
+// 可用 const p = React.PropTypes; 則可改寫為 Prop1: p.string
 
 // PropTypes 有幾種屬性：array、bool、func、number (基本型別)
 //                     object、string、symbol (基本型別)
-//                     node(節點)、element(元素)
+//                     node (任何節點)、element (元素)
 
+// PropTypes 的其他屬性：
+// PropTypes.oneOf(['str1', 'str2'])   (可為 'str1' 或 'str2')
+// PropTypes.arrayOf(PropTypes.number) (矩陣內容許型態為數值)
+// PropTypes.any.isRequired            (任何數據類型，且設為 Required)
+// PropTypes.element.isRequired        (用來指定只能有一個 child node)
+// PropTypes.shape({                   (只允許下面的結構)
+//     color: PropTypes.string,
+//     fontSize: PropTypes.number
+// })
+// PropTypes.oneOfType([               (可為下面幾種 type 其一)
+// 	   PropTypes.string,
+// 	   PropTypes.number
+// ])
+
+// import p from 'prop-types';
+// PropTypes 改取為 p 較簡潔
+function I(props){
+	// 矩陣內的值必須為物件，且 key 1,2 分別為 數值,布林值
+	const array = props.prop1;
+	const fun = () => props.prop2();
+	return null;
+}
+I.propTypes = {
+    prop1: p.arrayOf(p.shape({
+        key1: p.number.isRequired,
+        key2: p.bool.isRequired,
+    })).isRequired,
+    prop2: p.func.isRequired,
+};
+
+// defaultProps 可為某些 props 指定預設值
 // MyClass.defaultProps = {
 //     someProp: 'Stranger'
 // };  
 
-// defaultProps 可為某些 props 指定預設值
+
+
