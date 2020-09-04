@@ -579,6 +579,85 @@ var obj = {
 };
 obj.foo();
 
+// array 的訪問有下面幾種方法： filter、find、forEach、map、every、some、reduce
+var people = [
+  { name: 'Tom' , age: 20},
+  { name: 'Eric', age: 24},
+  { name: 'Jack', age: 10},
+];
+
+// 可先使用 Array.from() 將其他資料型態 (HTMLCollection、NodeList) 轉為 array
+// const myArray = Array.from( myData )
+
+// filter() 
+// 會回傳一個陣列，其條件是 return 後方為 true 的物件
+var myFilter = people.filter((item, index, array) => item.age > 15)
+// 回傳 Tom, Eric 這兩個物件形成的陣列
+// 若沒 return 條件，會回傳 []
+
+// find() 
+// 與 filter() 相似，但 find() 只會回傳一次值，且是第一次為 true 的值
+var myFind = people.find((item, index, array) => item.age > 15)
+// 若沒 return 條件，會回傳 undefined
+
+// forEach 
+// 是這幾個陣列函式最單純的一個，不會額外回傳值，只單純執行每個陣列內的物件或值
+var myForEach = people.forEach((item, index, array) => {
+  // 此處語法可以更改 people 陣列內的資料
+  // 不需寫 return 的語法， 寫了也不會有 return 值
+});
+// 無論如何 myForEach 皆為 undefined
+
+// map() 
+// 與 forEach (直接改寫 people) 不同，map 會產生一個新的陣列
+var myMap = people.map((item, index, array) => item.age * 2)
+// myMap = [40,48,20];
+
+// every()
+// 可以檢查所有的陣列是否符合條件，這僅會回傳一個 bool 值
+var myEvery = people.every(function(item, index, array){
+  // 當全部 age 大於 15 才能回傳 true
+  return item.age > 15;
+});
+// myEvery 為 false
+
+// some() 
+// 與 every() 相似，都是回傳 bool 值，差異僅在 some() 僅需有任一項符合
+var mySome = people.some(function(item, index, array){
+  // 只要有一項 age 大於 15 即回傳 true
+  // 全部符合則回傳 false
+  return item.age > 15
+});
+// mySome 為 true
+
+// reduce()
+// 可以與前一個回傳的值再次作運算，參數包含以下：
+
+// accumulator: 前一個參數，如果是第一個陣列的話，值是以另外傳入或初始化的值
+// currentValue: 當前變數
+// currentIndex: 當前索引
+// array: 全部陣列
+
+var myReduce = people.reduce(function(accumulator, currentValue, currentIndex, array){
+  // 與前一個值相加
+  return accumulator + currentValue.age;
+}, 0); // 傳入初始化值為 0
+// myReduce 為 20+24+10 = 54
+// 若沒有條件，會回傳 undefined
+
+var myReduce = people.reduce(function(accumulator, currentValue, currentIndex, array){
+  // 取最大的
+  return Math.max( accumulator, currentValue.age );
+}, 0);
+// myReduce 為最大值 24
+
+// 預設的陣列行為內的 this 是指向 window (除了 reduce() 是傳入初始資料)
+// 如果要改，可以在 function 後傳入
+var myThis = people.forEach(function(item, index, array){
+  // 這邊的 this 就會使用後方傳入的也就是 people
+}, people);  // 傳入的物件，替代 this，如果無則是 window
+
+
 // 模組化
 
 /////////////////////////////////
