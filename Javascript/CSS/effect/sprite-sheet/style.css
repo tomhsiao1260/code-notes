@@ -1,0 +1,62 @@
+.character {
+  position: relative;
+  display: inline-block;
+  width: 80px;
+  height: 180px;
+  overflow: hidden;
+}
+
+.character .spriteSheet {
+  position: absolute;
+  width: 960px;
+  height: 720px;
+  -webkit-animation: move 1s steps(12) infinite;
+          animation: move 1s steps(12) infinite;
+}
+
+.character .pixelart {
+  -ms-interpolation-mode: nearest-neighbor;
+      image-rendering: -webkit-optimize-contrast;
+      image-rendering: -moz-crisp-edges;
+      image-rendering: -o-pixelated;
+      image-rendering: pixelated;
+}
+
+.character .channel1 {
+  top: 0;
+}
+
+.character .channel2 {
+  top: -180px;
+}
+
+.character .channel3 {
+  top: -360px;
+}
+
+.character .channel4 {
+  top: -540px;
+}
+
+@-webkit-keyframes move {
+  0% {
+    -webkit-transform: translate3d(0px, 0, 0);
+            transform: translate3d(0px, 0, 0);
+  }
+  100% {
+    -webkit-transform: translate3d(-100%, 0, 0);
+            transform: translate3d(-100%, 0, 0);
+  }
+}
+
+@keyframes move {
+  0% {
+    -webkit-transform: translate3d(0px, 0, 0);
+            transform: translate3d(0px, 0, 0);
+  }
+  100% {
+    -webkit-transform: translate3d(-100%, 0, 0);
+            transform: translate3d(-100%, 0, 0);
+  }
+}
+/*# sourceMappingURL=style.css.map */

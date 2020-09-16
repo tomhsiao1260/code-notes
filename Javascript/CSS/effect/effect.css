@@ -190,6 +190,36 @@ time-function 也可放在 排程內，下面寫法會讓前半為 linear，後�
 -webkit-animation: ...;
 -moz-animation: ...;
 animation: ...;
+-----------------------------------------------------------------------------*/
+/*css animation 搭配 linear-gradient 套用在背景上*/
+
+.background-animation{
+    background: linear-gradient(115deg, #ff0066, #ffcc00);
+    background-size: 300%;
+    animation: gradient-move 5s infinite alternate;
+}
+
+/*css animation 搭配 linear-gradient 套用在字體上*/
+
+.text-animation{
+    background: linear-gradient(115deg, #ff0066, #ffcc00);
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+    background-size: 300%;
+    animation: gradient-move 5s infinite alternate;
+}
+
+@keyframes gradient-move {
+    0%{
+        background-position: left;
+    }
+    100%{
+        background-position: right;
+    }
+}
+
+/*
 -----------------------------------------------------------------------------
 參考文章最後還有提到一些常用的工具，例如：Wow.js、Animate.css、Modernizr
 以及一些設計上的建議，還有後續可深入閱讀的地方～

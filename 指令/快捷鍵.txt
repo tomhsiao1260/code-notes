@@ -33,3 +33,6 @@ cl+sh+m: 選取括號內的內容
 sh+left: 選取
 sh+c+left: 選取到底
 cl+sh+k: 刪除整行
+
+!+tab: 自動生成 html starter
+(注意要先在 sublime 載入 emmet)

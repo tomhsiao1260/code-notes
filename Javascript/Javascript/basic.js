@@ -480,6 +480,12 @@ var date = new Date(2018, 13, 1, 1, 80)  // 2018-1-1 02:20 超過會自動進位
 new Date(2022,0,2) > new Date(2020,1,1); // true
 date.getTime() === date.getTime()        // true 相等的比較必須用 getTime
 
+// 若用 express, socket 這類的網路協定傳輸 Date，會自動轉為字串形式傳輸
+// 這時候接收端需要解析這段字串並轉回為 Date 物件
+var string = '2020-09-15T11:21:28.577Z';
+var date =  Date.parse(string);
+date = new Date(date);
+
 // getTime()	     取得從 1970-01-01 UTC 累計的毫秒數
 // setTime()	     用 milliseconds 設定是什麼日期時間
 

@@ -1,0 +1,61 @@
+// whole image size
+$img-width: 1920px;
+$img-height: 1440px; 
+
+// frame * channel = whole image number
+$frame: 12;
+$channel: 4;
+
+// multiply a scale factor
+$scale: 0.5;
+
+// final width and height
+$width: $img-width / $frame * $scale;
+$height: $img-height / $channel * $scale;
+
+// sprite sheet animation
+$animation: move 1s steps($frame) infinite;
+
+.character{
+    position: relative;
+    display: inline-block;
+    width: $width;
+    height: $height;
+    overflow: hidden;
+
+    // sprite sheet animation
+    .spriteSheet{
+        position: absolute;
+        width: $img-width * $scale;
+        height: $img-height * $scale;
+        animation: $animation;
+    }   
+
+    // for pixel art
+    .pixelart {
+        image-rendering: pixelated;
+    }
+
+    // different channel
+    .channel1 {
+        top: 0;
+    }
+    .channel2 {
+        top: -1 * $height;
+    }
+    .channel3 {
+        top: -2 * $height;
+    }
+    .channel4 {
+        top: -3 * $height;
+    }
+}
+
+@keyframes move{
+    0% {
+       transform: translate3d(0px,0,0)
+    }
+    100% {
+       transform: translate3d(-100%,0,0)
+    }
+ }

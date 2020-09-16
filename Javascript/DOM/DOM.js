@@ -167,12 +167,20 @@ d1.className;                  // 'd1'
 d1.className = 'd'             // 更改屬性 class='d'
 d1.classList.add('new')        // 新增名 new 的 class
 d1.classList.remove('new')     // 刪除名 new 的 class (可用來動態更改樣式)
+d1.classList.contains('new')   // 查看是否有 new 的 class (boolean) 
 d1.removeAttribute('class');   // 移除屬性
 d1.attributes['id'].name;      // 'id'
 d1.attributes['id'].value;     // 'd1'
 d1.attributes.id.name;         // 'id'
 d1.attributes.id.value;        // 'd1'
 d1.id = 'd1';                  // 修改 id 的值
+
+// 另外還可以動態的增加或刪除某個 class 來與觸發的 event 進行互動
+// if (!e.currentTarget.classList.contains(styles.open)){
+//     e.currentTarget.classList.add(styles.open);
+// }else{
+//     e.currentTarget.classList.remove(styles.open);
+// }
 
 // 也可用迴圈遍歷所有屬性
 for (var i=0; i<d1.attributes.length; ++i) {

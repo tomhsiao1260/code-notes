@@ -139,9 +139,10 @@ class E extends React.Component {
         // setState 可用來改變 State 狀態，並觸發 virtual DOM 重新呼叫 render() 來更新
         // 直接改 this.state 為錯誤語法，不會觸發 render 更新
         this.setState({date: new Date()});
-        // 因為 this.state 和 this.props 是非同步更新
+        // 上方可簡化為 const date = new Date() 然後 this.setState({ date })
+        // 此外，因為 this.state 和 this.props 是非同步更新
         // 所以不行利用現在的值去更新下一步，可改用在 setState 裡輸入函數
-        // 第一項會輸入會預設是當前更新後的 state，props 則為當前的 props 
+        // 第一項會輸入會預設是當前更新後的 state，props 則為當前的 props
         this.setState((state,props)=>({
             count: state.count + props.start + 1
         }));
@@ -204,6 +205,16 @@ function F() {
 }
 export {F};
 
+// 關於 this
+// 若要傳入參數 params 可使用寫法 onClick={() => this.myFun(params)}
+// 若沒有要傳入參數可使用寫法 onClick={this.myFun.bind(this)}
+// 這樣就都會綁定到 class 的 this (就不用在 constructor 那裡綁定)
+// 所以函式只要用一般的寫法 myFun(){ something... }
+// 比較易讀也比較好寫
+// 若想同時傳入 event 和 參數可寫為
+// onClick={(e) => this.myFun(e, params)}
+// function component 去掉 this 即可
+
 // 條件式 render
 function G(props) {
     const login = props.isLoggedIn;
@@ -239,16 +250,16 @@ class H extends Component {
         this.state = {btnText: 'Press It'};
     }
     // 先在 父component 寫好改變 state 的方法
-    btnPress = () => {this.setState({btnText:'Pressed'})}
+    btnPress(str){this.setState({btnText: str})}
 
     render() {
         // 將 btnPress 方法用 props 傳給 子component
-        return <Btn text={this.state.btnText} press={this.btnPress}/>
+        return <Btn text={this.state.btnText} press={this.btnPress.bind(this)}/>
     }
 }
 function Btn(props) {
     // 子component 用 props 呼叫 父component 的方法去更新父的 state
-    function Click(){ props.press() }
+    function Click(){ props.press('Pressed') }
     // 父component 的 state 被更新的當下 (按鈕點擊)
     // 子component 的 props.text 也會隨之 update
     return <button onClick={Click}>{ props.text }</button>
