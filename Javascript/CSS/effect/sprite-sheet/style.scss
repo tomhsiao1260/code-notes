@@ -37,17 +37,19 @@ $animation: move 1s steps($frame) infinite;
     }
 
     // different channel
-    .channel1 {
-        top: 0;
+    &.channel1 {
+        .spriteSheet{ top: 0; }
+        // can also add move right animation here
     }
-    .channel2 {
-        top: -1 * $height;
+    &.channel2 {
+        .spriteSheet{ top: -1 * $height; }
+        // can add move left animation here
     }
-    .channel3 {
-        top: -2 * $height;
+    &.channel3 {
+        .spriteSheet{ top: -2 * $height; }
     }
-    .channel4 {
-        top: -3 * $height;
+    &.channel4 {
+        .spriteSheet{ top: -3 * $height; }
     }
 }
 

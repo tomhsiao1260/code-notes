@@ -22,19 +22,19 @@
       image-rendering: pixelated;
 }
 
-.character .channel1 {
+.character.channel1 .spriteSheet {
   top: 0;
 }
 
-.character .channel2 {
+.character.channel2 .spriteSheet {
   top: -180px;
 }
 
-.character .channel3 {
+.character.channel3 .spriteSheet {
   top: -360px;
 }
 
-.character .channel4 {
+.character.channel4 .spriteSheet {
   top: -540px;
 }
 

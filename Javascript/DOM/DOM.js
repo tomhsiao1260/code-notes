@@ -213,6 +213,9 @@ p1.style.cssText = 'color: white; background: gray; margin-top: 30px;'
 var cssAll = window.getComputedStyle(p1);
 // 取得屬性值
 cssAll.getPropertyValue('color'); 
+// 在瀏覽器可直接使用下面語法，與上面效果相同
+// var styles = getComputedStyle(p1);
+// styles.color;
 
 // event handle
 function Click(){alert('click !');}
