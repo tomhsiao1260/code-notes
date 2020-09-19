@@ -275,6 +275,11 @@ const style = {
 };
 // 使用 <div style={style}>text</div>
 
+// 注意如果使用 import styles from './myStyles.css';
+// 使用時只能透用在傳統的 element 上，不能套用在 react 的 component 上會失效
+// <input className={styles.myClass} />      有效
+// <MyComponent className{styles.myClass} /> 無效
+
 
 // 為了避免 JS 的自動型別轉換，可以用 propTypes 語法限制 props 的型態，以便提前報錯好找 bugs
 // import PropTypes from 'prop-types';

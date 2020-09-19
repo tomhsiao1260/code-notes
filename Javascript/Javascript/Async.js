@@ -191,6 +191,7 @@ async function sleep(ms){
 	await new Promise(resolve => setTimeout(resolve, ms));
 	console.log(`after ${ms} ms`)
 }
+// const sleep = async(ms) => { something... } 也可寫成這樣 
 
 sleep(1000);
 

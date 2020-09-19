@@ -211,6 +211,18 @@ CSS 的全名為 Cascading Style Sheets
 而且同種匯入型態下，越後被匯入的越有優先權
 
 -----------------------------------------------------------------------------
+若可以使用 import 語法，則可以用下面方法使用樣式：
+
+1. import './myStyle.css'
+   會在這個資料夾下套用所有選擇到的樣式
+
+2. import styles from './myStyles.module.css'
+   <img class={styles.myClass} />
+
+   會在 img 元素下套用 css 檔的 .myClass 裡的樣式，styles.myClass 其實是個獨一無二的字串
+   選擇到 .myClass 這個樣式，此寫法可避免與其他的 css 檔樣式名稱發生衝突 (css module)
+
+-----------------------------------------------------------------------------
 !important
 
 有時候樣式內會加入 !important 表示優先採用此樣式，不論匯入型態優先採用
