@@ -318,6 +318,46 @@ function I() {
 // 使得撰寫上有更多的彈性
 export {I};
 
+// Controlled Component
+class J extends React.Component {
+    // 在 HTML 中，表單的 element 像是 <input>、<textarea> 和 <select> 
+    // 通常會維持它們自身的 state，並根據使用者的輸入來更新 state
+    // 但在 React 中，可變 state 通常是被維持在 component 中的 state (唯一資料來源)
+    // 並只能以 setState() 來更新是較好的寫法，以利把資訊傳給其他的 compomnent
+    constructor(props) {
+        super(props);
+        this.state = {value: ''};
+
+        this.handleChange = this.handleChange.bind(this);
+        this.handleSubmit = this.handleSubmit.bind(this);
+    }
+
+    handleChange(event) {
+        this.setState({value: event.target.value});
+    }
+
+    handleSubmit(event) {
+        console.log('A name was submitted: ' + this.state.value);
+        event.preventDefault();
+    }
+
+    render() {
+        return (
+          <form onSubmit={this.handleSubmit}>
+            <label>
+              Name:
+              <input type="text" value={this.state.value} onChange={this.handleChange} />
+            </label>
+            <input type="submit" value="Submit" />
+          </form>
+        );
+    }
+}
+// 像這樣一個輸入表單的 element，被 React 用這樣的方式來控制它的值，就被稱為 controlled component
+// 其他表單的 control component 寫法也都類似，可參考連結
+// https://zh-hant.reactjs.org/docs/forms.html
+export {J};
+
 
 // 為了避免 JS 的自動型別轉換，可以用 propTypes 語法限制 props 的型態，以便提前報錯好找 bugs
 // import PropTypes from 'prop-types';
@@ -353,13 +393,13 @@ export {I};
 
 // import p from 'prop-types';
 // PropTypes 改取為 p 較簡潔
-function J(props){
+function K(props){
 	// 矩陣內的值必須為物件，且 key 1,2 分別為 數值,布林值
 	const array = props.prop1;
 	const fun = () => props.prop2();
 	return null;
 }
-J.propTypes = {
+K.propTypes = {
     prop1: p.arrayOf(p.shape({
         key1: p.number.isRequired,
         key2: p.bool.isRequired,

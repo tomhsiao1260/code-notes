@@ -107,10 +107,27 @@ mongoDB 架設
 3. 在本地端 mongoose.connect 內輸入字串 (coin-chat-demo 為例)
    mongodb+srv://coin-chat:demo1234@.../coin-chat-demo...
 
+mongoose 教學
+https://pjchender.github.io/2018/12/09/mongo-mongoose-%E6%93%8D%E4%BD%9C/
+
 ---------------------------------------------------------
 socket 使用
 
-待補
+待整理，參考連結：
+
+1. https://socket.io/get-started/chat/
+2. https://dev.to/rexeze/how-to-build-a-real-time-chat-app-with-nodejs-socketio-and-mongodb-2kho
+3. https://tsh.io/blog/socket-io-tutorial-real-time-communication/
+
+搭配 React，參考連結：
+
+1. https://medium.com/enjoy-life-enjoy-coding/react-%E5%9C%A8-react-%E4%B8%AD%E4%BD%BF%E7%94%A8-websocket-feat-socket-io-%E5%9F%BA%E6%9C%AC%E6%95%99%E5%AD%B8-2e3483ad5c80
+2. https://www.valentinog.com/blog/socket-react/
+3. https://levelup.gitconnected.com/how-to-render-react-app-using-express-server-in-node-js-a428ec4dfe2b
+4. https://ericlondon.com/2018/02/01/integrate-socket.io-and-react-components-to-create-a-simple-chat-client-app.html
+
+---------------------------------------------------------
+
 
 
 
