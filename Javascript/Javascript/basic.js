@@ -523,3 +523,34 @@ Math.asin(1);          // pi/2 還有 Math.acos(), Math.atan()
 
 // 若超出定義範圍會回傳 NaN
 
+// splice() 
+// 用來移除或加入陣列裡的元素 (原來的 array 會被改變)
+var arr = ['A', 'B', 'C', 'D'];
+var copy = arr.splice(2, 0, 'E'); // 在 index = 2 加入 'E' (移除 0 個 item)
+                                  // arr = ["A", "B", "E", "C", "D"];
+                                  // copy = []; (返回刪除的項)
+var copy = arr.splice(2, 1);      // 移除 index = 2 (移除 1 個 item)
+                                  // arr = ["A", "B", "C", "D"];
+                                  // copy = ['E']; (返回刪除的項)
+
+// slice()  
+// 用來取出陣列裡的元素並產生新陣列 (原本的 array, string 不改變)
+var arr = ['A', 'B', 'C', 'D'];
+var copy = arr.slice();           // 取全部的 arr
+                                  // copy = ['A', 'B', 'C', 'D'];
+var copy = arr.slice(-1);         // 取最後一項 arr
+                                  // copy = ['D'];
+var copy = arr.slice(0, -1);      // 取 [0,-1) 的 arr
+                                  // copy = ['A', 'B', 'C'];
+var copy = arr.slice(1, 3);       // 取 [1,3) 的 arr
+                                  // copy = ['B', 'C'];
+var str = 'ABCD';
+var copy = str.slice(1, 3);       // 同理 copy 為 'BC'
+
+// split()  
+// 用來將字串透過某些規則產生出一個陣列 (原本的 string 不改變)
+var str = 'Hello World! Well done.';
+var copy = str.split(' ', 3);     // 以 space 分段取前三項
+                                  // copy = ['Hello', 'World!', 'Well'];
+var copy = str.split(' ');        // copy = ['Hello', 'World!', 'Well', 'done.'];
+
