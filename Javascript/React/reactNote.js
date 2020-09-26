@@ -1,3 +1,4 @@
+/* eslint-disable */
 import React, {Component} from 'react';
 import p from 'prop-types';
 
@@ -207,17 +208,27 @@ export {F};
 
 // 關於 this
 // 若要傳入參數 params 可使用寫法 onClick={() => this.myFun(params)}
-// 若沒有要傳入參數可使用寫法 onClick={this.myFun.bind(this)}
-// 這樣就都會綁定到 class 的 this (就不用在 constructor 那裡綁定)
-// 所以函式只要用一般的寫法 myFun(){ something... }
-// 比較易讀也比較好寫
+// 若沒有要傳入參數可使用寫法 onClick={this.myFun}，然後在 constructor 處綁定
+// 撰寫方法內容時只要用一般的寫法 myFun(){ something... }，比較易讀也比較好寫
 // 若想同時傳入 event 和 參數可寫為
 // onClick={(e) => this.myFun(e, params)}
 // function component 去掉 this 即可
 
+// 撰寫時若要使用 props, state，下面為比較好的寫法
+// const { prop1, prop2 } = this.props;
+// const { state1, state2 } = this.state;
+// class component 可寫在 render() 內， functional component 寫在 return() 前
+// 想取別名可用下面寫法
+// const { prop1: myProp } = this.props;
+// 也可使用在函數中，將 props, state 傳入 (myObj)
+// function showColor({ color }) { console.log(color); }
+// const myObj = {'color': 'blue'};
+// showColor(myObj); 會得到 'blue'
+
 // 條件式 render
 function G(props) {
     const login = props.isLoggedIn;
+    // const { isLoggedIn: login } = props;
     if (login) { return <Case1 /> }
     else       { return <Case2 /> }
 }
@@ -280,6 +291,33 @@ const style = {
 // <input className={styles.myClass} />      有效
 // <MyComponent className{styles.myClass} /> 無效
 
+// React Hook
+import { useState, useEffect } from 'react';
+// import React, { useState, useEffect } from 'react';
+
+function I() {
+  // 建立一個名稱為 count 的 state 並初始化為 0
+  const [count, setCount] = useState(0);
+
+  // 相似於 componentDidMount 和 componentDidUpdate:
+  useEffect(() => {
+    // 使用瀏覽器 API 更新文件標題
+    document.title = `You clicked ${count} times`;
+  });
+
+  return (
+    <div>
+      <p>You clicked {count} times</p>
+      <button onClick={() => setCount(count + 1)}>
+        Click me
+      </button>
+    </div>
+  );
+}
+// Hook 使得使用者不必寫 class 就能使用 state 以及其他 React 的功能
+// 使得撰寫上有更多的彈性
+export {I};
+
 
 // 為了避免 JS 的自動型別轉換，可以用 propTypes 語法限制 props 的型態，以便提前報錯好找 bugs
 // import PropTypes from 'prop-types';
@@ -315,13 +353,13 @@ const style = {
 
 // import p from 'prop-types';
 // PropTypes 改取為 p 較簡潔
-function I(props){
+function J(props){
 	// 矩陣內的值必須為物件，且 key 1,2 分別為 數值,布林值
 	const array = props.prop1;
 	const fun = () => props.prop2();
 	return null;
 }
-I.propTypes = {
+J.propTypes = {
     prop1: p.arrayOf(p.shape({
         key1: p.number.isRequired,
         key2: p.bool.isRequired,

@@ -47,7 +47,8 @@ clearInterval(ID3);
 
 // Arrow Function
 var multiply = function(a, b) {return a * b;}
-var multiply = (a, b) => a * b;           // 與上方寫法等價
+var multiply = (a, b) => a * b;           // 與上方寫法等價，會自動 return
+var multiply = (a, b) => (a * b);         // 與上方寫法等價，會自動 return
 var multiply = (a, b) => {return a * b};  // 有 {} 記得要加 return
 var multiply = (a, b) => {a * b};         // 有 {} 卻沒 return 值會回傳 undefined
 var multiply = (a, b) => {};              // undefined
@@ -276,6 +277,30 @@ class Cat extends Animal {
 }
 var c = new Cat('Cookie'); 
 c.speak(); // 1Cookie
+
+// static method
+class Triple {
+  static triple(n) { return n * 3; }
+}
+
+class BiggerTriple extends Triple {
+  static triple(n) {
+    return Math.pow(super.triple(n), 2);
+  }
+}
+
+// 有加 static 的 method 不須有類實例其類別即可被呼叫
+// 但當類別被實例化後則靜態方法不能被呼叫，常被使用在建立應用程式的工具函式
+// 實作上，若一個方法沒有用到 this，建議直接將方法獨立出來在外面
+// 或是改為 static 加以使用
+
+Triple.triple(6);       // 18
+BiggerTriple.triple(3); // 81
+
+var tp = new Triple();
+// 類實例無法使用 static method
+// tp.triple();  TypeError: 'tp.triple is not a function'.
+
 
 // Symbol 資料型態
 var s1 = Symbol();
@@ -765,7 +790,7 @@ export function fn() {
 // 要用 {} import 進來
 import { fn } from './module.js';
 fn(); // 直接執行函式
-// import 全部ㄥ
+// import 全部
 import * as name from './module.js';
 name.fn();
 // 重新命名

@@ -1,0 +1,123 @@
+---------------------------------------------------------
+連結 heroku 遠端資料庫
+
+1. 在 heroku 新增一個專案，然後在下終端指令：
+
+   git init
+   heroku login
+   git remote add heroku [project name]
+
+   也可同時連結到 GitHub 的遠端
+   git remote add origin [link]
+
+   確定有產生 heroku 的遠端連結
+   git config --list 
+
+2. 上傳遠端的方法：
+
+   git add .
+   git commit -m "something"
+   git push heroku master
+
+   如果同時有連結 GitHub 的遠端也可加上指令
+   git push origin master
+
+3. clone 的方法，記得先 heroku login
+   heroku git:clone -a [project name]
+
+4. < Note >
+   上傳後遠端 heroku 會自動在根目錄執行 npm start
+   這跟 gh-pages 直接自動發布 html 到 client 端的方式不同
+   所以 GitHub 只能用來架設靜態的網頁
+   另外，後端 listen 的 port 不要寫固定，而是給 heroku 自行分配
+   const port = process.env.PORT || 3000
+
+---------------------------------------------------------
+heroku 專案名稱
+
+coin-chat-demo 外部展示的 http://coin-chat-demo.herokuapp.com/
+yao-chat       內部使用的 http://yao-chat.herokuapp.com/
+
+---------------------------------------------------------
+前後端架設
+
+可參考 ./Project/rics_chat 範例
+
+1. 先 npm init 一個專案，確定有 npm start 和 npm run build 的方法
+   並執行 npm install socket.io-client --save
+
+2. 在根目錄建立名為 server 的資料夾，在資料夾下也執行
+   npm init
+   npm install express mongodb mongoose socket.io --save
+   npm install nodemon --save-dev
+
+3. 在 server 資料夾創建 server.js
+   在內部撰寫後端邏輯，可參考 rics_chat 範例
+   會負責把前端 build 完的 html 送到 client 端顯示
+
+4. 在 server 資料夾裡的 npm start 指令改為：
+   "start": "nodemon server.js"
+
+5. 把 Root 下的 npm script 的 "start" 改為 "start-client"
+   並寫一個新的 "start" 如下：
+   "start": "npm run build && (cd server && npm start)"
+
+6. 若只要測試前端的程式跑 npm run start-client
+   若要跑前端+後端的程式跑 npm start
+   這會先產生前端的專案到 build 資料夾，然後執行 nodemon server.js
+   將 build 完的 html 送到 client 端顯示
+
+Root
+|- package.json
+|- ./scr
+|- ./build
+|- ./server
+   |- package.json
+   |- server.js
+
+---------------------------------------------------------
+1. express   負責前後端溝通
+2. mongodb   負責雲端資料庫
+3. mongoose  為 JS 的 MongoDB ORM
+4. socket.io 負責多個 client 端的即時同步更新 
+
+ORM (Objec Relational Mapping)
+透過某些程式語言( Ruby, Java )，去操作資料庫語言( SQL )
+使得使用者更簡便、安全的去從資料庫讀取資料
+而這也是實作了物件導向的概念，產生的一種工具模式
+
+mongoDB
+簡單的說，就是 data 以類似 JSON (Key-value pairs) 的方式儲存在資料庫裡面
+
+---------------------------------------------------------
+mongoDB 架設
+
+1. 簡易教學： https://www.youtube.com/watch?v=KKyag6t98g8
+
+2. 下面是連結到 heroku 的 coin-chat-demo 專案資料:
+   資料庫名： coin-chat-demo (cluster0)
+   使用者名： coin-chat
+   使用密碼： demo1234
+
+   下面是連結到 heroku 的 yao-chat 專案資料:
+   資料庫名： Project0 (cluster0)
+   使用者名： user_0
+   使用密碼： abc1234
+
+3. 在本地端 mongoose.connect 內輸入字串 (coin-chat-demo 為例)
+   mongodb+srv://coin-chat:demo1234@.../coin-chat-demo...
+
+---------------------------------------------------------
+socket 使用
+
+待補
+
+
+
+
+
+
+
+
+
+

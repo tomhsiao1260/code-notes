@@ -19,6 +19,9 @@ git push origin [branch] -f  不論是否有遺漏的新版本，直接 push 覆
 git push --all               push 所有分支
 git pull origin [branch]     pull 遠端資料到本地資料夾，origin 為遠端儲存庫的預設別名
 
+gitmoji --commit             用 gitmoji 取代 git commit
+gitmoji --list               可用的 emoji 列表            
+
 -----------------------------------------------------------
 
 push 失敗 (rejected)

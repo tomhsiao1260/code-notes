@@ -341,10 +341,12 @@ var myObj = {
     myFun: function() {return this.number;}
     // 兩個以上方法後面記得加逗號 ,
 }
-myObj.number;      // 3
-myObj['number']    // 3
-myObj.myFun();     // 3
-myObj['myFun']();  // 3
+myObj.number;          // 3
+myObj['number']        // 3
+myObj.myFun();         // 3
+myObj['myFun']();      // 3
+var { color } = myObj;          // 'blue'
+var { color: myColor } = myObj; // var myColor = 'blue'
 
 var foo = 'Hi';
 var goo = 'Fun';
@@ -444,6 +446,7 @@ String(true)             // 'true'
 var arr = ['Apple', 'Banana'];
 arr[0];                 // Apple
 arr[arr.length - 1];    // Banana
+var [x, y] = arr;       // var x = 'Apple'; var y = 'Banana';
 arr[1] = 1;             // ['Apple', 1];
 arr.push('Orange');     // 最後面加入   ['Apple', 1, 'Orange']
 arr.unshift(10);        // 最前面加入   [10, 'Apple', 1, 'Orange']

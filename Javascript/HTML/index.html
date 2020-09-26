@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<!-- meta tag -->
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<!-- 標題 -->
+	<title>HTML Example</title>
+	<!-- 匯入 css 樣式 -->
+	<link rel=stylesheet href='style.css'>
+</head>
+<body>
+	<!-- <script> 可使用 JS -->
+	<script>console.log('Run JS here')</script>
+	<script src="main.js"></script>
+	<!-- <noscript> 會在不支援 JS 的環境顯示 -->
+	<noscript><p>Not support JS language</p></noscript>
+	<!-- <p> 為段落 -->
+	<p>This is a paragraph.</p>
+	<!-- 空白大小 -->
+	<p>original space &nbsp;</p>
+	<p>half space &ensp; full space &emsp; narrow space &thinsp;.</p>
+	<!-- <img> 使用圖片 -->
+	<img src="img.jpg" with="600" heigh="400" alt="This is an image">
+	<!-- <br> 可以換行 -->
+	<br>
+	<!-- <a> 建立連結 target="_blank" 表示會在新分頁開啟-->
+	<a href="https://www.youtube.com/" target="_blank">A link to YouTube.</a>
+	<!-- 建立圖片連結 -->
+	<a href="https://example.com/" target="_blank">
+		<img src="img.jpg" alt="This is an image">
+	</a>
+	<!-- 標題 由大到小為 h1, h2, h3, h4, h5, h6 -->
+	<h3>This is h3 title</h3>
+	<!-- list -->
+	<!-- <ul> 為圓點列表 <ol> 為數字列表，<li> 裡可以包其他的 <ul>, <ol> -->
+	<ul>
+		<li>first item</li>
+		<li>second item</li>
+	</ul>
+	<!-- table 表格 -->
+	<!-- tr 為一列，th 為標題，td 為內容  -->
+	<style type="text/css"> td{ border: 1px solid; text-align: center}</style>
+
+	<table>
+		<!-- caption 為 table 的名稱，非必要 -->
+		<caption>My Table</caption>
+
+		<!-- <colgroup> 可對直行分組，span 屬性，用來指定這一個分組橫跨了幾個直行，預設值是 1 -->
+		<colgroup span="2" style="background-color: gray;"></colgroup>
+		<colgroup style="background-color: green;"></colgroup>
+
+		<!-- thead 表標題，tbody 表內容，troot 表最下方一列，三個標籤只是方便理解非必要 -->
+		<thead>
+			<tr>
+				<th>Title 1</th>
+				<th>Title 2</th>
+				<th>Title 3</th>
+			</tr>
+			</thead>
+
+			<tbody>
+			<tr>
+				<td>item 1</td>
+				<td>item 2</td>
+					<!-- rowspan="2" 表示從所在列開始往下合併至下一列(共 2 列) -->
+			<!-- 所以後面幾列的 <tr> 中同樣位置的 <td> 需省略 -->
+				<td rowspan="2">rowspan</td>
+			</tr>
+			<tr>
+				<!-- colspan="2" 表示從所在行開始往下合併至下一行(共 2 行) -->
+				<td colspan="2">colspan</td>
+			</tr>
+		<tbody>
+
+		<troot>
+			<tr>
+				<th>troot:</th>
+				<td colspan="2">something</td>
+			</tr>
+		</troot>
+	</table>
+	<!-- form 表單 -->
+	<!-- 是用來讓使用者輸入資料的區域 -->
+	<!-- form 內常見的元素有 <input>, <textarea>, <select> -->
+	<form>
+		<input type="text" name="name" value="some input">
+		<textarea name="text" rows="1" cols="10">text area</textarea>
+		<input type="radio" name="myName" value="v1"> radio1
+		<input type="radio" name="myName" value="v2"> radio2
+		<select>
+			<option>choose one</option>
+			<option>Dog</option>
+			<option>Cat</option>
+		</select>
+		<input type="submit" value="press submit">
+	</form>
+	<!-- input 元素 -->
+	<!-- https://www.fooish.com/html/input-tag.html -->
+	<form>
+		<input class="myInput" type="search" placeholder="type something...">
+		<button onclick='Click(event)'>Go</button>
+	</form>
+	<!-- 若 form 對焦則按 enter 會自動觸發 button 的 click 事件 -->
+	<script>
+		function Click(e){
+			e.preventDefault();
+			const myInput = document.querySelector(".myInput");
+			console.log(myInput.value);
+			myInput.value = '';
+		}
+	</script>
+	<!-- textarea 元素 -->
+	<!-- https://www.fooish.com/html/textarea-tag.html -->
+	<!-- select 元素 -->
+	<!-- https://www.fooish.com/html/select-option-optgroup-tag.html -->
+
+	<!-- label 標籤 -->
+	<!-- 用來給表單的控制元件一個說明標題，可搭配 input, textarea, select, button... -->
+	<!-- 使用 for 屬性，若點選 label，也會自動點擊且對焦到對應的 id -->
+	<label for="myLabel">Do you like cheese?</label>
+	<input type="checkbox" id="myLabel">
+	<!-- 或直接包住也有同樣效果 -->
+	<label>Do you like peas?
+		<input type="checkbox">
+	</label>
+	<!-- span:行內元素 | strong:粗體 | em:斜體 | mark:螢光強調 | hr:分隔線 -->
+	<div>DIV <span>SPAN</span> <strong>STRONG</strong> <em>EM</em> <mark>MARK</mark></div>
+	<hr>
+	<!-- iframe 能嵌入外部 HTML，但可能會影響 SEO 和效能，屬性欄位可參考連結 -->
+	<!-- https://www.fooish.com/html/iframe-tag.html -->
+	<iframe src="http://www.fooish.com/">
+	  Your browser does not support iframe
+	</iframe>
+	<!-- embed 可嵌入外部內容，像是嵌入 Java Applets, Flash, PDF 等 -->
+	<embed type="video/quicktime" src="movie.mov" width="100" height="100">
+	<!-- 想嵌入圖片改用<img>，想嵌入 HTML 改用<iframe>，想嵌入音源影片改用<audio>、<video> -->
+	<!-- object 和 embed 用途類似，但 object 安全性較好，也可設定載入失敗的 fallback 內容 -->
+	<object type="application/pdf" data="example.pdf" width="100" height="100"></object>
+	<!-- object 可用 param 設定資料參數 -->
+	<object data="move.swf" type="application/x-shockwave-flash">
+	 	<param name="foo" value="bar">
+	</object>
+	<!-- <pre> 用來保存原始文字內容的格式 preformatted text -->
+	<!-- 文字內容中的空白、換行都會被保留下來顯示 -->
+	<pre> 
+	Hello 
+	World
+	</pre>
+	<!-- <code> 用來顯示電腦程式碼內容，常和 pre 一起使用 -->
+	<p>command: <code>git push origin master</code></p>
+	<pre><code>
+	p {
+	  color: #333;
+	  font-size: 16px;
+	}
+	</code></pre>
+	<!-- del 用來刪除文字 -->
+	<p>paragraph: <del>this text has been deleted</del></p>
+
+	<!-- 下面是 HTML5 出來的新標準 -->
+
+	<!-- video 是用來播放影片或影音串流，更多細節可參考連結 -->
+	<!-- https://www.fooish.com/html/video-tag.html -->
+	<video src="myVideo.mp4" controls></video>
+	<!-- audio 是用來播放多媒體的聲音內容，更多細節可參考連結 -->
+	<!-- https://www.fooish.com/html/audio-tag.html -->
+	<audio src="myAudio.mp3" autoplay controls></audio>
+
+	<!-- HTML5 標準中有很多新的語意標籤 (semantic elements) -->
+	<!-- 幫助搜尋引擎和開發者解讀網頁結構，也可以增強網頁的 SEO，種類如下 -->
+	<!-- nav, article, section, aside, main, header -->
+
+	<!-- nav: 導航連結區塊，導覽連結常見的像是網站最上面的主菜單 (menu) -->
+	<nav class="menu">
+	  <ul>
+	    <li><a href="#">Home</a></li>
+	    <li><a href="#">About</a></li>
+	    <li><a href="#">Contact</a></li>
+	  </ul>
+	</nav>
+	<!-- article: 內容本身是獨立且完整的區塊，例如部落格中的一篇文章、一則留言 -->
+	<article>
+		<h4>March 2018</h4>
+		<p>It's Rainy.</p>
+	</article>
+	<!-- section 用在 HTML 文件中有明顯含義的區塊，通常帶有標題 -->
+	<section>
+	  <h1>Heading</h1>
+	  <p>Bunch of awesome content</p>
+	</section>
+	<!-- article 和 section 的差別是 article 有更高的獨立性及完整性 -->
+	<!-- section 雖然也表示相對獨立的內容，但對外層的其他內容通常還有一定的相依性 -->
+	<!-- 如果內容具備完整的獨立性，用 article 是更好的選擇 -->
+
+	<!-- aside 是用來表示此內容是跟主要內容沒直接關係的區塊 -->
+	<aside>Place some sidebar information or ads.</aside>
+	<!-- main 是用來放頁面主要資訊的區塊，而每個頁面中只能有一個 main -->
+	<main>
+		<article>
+		    <h2>Title 1</h2>
+		    <p>Paragraph 1</p>
+	    </article>
+	    <article>
+	        <h2>Title 2</h2>
+	        <p>Paragraph 2</p>
+	    </article>
+	</main>
+	<!-- header 為標頭區塊，會有網站名稱、logo、導覽連結、搜尋表單等內容 -->
+	<header>
+		<h1>Main Page Title</h1>
+		<img src="mdn-logo-sm.png" alt="MDN logo">
+	</header>
+	<!-- footer 用來定義一個頁尾或結尾區塊 -->
+	<footer>
+        <p>© 2020 Copyright</p>
+	</footer>
+	<!-- figure 主要目的是用來包含內容獨立的區塊， -->
+	<!-- 可包含文字段落、圖片、圖表或程式碼片段 -->
+	<!-- 還可以有一個 figcaption 用來說明該 figure 區塊的標題 -->
+	<figure>
+	  <img src="/media/elephant.jpg">
+	  <figcaption>An elephant at sunset</figcaption>
+	</figure>
+	<!-- canvas 定義一個空白畫布，可以透過 JavaScript 在上面做影像處理 -->
+	<canvas width="100" height="100">
+		Your browser does not support canvas
+	</canvas>
+	<!-- picture 有下面幾種用途，所以常被用來作 RWD 設計，詳細的屬性如下 -->
+	<!-- 讓瀏覽器可以根據不同的螢幕條件下，自動載入不同尺寸的圖片 -->
+	<!-- 讓瀏覽器可以根據自己對圖片格式的支援度，自動載入相容格式的圖片 -->
+	<!-- https://www.fooish.com/html/picture-tag.html -->
+	<picture>
+		<!-- 瀏覽器會先從 <source> 去找有沒匹配條件的圖片 -->
+		<!-- 如果沒有的話 (或不支援 picture 標籤) 則使用 <img> 的圖片 -->
+		<source srcset="logo-wide.png" media="(min-width: 1200px)">
+		<source srcset="logo-mid.png" media="(min-width: 600px)">
+		<img src="logo-narrow.png">
+	</picture>
+	<!-- output 是表單 (form) 元素之一，用來顯示計算或使用者操作的結果 -->
+	<form oninput="result.value=parseInt(a.value)+parseInt(b.value)">
+		<input type="range" id="b" name="b" value="50" /> +
+		<input type="number" id="a" name="a" value="10" /> =
+		<output name="result" for="a b">60</output>
+	</form>
+</body>
+</html>
