@@ -9,6 +9,7 @@
 * reactNote.js : react 的基本語法
 * Webpack :  基本教學
 * Eslint :  基本教學
+* D3 :  基本教學 (未完)
 
 
 執行方法
@@ -17,3 +18,4 @@
 * advance.js : 終端執行 node advance.js
 * DOM.js : 直接用瀏覽器開啟 DOM.html
 * reactNote.js : 在 react 環境下 import 此檔案，在終端執行 npm start
+* D3: 架一個 server (直接點 html 會有 CORS 的 issue)

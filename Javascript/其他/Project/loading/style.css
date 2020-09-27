@@ -1,0 +1,67 @@
+:root{
+  --step: 12%;
+  --box-width: 1em;
+}
+
+#animation{
+  position: absolute;
+  width: 15em;
+  height:3em;
+  background-color: black;
+  left: 50%;
+  top: 15em;
+  transform: translateX(-50%);
+}
+
+.box{
+  position: absolute;
+  top: 50%;
+  margin:0;
+  transform: translate(-50%,-50%);
+  display: inline-block;
+  width: var(--box-width);
+  height: var(--box-width);
+}
+.box{
+  animation: myName 1s ease-in-out infinite;
+  animation-direction: alternate;
+}
+
+.box0{
+  left: calc(50% - 2 * var(--step));
+  background-color: #00ff99;
+  animation-delay: -0.2s;
+}
+.box1{
+  left: calc(50% - var(--step));
+  background-color: #4dd2ff;
+  animation-delay: -0.1s;
+}
+.box2{
+  left: 50%;
+  background-color: #9900ff;
+  animation-delay: 0s;
+}
+.box3{
+  left: calc(50% + var(--step));
+  background-color: #ff6666;
+  animation-delay: 0.1s;
+}
+.box4{
+  left: calc(50% + 2 * var(--step));
+  background-color: #ffff66;
+  animation-delay: 0.2s;
+}
+
+@keyframes myName {
+  0% {
+    width: calc(var(--box-width) * 0.5);
+    height: calc(var(--box-width) * 0.5);
+    top: 80%;
+  }
+  100% {
+    width: var(--box-width);
+    height: var(--box-width);
+    top: 20%;
+  }
+}

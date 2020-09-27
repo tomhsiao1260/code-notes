@@ -1,0 +1,22 @@
+普通 HTML, CSS, JS 轉到 npm, webpack 專案的方法
+
+1. 開啟 webpack.config.js 看 entry 位置
+   把 HTML, JS 放到指定位置確認 webpack 讀得到
+
+2. 刪除 HTML 內引用的 JS, CSS 標籤
+   改在 JS 裡用 import 的語法：
+   import 'myCSS.css';
+   外部資源也都要改用 import 的語法：
+   import Data from 'myJSON.json';
+
+3. 若在 HTML 有刪除到外部模塊
+   改用 npm install 安裝，再用 import 載入
+
+4. 若 JS 中有使用 .json 外的文檔 (png, mp3...)
+   可能需要先新增 loader 再 import 進來
+   
+5. 確認 webpack.config.js 裡有
+   style-loader (CSS)
+   css-loader   (CSS)
+   sass-loader  (SASS)
+   file-loader  (png, jpg...)
