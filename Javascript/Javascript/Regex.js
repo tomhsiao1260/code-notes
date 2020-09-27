@@ -3,11 +3,36 @@
 // 線上 regex
 // https://regex101.com/
 
+// 建立正規表達式 regexObj
+var re = /ab+c/;             // 腳本載入前編譯，效能較好
+var re = new RegExp('ab+c'); // 運行時即時編譯，可動態變更
+// 可加入些修飾詞
+var re = /ab+c/g; 
+var re = new RegExp('ab+c', 'g');
+
+// regexObj.test(str)
+// test 方法回傳 boolean 表示 str 是否有符合 regeexObj 的表達式
+/app/.test('app'); // true
+
+// regexObj.exec(str)
+// exec 方法若沒符合回傳 null，有則回傳 數組，表示如下：
+var arr = /app/.exec('An app from app store.');
+// 回傳 [ 'app', index: 3, input: 'An app from app store.']
+arr.length; // 1
+arr[0];     // 'app' 為字串中符合的結果
+arr.index;  // 3     為第一個符合的段落在字串中的起始 index
+arr.input;  // 'An app from app store.' 
+var arr = /(An) (app)/.exec('An app from app store.');
+// 回傳 ['An app', 'An', 'app', index: 0, input: 'An app from app store.']
+arr.length; // 3
+arr[0];     // 'An app' 為字串中符合的結果
+arr[1];     // 'An'     為第一個 () 中 group 到的結果
+arr[2];     // 'app'    為第二個 () 中 group 到的結果
+/app/.exec('mismatch'); // null
+
+
 // 字元類別 (Character Classes)
 // 用來表示一組特定的字符集，有下面幾種：
-
-// .test() 可用來判斷使否有符合的字串
-// .exec() 可用來找出符合的字串
 
 // . dot
 // 用來匹配除了換行符號 \n \r 之外的任何一個字元
@@ -128,13 +153,16 @@ match[0]; // aaa
 var match = /bo*/.exec('A ghost bed');
 match[0]; // b
 
-// {min,max} {n} {min,} ，Quantifier 有下面三種寫法：
+// Quantifier 有下面三種寫法：
 // {min,max} 表示至少連續出現 min 次，但最多連續出現 max 次
 // {n} 表示要出現 n 次
 // {min,} 表示至少連續出現 min 次
 // 例如 ab{1,3}c 可以用來匹配 "abc", "abbc", "abbbc" 等字串，但 "ac", "abbbbbc" 不符合
 var match = /a{1,3}/.exec('caaaaaaandy');
 match[0]; // aaa
+var match = /(foo){1,2}/.exec('foofoofoo');
+match[0]; // foofoo
+match[1]; // foo
 
 // ? Optional
 // 表示出現 0 次或 1 次
@@ -149,7 +177,7 @@ match[0]; // el
 // 表示 lazy (非貪婪, 懶惰) 模式，會使匹配引擎變成以匹配越少字為原則
 // ex: 用 (.+?)(\d+) 來匹配字串 "abcd1234"，group 1 會得到 "abcd"，group 2 會得到 "1234"
 var match = /<.+>/.exec('<em>Hello World</em>');
-match[0]; // <em>Hello World</em
+match[0]; // <em>Hello World</em>
 var match = /<.+?>/.exec('<em>Hello World</em>');
 match[0]; // <em>
 
@@ -166,6 +194,7 @@ match[0]; // green
 // Capturing Group ( )
 // 小括號 ( ) 圈住的部分表示一個子樣式 (subexpression)，也稱作群組 (group)
 var match = /(hello \S+)/.exec('This is a hello world!');
+match.length; // 2
 match[1]; // hello world!
 
 // \1 Backreference
@@ -173,19 +202,24 @@ match[1]; // hello world!
 // 數字 1 表示第一個 capturing group
 // ex: (\w)a\1，其中的 \1 表示 \w 擷取到的字元，"hahaha"，得到的結果會是 "hah"
 var match = /(hello) \1 \S+/.exec('This is a hello hello world!');
+match.length; // 2
 match[0]; // hello hello world!
 
 // (?: ) Non-Capturing Group
 // 相對於 capturing group，表示僅需要用作 group 的用途，但不需要擷取群組
 // 語法用法例如 (?:foo){2,}
 var match = /(?:hello) (\S+)/.exec('This is a hello world!');
+match.length; // 2
 match[1]; // world!
+// hello 不會被加入擷取的群組
+// ['hello world!', 'world!'] 
 
 // (?= ) Positive Lookahead
 // 檢視某文字 後面 連接的內容是否符合預期，只有 滿足 指定條件的前提下，才會繼續進行匹配
 // 語法 A(?=B)，表示 A 後面必須是接著 B
 // ex: a(?=[bcd]) 表示 a 後面接的必須是 b, c 或 d 字元
 var match = /(?:foo)(?=hello)/.exec('this is foohello 123');
+match.length; // 1
 match[0]; // foo
 var match = /(?:foo)(?=hello)/.exec('this is foohi 123');
 match; // null
@@ -193,12 +227,30 @@ match; // null
 // (?! ) Negative Lookahead
 // 是相對於 positive lookahead，只有在 後面 的內容能 不滿足 指定條件的前提下，才會繼續進行匹配
 var match = /(?:foo)(?!hello)/.exec('this is foohi 123');
+match.length; // 1
 match[0]; // foo
 
-/Jack(?=Sprat)/.test('JackFrost'); // false
-/Jack(?=Sprat)/.test('JackSprat'); // true
+// 修飾詞
+// i: 使用不區分大小寫的比對方式 (ignore case)
+// m: 使用多行模式，使 ^ 和 $ 會比對每一行的開頭與結尾，而不是輸入字串的開頭和結尾 (multiline)
+// s: 使用單行模式，使句點 . 會比對每個字元，而不是換行符號 \n 以外的每個字元 (singleline)
+// g: 可以保留 lastIndex 的狀態，讓下一次再匹配時，可以從 lastIndex 的位置開始找起
+//    可以遍歷整個文本中的所有可匹配字串，而不是每一次再匹配時都得到一樣的結果 (global search)
+
+// 使用 g 修飾執行 exec，regexObj 會有 lastIndex 值
+// 以表示此次執行完下次再執行的起始點
+var re = /(ab*)/g;
+var str = 'abbxxxxab';
+var arr;
+while ((arr = re.exec(str)) !== null) {
+  var msg = 'Found ' + arr[0];
+  msg += 'Next match starts at ' + re.lastIndex;
+}
+// Found abb Next match starts at 3
+// Found ab Next match starts at 9
 
 // 例子
+
 // Email Regex / Email 正規表示式
 var str = /^([a-z0-9_\.-]+)@([\da-z\.-]+)\.([a-z\.]{2,6})$/;
 // URL Regex / 網址正規表示式
