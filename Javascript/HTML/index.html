@@ -104,6 +104,7 @@
 	<!-- 若 form 對焦則按 enter 會自動觸發 button 的 click 事件 -->
 	<script>
 		function Click(e){
+			// 記得使用 e.preventDefault(); 不然就是在 button 加上 type="button" 的設定
 			e.preventDefault();
 			const myInput = document.querySelector(".myInput");
 			console.log(myInput.value);

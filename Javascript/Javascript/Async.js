@@ -232,6 +232,12 @@ for( let i = 0; i < 5; i++ ) {
 
 // -------------------------------------------------------------
 
+// 前後端在傳輸資料必須是字串的形式，所以需要把 JSON 變成字串傳輸再解析為 JSON 的物件
+var obj = {id:0, name:'Tom'};
+var str = JSON.stringify( obj ); // 轉為字串傳輸
+var newObj = JSON.parse(str);    // 解析回物件使用
+                                 // newObj.name 為 Tom                               
+
 try{
 // AJAX
 // 為 Asynchronous JavaScript and XML 的簡稱
@@ -248,7 +254,7 @@ oReq.send();
 
 // Fetch
 // 是近年來號稱要取代 XHR 的新技術標準
-// 它是基於 Promise 語法結構的，而且它的設計足夠低階，有更多彈性
+// 它是基於 Promise 語法結構，而且設計足夠低階，有更多彈性
 // 語法上會接收了一個 url 作參數，並用 then 接收此次請求的相關資訊
 // 成功的話會回傳一個包含 response 的 promise
 // 只能在瀏覽器環境執行，在 node 環境要使用外部模塊
@@ -257,7 +263,7 @@ fetch('https://www.google.com')
     .then((res) => res.json()) // 將 response 轉為 json 形式
     .then((myJson) => myJson)  // myJson 為 json 形式
     .catch((err) => err);      // 線上的資料傳輸大多為 json 形式
-							   // 常用的 res.json()、res.text() 的 parse 方法都會回傳 promise
+							   // 常用的 parse 方法為 res.json()、res.text()
 
 fetch('https://www.google.com')
    .then((res)=> res.status)  // 顯示狀態碼 200 表示成功，0 表示處理本地檔案
@@ -272,7 +278,7 @@ fetch('https://www.google.com')
 
 fetch('https://www.google.com').then(res => {
 	if (!res.ok) throw new Error(res.statusText)
-	// ok 代表狀態碼在範圍 200-299
+	// ok 為 true 代表狀態碼在範圍 200-299
 	// statusText 回傳錯誤文字說明
 	return res.json()
 }).catch(function(err) {
@@ -292,13 +298,21 @@ fetch('https://www.google.com')
     .catch()
 
 // 用 fetch() 送 POST，語法 fetch(url, object)
-// 可以要求更客製化的 request
+// 可以要求更客製化的 request，若沒有 object 的項則默認為 GET
 fetch(url, {
     method: 'post',
+    // 要帶一些 http header 讓 server 端了解目的
+    // Authorization: 認證資訊
+    // Accept: 能夠接受的回應內容類型 (Content-Type)，屬於內容協商的一環
     headers: {
+    	// 接收 純文字 -> Accept: text/plain
+	    // 接收 HTML  -> Accept: text/html
+	    // 接收 JSON  -> Accept: application/json
         'Accept': 'application/json',
         'Content-Type': 'application/json'
     },
+    // HTTP Body: JSON, 純文字，或XML格式
+    // 善用一些 node.js 套件，例如：body-parser
     body: JSON.stringify({
         name: 'Hubot',
         login: 'hubot'

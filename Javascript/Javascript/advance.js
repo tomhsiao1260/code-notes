@@ -689,12 +689,21 @@ var myThis = people.forEach(function(item, index, array){
 // require / exports 模組化寫法如下
 /////////////////////////////////
 
+// 每個檔案都有一個 module 物件，裡頭有 exports 屬性
+// 可以將方法或屬性寫入 module.exports 供外部使用
+// 在模組化的概念裡，一個檔案就是一個模組
+// 其變數和方法的 scope 僅限於這個檔案本身
+
 // exports
 var text = 'hi';
 module.exports = text;
 // require
 var example = require("./module.js"); // 'hi'
                                       // .js 可略
+// 也可在 exports 下新增屬性 
+// module.exports.myText = 'hi';
+// var obj = require("./module.js");
+// obj.myText; // 'hi'
 
 // exports
 var text = "hello";
@@ -798,7 +807,8 @@ import { fn as newFn } from './module.js';
 newFn();
 
 // import 是編譯中執行，CommonJS 的 require 是同步加載
-// import 無論在 node 或是瀏覽器都不能直接使用，透過 Webpack、Babel 轉譯後或使用 CommonJS 加載
+// require 語法在 node 可以使用，但 browser 不行
+// import 無論在 node 或是瀏覽器都不能直接使用，需透過 Webpack、Babel 轉譯後或使用 CommonJS 加載
 // 所以兩者其實透過轉譯後是一樣的，只是遵循的規範及出現的時間點不同而已
 // 在效能上基本上沒區別，因為轉譯過後還是一樣的東西
 // require / exports 出生在野生規範，也就是 JavaScript 社群開發者自己草擬的規則

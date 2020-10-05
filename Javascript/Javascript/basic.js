@@ -554,3 +554,32 @@ var copy = str.split(' ', 3);     // 以 space 分段取前三項
                                   // copy = ['Hello', 'World!', 'Well'];
 var copy = str.split(' ');        // copy = ['Hello', 'World!', 'Well', 'done.'];
 
+// 當腳本在 browser 上運行時會產生一個 window object，為全域變數
+// 當 HTML 檔載入 browser 後會產生一個 document object，也為全域變數
+// window 和 document object 主要是為了方便 JS 和 browser 與 HTML 有更多的互動
+
+// window 有些屬性值 (物件、方法) innerHeight, scrollX, setTimeout() ...
+// document 有些屬性值 (物件、方法) addEventListener(), createElement() ... 
+// 可用 window.x, document.y 或省略直接用 x, y 來呼叫，例如：
+// window.console.log(); 等同於 console.log();
+
+// 使用了 var 定義變數，就會在 window 下新增一個新的屬性
+// 使得 var 能在其他 JS 檔被呼叫到 (因為共用 window 物件)，導致全域污染
+// 所以儘量使用 const, let 來避免變數寫入 window object，例如：
+
+// 在 main.js
+// var   V = 1; window.V;  值為 1
+// const C = 2; window.C;  值為 undefined
+// 在 index.js
+// V; window.V; 值皆為 1
+// C; window.C; 值皆為 undefined
+
+// 在 node.js 環境中的全域變數叫做 global
+// 使用 var 變數時不會依附在 global 上，所以不會有全域污染問題
+// 這是 node 使用模組化寫法得緣故 (與 IIFEs 寫法有關)
+
+
+
+
+
+
