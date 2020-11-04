@@ -225,6 +225,7 @@ var btn = document.createElement('button');
 btn.innerHTML = 'Button';
 btn.setAttribute('onClick','Click()');
 // 即 <button onclick='Click()'>Button</button>
+// onclick 原為輸入函數，不用另外加()，但若以字串形式傳入要另外加()
 // 可用 'Click(this)' 寫法，this 傳入 btn 物件本身
 // 可用 'Click(event)' 寫法，event 傳入事件本身
 // 寫在 元素上 或 JS 內都 work

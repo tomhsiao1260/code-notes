@@ -8,11 +8,16 @@ import p from 'prop-types';
 // JSX 最終會透過 webpack 或 Babel 轉成 js 的語法
 // 但在 public 資料夾下的檔案不會被 webpack 打包，而是直接被放在 build 後的根目錄下
 function A(props) {
+	// 只要包在 <tag> 內就是受 JSX 的語法規範
     return <p>Hi, {props.name}</p>;
 }
 // 可寫為 :
 // const A = (props) => {
 //     return <p>Hi, {props.name}</p>;
+// }
+// 也常用解構賦值取代 props 當輸入
+// const A = ({name}) => {
+//     return <p>Hi, {name}</p>;
 // }
 // 注意 component 名稱第一個字要大寫
 
@@ -20,6 +25,7 @@ function A(props) {
 // 例如： <div>{true ? <p>Hi</p> : "Hello"}</div>
 // props 也可傳入 component (因為都是物件)
 // 例如 : 在屬性欄加入 attr = {<myEle />}
+// 對於 function component，輸入只是習慣用 props，可以變更名稱
 
 // 在 component 內加入方法 :
 // function A(props) {
@@ -37,9 +43,14 @@ function A(props) {
 // onClick={(e) => click(e)}          // 與上一列語法擇一
 // onClick={(e) => click(e,id)}       // 也可同時傳入其他變數
 export default A;
+// 因為 export default 回傳函數可為匿名的特性，上面寫法也可簡化為：
+// export default (props) => return <p>Hi, {props.name}</p>;
+// 若搭配 Destructuring assignment 可再進一步簡化為：
+// export default ({name}) => return <p>Hi, {name}</p>;
 
 // 或建立一個 react 的 class component
 // D 繼承了 React.Component，並實作 render 方法
+// 每個 react class 都要有一個 render 的方法
 // 用 this.props 存取物件
 class D extends React.Component {
     render() {
@@ -86,6 +97,10 @@ function B(props) {
             <A name={props.n2} />
             <div>{props.children}</div>
         </div>
+        // <></> 為 <Fragment></Fragment> 的簡化寫法 (React Fragment)
+        // 主要是不需要真的有個 <div> 被渲染時，所使用的假的 DOM
+        // 例如要在一個 <table> 內用 component，此元件包有多個 <tr>
+        // 此時若此元件使用 <div> 包在 <tr> 外，會讓其在 <table> 內失效，所以此時只能使用 <>
     );
     // 注意 return 多行用 () 包起來
 }
@@ -110,6 +125,10 @@ export {B, C};
 // 產生元素 <C n1="Yao" n2="Tien" />
 // 用 ReactDOM 可渲染出 Hi, Yao 和 Hi, Tien 和 Children
 
+// 此外，這種設計就是 Compositional Model 的概念
+// 藉由 B 事先寫好的基本元件邏輯，遇到不同的內容或需求時再產生不同的 C
+// 常用在瀏覽頁面不同，元件的內容也跟著變化，但元件組成相似的情境
+
 class E extends React.Component {
     constructor(props) {
         // 繼承父類的 props
@@ -121,7 +140,7 @@ class E extends React.Component {
             count: 0,
         };
         // 內建的 Lifecycle 方法裡的 this 都會正確指向 Component 本身
-        // 但如果是自己新增的方法，需要在 constructor() 手動綁定 this
+        // 但如果是自己新增的方法，需要在 constructor() 手動把 class 的 this 綁定到函數裡
         // 沒寫會自動綁定到全域 window 上
         // 這點跟 ES6 裡的 class 不同 (ES6 的方法裡會自動綁定到 class)
         this.click = this.click.bind(this);
@@ -144,9 +163,11 @@ class E extends React.Component {
         // 此外，因為 this.state 和 this.props 是非同步更新
         // 所以不行利用現在的值去更新下一步，可改用在 setState 裡輸入函數
         // 第一項會輸入會預設是當前更新後的 state，props 則為當前的 props
-        this.setState((state,props)=>({
+        this.setState((state, props)=>({
             count: state.count + props.start + 1
         }));
+        // 所以 this.setState 可直接輸入 obj，也可輸入一個回傳 obj 的函數
+        // 後者的寫法會自動將輸入的參數指定為 this.state 和 this.props
     }
     // 若沒有 bind 則打印出的 this 為 undefined
     click() {
@@ -154,7 +175,7 @@ class E extends React.Component {
             count: state.count++
         }));
     }
-    // 也可用 arrow function 會自動把 this 綁定到建立的環境下，就不需 bind 語法
+    // 也可用 arrow function ，因為是 anonymous，this 會自動屬於 class，就不需 bind 語法
     // tick 不需要事先 bind 是因為呼叫時用了 arrow 自動綁定了
     // 傳入事件可寫為 click_ = e => {console.log(e);}
     // 可用 e.target 去找出 node
@@ -300,6 +321,7 @@ function I() {
   const [count, setCount] = useState(0);
 
   // 相似於 componentDidMount 和 componentDidUpdate:
+  // 負責統一處理 life cycle method
   useEffect(() => {
     // 使用瀏覽器 API 更新文件標題
     document.title = `You clicked ${count} times`;
@@ -410,7 +432,30 @@ K.propTypes = {
 // defaultProps 可為某些 props 指定預設值
 // MyClass.defaultProps = {
 //     someProp: 'Stranger'
-// };  
+// };
+
+// Higher Order Component (HOC)
+// 若用一個 function，以 component 作為輸入，產生另一個 component
+// 輸入則為 wrapped component，輸出為 higher-order component
+// 輸入也可以增加另一個 callback 當作客製化 layout/data source 的方法
+
+// 常用在 nevigation bar 會隨著 logged in user 不同而有不同的內容/layout
+// 或者是 blog page 會隨著文章種類的不同而選擇不同的來源等等
+
+// const generalNavBar = (WrappedNavBar, layoutMethod) =>
+//   return class extends Component {
+//     constructor(props) {...}
+//     ... some life-cycle methods or event handling logic
+//     render() {
+//       return <WrappedNavBar ... / >;
+//     }
+//   }
+
+// 最好不要去更動輸入的 wrapped component
+// 也就是最好是一個 pure function 以避免 side effect
+// 此外回傳的 class 可為匿名的寫法
+
+
 
 
 

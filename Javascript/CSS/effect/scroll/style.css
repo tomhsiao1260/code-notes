@@ -1,0 +1,73 @@
+/*****************/
+/* translate 特效 */
+/*****************/
+html, body {
+  background-color: #000066;
+  text-align: center;
+  font-family: "Courier New";
+}
+
+/* 避免 translate3d 平移特效產生多餘的橫向空間 */
+html, body {
+  overflow-x: hidden;
+  max-width: 100%;
+}
+
+p {
+  border: 5px solid white;
+  margin: 30px;
+  padding: 30px;
+  color: white;
+  font-size: 2rem;
+  outline: none;
+  cursor: pointer;
+  background-color: #4d4dff;
+  border-radius: 20px;
+  transform: translate3d(100px,0,0);
+  transition: all 1s ease-in-out;
+}
+
+/* 搭配 transition 產生平移特效 */
+.active {
+  transform: translate3d(0,0,0);
+}
+
+/****************/
+/* Parallax 特效 */
+/****************/
+#bigYellowCircle {
+  background-image: url("https://www.kirupa.com/images/yellow_circle.svg");
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: 90%;
+  position: fixed;
+  top: 0;
+  width: 100vw;
+  height: 100vw;
+  /*z-index: -1;*/
+  opacity: .9;
+}
+#blueSquare {
+  background-image: url("https://www.kirupa.com/images/blue_square.svg");
+  background-repeat: no-repeat;
+  background-position: 97% bottom;
+  background-size: 30%;
+  position: fixed;
+  top: 0;
+  width: 100vw;
+  height: 100vw;
+  /*z-index: -2;*/
+  opacity: .75;
+}
+#greenPentagon {
+  background-image: url("https://www.kirupa.com/images/green_pentagon.svg");
+  background-repeat: no-repeat;
+  background-position: 5% top;
+  background-size: 50%;
+  position: fixed;
+  top: 0;
+  width: 100vw;
+  height: 100vw;
+  /*z-index: -3;*/
+  opacity: .75;
+}

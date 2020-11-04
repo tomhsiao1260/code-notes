@@ -60,6 +60,7 @@ git merge [branch]           將所在的 branch 和指定的 branch 合併 (更
 git fetch origin [branch]    將遠端的儲存庫更新到本地的 origin/[branch] 分支裡
                              其實 git pull origin master 等同於執行了下面兩個指令：
                              git fetch origin master 和 git merge origin/master
+git branch -f master develop 強迫將 master 以 develop 的專案覆蓋掉 (要先 checkout 到 develop)
 
 -----------------------------------------------------------
 

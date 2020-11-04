@@ -48,7 +48,7 @@ clearInterval(ID3);
 // Arrow Function
 var multiply = function(a, b) {return a * b;}
 var multiply = (a, b) => a * b;           // 與上方寫法等價，會自動 return
-var multiply = (a, b) => (a * b);         // 與上方寫法等價，會自動 return
+var multiply = (a, b) => (a * b);         // 給跨行的單行程式使用，會自動 return
 var multiply = (a, b) => {return a * b};  // 有 {} 記得要加 return
 var multiply = (a, b) => {a * b};         // 有 {} 卻沒 return 值會回傳 undefined
 var multiply = (a, b) => {};              // undefined
@@ -85,7 +85,7 @@ f(1, 2, ...arr, 5);       // 等同於 f(1, 2, 3, 4, 5)
 function f(a,...b) {b;}   // 輸入 f(1,2,3) 則 b=[2,3]
 
 
-// 解構賦值
+// 解構賦值 Destructuring assignment
 var foo = ['1', '2', '3'];
 var [one, two, three] = foo; // one = '1' 以此類推
 
@@ -107,6 +107,7 @@ var {a = 10, b = 5} = {a: 3}; // a=3 b=5
 
 var obj = {p: ['Hi', {y: 'World'}]};
 var {p: [x, {y}]} = obj;      // x='Hi' y='World'
+// 解構賦值的寫法常用在 function 的輸入上
 
 // super 關鍵字
 var parent = {
@@ -233,7 +234,7 @@ s.clear();     // 清空 Set
 // JS 使用函數 (function) 做為類別 (class) 的建構子 (constructor) 來定義一個類別
 
 class Animal { 
-	// 用 constructor 來宣告變數
+	// constructor 方法會在 new 時被自動呼叫，用來做初始化
     constructor(name) {
         this.name = name;
         this.num = 0;
@@ -241,7 +242,9 @@ class Animal {
     speak() {return this.name;}
     count() {return this.num;}
 }
-// 將 'Elephant' 傳給建構子初始化
+// a 為 Animal 這個 class 產生的 object (類實例)
+// 使用類別建立物件，就好比用新的資料型別 (class) 來建立一個類別變數 (object)
+// 需使用 new 運算子，會將 'Elephant' 傳給建構子初始化
 // 注意 class 的寫法沒有 hoisting 的功能
 var a = new Animal('Elephant');
 a.name;        // Elephant
@@ -267,7 +270,7 @@ d.speak();   // Puppy Hi, Puppy
 class Cat extends Animal {
     constructor(name) {
         // 繼承加上要寫自己的建構式前要加 super()
-        // 此語法會先跑過父類的建構式
+        // 此語法會先跑過父類的建構式，() 內可加入想初始的參數
         super();
         this.name = name;
         this.num = 1;
@@ -289,8 +292,13 @@ class BiggerTriple extends Triple {
   }
 }
 
-// 有加 static 的 method 不須有類實例其類別即可被呼叫
-// 但當類別被實例化後則靜態方法不能被呼叫，常被使用在建立應用程式的工具函式
+// 在類別裡的屬性、方法前加上 static 關鍵字
+// 會成為該類別下產生的類實例之間的共用屬性、方法
+// 而且在尚未產生類實例前即可直接用 class 本身來呼叫
+// 在 JS 語法更是進一步規定不能用類實例呼叫 static 方法、屬性
+// 此外，因為 static 表共用，其語法內部不能用到 this 語句
+// 常被使用在建立應用程式的工具函式，例如 Math 類別裡的常數、次方運算
+
 // 實作上，若一個方法沒有用到 this，建議直接將方法獨立出來在外面
 // 或是改為 static 加以使用
 
@@ -301,6 +309,11 @@ var tp = new Triple();
 // 類實例無法使用 static method
 // tp.triple();  TypeError: 'tp.triple is not a function'.
 
+// 另外也可將會重複使用的 element 寫成一個 class
+// 寫法另外整理在 ./Project/class_dom 內
+
+// 命名方面 class 通常會使用 PascalCase
+// 其他例如 method、variable 則使用 camelCase
 
 // Symbol 資料型態
 var s1 = Symbol();
