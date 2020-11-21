@@ -269,7 +269,7 @@ fetch('https://www.google.com')
    .then((res)=> res.status)  // 顯示狀態碼 200 表示成功，0 表示處理本地檔案
    .catch((err) => err);      // 404 表示失敗
 
-// 狀態碼
+// 狀態碼 status code
 // 資訊回應 (Informational responses, 100–199)
 // 成功回應 (Successful responses, 200–299)
 // 重定向 (Redirects, 300–399)

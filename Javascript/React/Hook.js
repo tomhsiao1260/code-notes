@@ -2,8 +2,9 @@ import React, { useState, useEffect } from 'react';
 
 // Hook 是一個 function
 // 只能在 function components 或自定義的 Hook 內使用
-// 它讓 function component 可以 "hook into" React state 與 生命週期
-// 常見的有 useState, useEffect 兩種 Hook
+// 它讓 function component 裡的 local 變數可以 "hook into"
+// React engine 內部維護的各種功能，常見的有 useState, useEffect 兩種 Hook
+// 例如： state 用 useState、life cycle method 用 useEffect ... 等
 
 function A(props) {
   // useState 用來管理 state

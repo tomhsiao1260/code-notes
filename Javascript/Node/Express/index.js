@@ -1,7 +1,7 @@
 // 前端傳 Url + Verb 給後端作為 request
 // 後端傳 Status Code + Message Body 給前端作為 Response
 
-// Express 定義了各種 middlewares 來協助 client 與 server 進行溝通
+// Express 定義了各種 middlewares(函數)來協助和簡化 client 與 server 進行溝通
 // 另外 Routing 定義了端點 endpoints (URIs) 並描述如何對 client 端做出回應
 // Express 的 app 物件提供了各種對應於 HTTP methods (Verb) 的方法，使用如下：
 
@@ -16,6 +16,10 @@ const port = process.env.PORT || 3000;
 app.listen(port, () => {
   console.log(`Listening on port ${port}...`);
 });
+
+// middlewares 可輸入一個 route 和 callback
+// 若沒提供 route 則會在每次觸發 node.js 都會執行一次
+// 之間也可以用 next() 接力，若沒有有則不會執行後面相同的 route
 
 // 此 app 物件有下面幾種方法：
 // app.get();    讀取

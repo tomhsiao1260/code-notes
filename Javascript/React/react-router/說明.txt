@@ -1,0 +1,46 @@
+執行
+npm install react-router-dom
+
+並載入模塊
+import { BrowserRouter } from 'react-router-dom';
+import { NavLink, Switch, Route, Redirect } from "react-router-dom";
+
+1. BrowserRouter 包在最外層的 component，定義了的 root 位置
+2. NavLink 定義了 route 的名字
+3. Switch 裡包著多個 Route
+4. Route 用來指定 NavLink 所定義的 path 連結，用哪個 compoment 產生畫面
+
+<div>
+    <button>
+        <NavLink to="/home">Home</NavLink>
+    </button>
+    <button>
+        <NavLink to="/posts">Posts</NavLink>
+    </button>
+    <button>
+        <NavLink to="/authors">Authors</NavLink>
+    </button>
+    <Switch>
+        <Route exact path="/posts" component={Posts} />
+        <Route path="/posts/:id?" component={PostRender} />
+        <Redirect from="/home" to="/" />
+    </Switch>
+</div>
+
+1. NavLink 真正在頁面上畫出來，還是要在外面包一個 HTML tag
+   有些例子會使用 Link 取代 NavLink 是因為可以加入一些 styling attribute
+2. path="/posts/:id?" 會把對應的 id 用 props 傳進 component
+   例如：/posts/3838 可用 props.match.params.id 獲得 3838 這個數字
+3. 若沒加 exact 關鍵字，則 /posts/3838 也會觸發 /posts 這個 route
+4. Redirect 將 /home 引導到 /
+
+在 src 中
+/App.js 用 BrowserRouter 包覆
+
+在 src/containers 中
+/Blog.js 處理了主要的 route 邏輯
+/Post/Posts.js 為 Post 的主頁，裡面有定義 /posts/:id? 的 NavLink
+點擊後會觸發 Blog.js 裡的 Switch 渲染 PostRender 對應的 compoment
+並會以 props.match.params 傳入對應的 id
+
+更多詳細教學： https://reactrouter.com/web/guides/quick-start

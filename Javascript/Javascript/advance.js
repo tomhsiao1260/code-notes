@@ -696,6 +696,51 @@ var myThis = people.forEach(function(item, index, array){
 }, people);  // 傳入的物件，替代 this，如果無則是 window
 
 
+// parsing URL
+
+// 使用瀏覽器內建的 URL 建構函式、URLSearchParams 兩種 Web API，方便解析 URL
+// 其中 ? 以後為 query parameter
+var githubURL = new URL('https://github.com/search?q=react&type=Code');
+// 透過物件的解構賦值，取出 URL 物件的屬性值
+var { href, protocol, hostname, pathname, search, searchParams } = githubURL;
+// href:     https://github.com/search?q=react&type=Code
+// protocol: https:
+// hostname: github.com
+// pathname: /search
+// search:   ?q=react&type=Code
+// searchParams: URLSearchParams { 'q' => 'react', 'type' => 'Code' }
+
+// 其中 URLSearchParams 可以方便設定、刪除和讀取 query parameter
+// 也可轉為字串 "q=react&type=Code"
+searchParams.toString();
+// 也可透過陣列的解構賦值，取得網址參數部分，會依序取得：
+for(let [key, value] of searchParams.entries()) { 
+  var str = `key: ${key}, value: ${value}`;
+  // key: q,    value: react
+  // key: type, value: Code
+}
+// 也可檢測參數是否存在某種 key，並取得其值
+searchParams.has('q'); // true
+searchParams.get('q'); // "react"
+
+// 也可使用 URLSearchParams 建立 query parameter
+// 有下面幾種方法：直接寫入、代入陣列、代入物件
+var searchParams = new URLSearchParams('q=react&type=Code');
+var searchParams = new URLSearchParams([['q', 'react'], ['type', 'Code']]);
+var searchParams = new URLSearchParams({q: 'react', type: 'Code'});
+// 都會得到一樣的結果
+searchParams.toString() // "q=react&type=Code"
+
+// URL 主體和 query parameter 分開，讓後續的 fetch 寫法更易讀好維護
+var githubURL    = new URL('https://github.com/search');
+var searchParams = new URLSearchParams({q: 'react', type: 'Code'});
+githubURL.search = searchParams;
+// fetch(githubURL.href).then( something... );
+
+// 另外 URLSearchParams 還提供了
+// .set() .append() .sort() .delete() 的方法以靈活操作參數
+
+
 // 模組化
 
 /////////////////////////////////

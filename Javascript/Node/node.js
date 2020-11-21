@@ -1,10 +1,13 @@
-// Node.js 是個可以在 browser 外運行的跨平台開源環境
+// Node.js 是個可以在 browser 外運行的跨平台開源環境 Runtime Enviroment
 
 // 每種 browser 都有屬於自己的 JS Engine，把撰寫的 code 轉化成可執行的機器語言
 // 正是因為這些引擎的緣故，JS 在不同瀏覽器上可能會有不同的表現
 
 // Node.js 使用了 Google 的 V8 引擎、並嵌入一個 C++ 的程式叫做 Node.exe
 // 整個 Node.js就是包含一個 V8 引擎和一些額外的 module，讓 JS 也能執行
+
+// Node.js 的偶數版本有 LTS (long-term support)，奇數則無
+// 現在 Web 開發後端開發多以 Node 為主，有逐年增長的趨勢 (Java 搭配 maven 次之)
 
 // Node.js 有一些內建的 module，例如：
 // File system、Http、Operation system

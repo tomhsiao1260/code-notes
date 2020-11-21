@@ -27,7 +27,9 @@ history               終端機紀錄
 history | grep clear  檢視搜尋終端機有 clear 的指令
 find . -iname '*.py'  尋找 .py 結尾的檔案
 
-python -m SimpleHTTPServer 在本地端架一個簡易的server (監聽 port 8000)
+在本地端架一個簡易的server (監聽 port 8000)
+python2: python -m SimpleHTTPServer
+python3: python3 -m http.server 
 
 -----------------------------------------------------------
 
