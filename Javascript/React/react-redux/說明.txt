@@ -1,0 +1,72 @@
+--------------------------------------------------------------------
+Store: 唯一儲存所有 app 裡 states 的地方
+Action: 為一個 object 包含了下面兩種特性: type 和 payload，以描述 state 的變更
+Reducer: 為一個函數，以目前的 state 和 action 作為輸入，以產生新的 state
+
+Redux 三大原則 (讓 state 更容易被預測、偵錯):
+1. 所有的 state 僅存在唯一的 store
+2. 改變 state 的唯一方式為送一個訊號，也就是送一個描述改變的 action (dispatching an action)
+3. state 是 immutable (不能被複寫的)，也就 reducer 必須是個 pure function
+
+yarn add redux --dev
+
+寫法可參考
+./src/js/store
+./src/js/actions
+./src/js/reducers
+
+--------------------------------------------------------------------
+Redux 是 agnostic 可以用在各種 framework
+最常與 React 搭配使用，方法如下：
+
+yarn add react-redux --dev
+
+在 App 的最外層加入 Redux 的 Provider 這個 HOC 監聽所有 store 的狀態
+所有跟 state 處理有關的 components 用 Redux 的 connect 重新產生，其中
+mapStateToProps 會將某些 state 成為該元件的 props
+mapDispatchToProps 會將 某些 dispatch 成為該元件的 props
+
+寫法可參考
+./src/components/List
+./src/components/Form
+
+--------------------------------------------------------------------
+Redux 的 middleware 是一個 function，會在 action 到達 reducer 前先被執行
+此範例會在輸入 spam, money 等關鍵字跳出 alert() 而非更新 store
+
+寫法可參考
+./src/js/middleware
+./src/js/store
+
+--------------------------------------------------------------------
+若要寫一些 AJAX 非同步的語法，需使用客製化的 middleware，可使用 Redux Thunk
+
+yarn add redux-thunk --dev
+
+寫法可參考
+./src/components/Post
+./src/js/actions
+./src/js/reducers
+./src/js/store
+
+有另一種 Redux Thunk 的替代方案 Redux Saga
+
+--------------------------------------------------------------------
+在開發上可使用一些 Redux Toolkit，可使整個邏輯更加簡潔
+
+若 reducer 有太多 action，可拆分在合併成一個 reducer
+會用到 redux 內建的 combineReducers 方法
+
+--------------------------------------------------------------------
+
+參考連結： https://www.valentinog.com/blog/redux/
+
+
+
+
+
+
+
+
+
+

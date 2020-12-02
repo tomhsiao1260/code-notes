@@ -149,6 +149,7 @@ class E extends React.Component {
     componentDidMount() {
         // 產生 timer
         this.timerID = setInterval(() => this.tick(), 1000);
+        // 可在此處寫一些 AJAX 的語法，例如：fetch, promise
     }
     // Unmount (卸載) 前執行 (Liftcycle Method)
     componentWillUnmount() {

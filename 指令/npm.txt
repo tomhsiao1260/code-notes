@@ -69,6 +69,7 @@ npx 為 node.js 的一個內建的 CLI 工具
 也避免長期污染，下面為範例：
 
 npx create-react-app my-react
+yarn create-react-app my-react
 npx express my-express
 
 ----------------------------------------------

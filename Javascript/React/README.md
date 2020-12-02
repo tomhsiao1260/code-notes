@@ -1,6 +1,8 @@
 檔案說明
 ------
-* reactNote.js : 基本 react 語法
+* reactNote.js : 基本 react  語法
+* react-router : 基本 router 語法
+* react-redux  : 基本 redux  語法
 
 其他
 ------

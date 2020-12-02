@@ -19,3 +19,5 @@ console.log(window.innerHeight);
 // outer 表示包含工具列、捲軸
 console.log(window.outerWidth);
 console.log(window.outerHeight);
+
+// 掛在 window 上的全域變數可以在 browser 裡的 console 裡呼叫
