@@ -56,6 +56,7 @@ yarn add redux-thunk --dev
 
 若 reducer 有太多 action，可拆分在合併成一個 reducer
 會用到 redux 內建的 combineReducers 方法
+也可把局部部分的 state 改用 useState 管理較靈活
 
 --------------------------------------------------------------------
 

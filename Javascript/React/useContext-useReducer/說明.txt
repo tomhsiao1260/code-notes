@@ -1,0 +1,82 @@
+有時候 Redux 有點複雜，可考慮使用 React Hook 實作輕量型的功能
+相關的 Hook 有 useContext、useReducer
+
+-------------------------------------------------------
+useContext
+
+可以讓子物件直接使用狀態，而不是使用 props 傳遞
+以解決傳遞資料時會經過太多層的不便，也可把 state 集中管理
+
+實作上，會以 createContext 將讓最上層物件成為 Context Component 
+並將要傳遞的資料放到此物件的 value 中
+此時下層物件便能直接將 Context Component 傳給
+useContext 以取得 value 的資料
+
+import React, { createContext, useContext } from 'react'
+
+// 建立 Context Component
+const ParentContext = createContext()
+
+// 上層組件
+const Parent = () => {
+    // 要與下層組件共享的資料
+    const title = 'Hi this is context!'
+    return (
+        // 將要傳遞的資料放進 Context Component.Provider 的 value 中
+        <ParentContext.Provider value={title}>
+            <Son />
+        </ParentContext.Provider>
+    )
+}
+
+// 下層組件
+const Son = () => {
+    // 將 Context Component 放進 useContext 中取得 value 的資料
+    const title = useContext(ParentContext)
+    return (
+        // render 出 value 的資料
+        <h1>{title}</h1>
+    )
+}
+
+-------------------------------------------------------
+useReducer
+
+與 Redux 的 Reducer 功能類似，作為與 state 溝通的唯一管道
+這些維護在 store 的狀態被 dispatch 變更後都會被重新 render
+可參考 ./src/index.js 寫法
+
+輸入：第一項為 reducer  第二項為 initial state
+輸出：第一項為 state    第二項為 dispatch
+
+import React, { useReducer } from 'react'
+
+const [state, dispatch] = useReducer(reducer, initState)
+
+-------------------------------------------------------
+結合 useContext 和 useReducer 達到與 Store 的集中管理
+
+將 useReducer 產生的 state, dispatch 
+傳進 useContext 的 value 作為資料
+另外還需自己實作一個 combineReducer 的函式
+結合分散在各地的 reducer 和對應的 initial state
+
+可參考 ./src/index.js 寫法
+
+-------------------------------------------------------
+Redux 和 React Hook 實作比較
+
+使用 React Hook 讓專案更簡潔也不需使用到第三方套件
+但處理一些異步問題或 middleware 還是要使用 Redux
+Redux 的生態圈也叫活絡，多被企業採用
+
+但是 React 團隊表示 Hook 的出現並不是 Redux 的末日
+而是希望 React 能夠不是必須需要第三方套件，也能夠自己做到基本的事情
+Redux 和 Hook 同時使用也不衝突
+
+關於 Redux 的各式疑問官方回覆
+https://blog.isquaredsoftware.com/2018/03/redux-not-dead-yet/
+
+-------------------------------------------------------
+
+

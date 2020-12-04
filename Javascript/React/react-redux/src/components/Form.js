@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import {v4 as uuid} from 'uuid'
+import {v4 as uuid} from 'uuid';
 import { addArticle } from "../js/actions/index";
 
 // 將 dispatch 方法存成元件的 props
