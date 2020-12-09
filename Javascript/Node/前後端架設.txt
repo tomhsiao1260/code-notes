@@ -1,4 +1,27 @@
 ---------------------------------------------------------
+server: 可以把資源部署到主機上，並根據聆聽到的 port 給予對應的資源
+client: 即 browser 端，負責頁面的顯示，向 server 端要資源
+
+server 和 client 透過 http 協定溝通，實作上常使用 AJAX
+localhost 是本機的網域名，在 client 端輸入可連到本機架設的 server
+           
+所以在 client 輸入 localhost:3000 表示
+向 server 端的 port 3000 
+發出一個 request 以要求給予對應的資源
+常見的 respond 會回傳整個網頁，並渲染到 browser 上
+以使用者角度來看就好像輸入網址拜訪了某個頁面
+
+開發上，可以將 server 和 client 端程式同時架在不同的 port 上
+client 只要在實作一些 AJAX 時，指向 server 端的 port 即可要到資源
+因為向不同 port 要資源，所以這類寫法需要考慮到 CORS 等跨域問題
+也可改為將 client 端 build 好的結果跟 server 放在同個 port
+當 browser 要求頁面時再把資源提供並顯示出來
+
+產出時，常使用第三方 Hosting 來託管 server
+此時只能使用同個 port 的寫法
+系統會自動分配一個 port (可查詢環境變數取得)，所以 port 數值不能寫死
+
+---------------------------------------------------------
 連結 heroku 遠端資料庫
 
 1. 在 heroku 新增一個專案，然後在下終端指令：

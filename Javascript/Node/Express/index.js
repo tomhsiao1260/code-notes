@@ -341,6 +341,10 @@ app.use('/static', express.static(__dirname + '/public'));
 // 更新部份內容       -> PATCH /resources
 // 只回傳HTTP header -> HEAD /resources/:id
 
+// GET, POST 使用時機與是否有傳遞資料無關
+// 主要差別在於對 server 端的資源是否有更動
+// 若只是單純的傳資料到 server 比對或查看則為 GET
+
 // URI 原則
 // 由 prefix + API endpoint 組成
 // Prefix 可有可無，例如/api或/api/v1，API endpoint的設計，幾個重要原則：

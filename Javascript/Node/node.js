@@ -100,6 +100,10 @@ console.log('Listening on port 3000...');
 // 像上面線性地增加不同的 route 以後會很難維護
 // 所以使用 express 這類的框架可以協助後端程式的開發更順暢
 
+// 開發上也可使用 npm 並在 package.json 內加入
+// type="module"
+// 即可在 node 內使用 import 語法引入模塊
+
 
 
 

@@ -323,8 +323,146 @@ fetch(url, {
 // headers: HTTP request header
 // body: JSON.stringify 轉成 JSON 字串
 
+// 使用 fetch 請求外部資源常會遇到同源問題 CORS
+// Cross-Origin Resource Sharing
+// 同源政策是基於瀏覽器安全性考量所定義的規範
+// 規範了哪些資源可以跨源存取，哪些會受到限制，同源為：
+
+// 同網域 Domain
+// 同通訊協定 HTTP, HTTPS, FTP
+// 同連接埠號 Port
+
+// Fetch API 遵守同源政策，在這個情況下，其實請求已經發出去了，也拿到回應
+// 但是基於同源政策，瀏覽器不把拿到的回應做進一步的處理
+// 除非使用適當的 CORS 標頭，否則只能請求與應用程式相同網域的 HTTP 資源
+
+// CORS 標頭的使用細節可參考下面文章：
+// https://pjchender.github.io/2018/08/20/同源政策與跨來源資源共用（cors）/
+
+
 }catch{}
 // -------------------------------------------------------------
+try{
+// axios 為 AJAX 的 middleware 使得 fetch 的使用更加的方便
+// 使用前需要安裝 yarn add axios
+
+const axios = require('axios');
+
+// 向特定 ID 的 user 提出 request
+axios.get('/user?ID=12345')
+  .then(function (response) {
+    // handle success
+  })
+  .catch(function (error) {
+    // handle error
+  })
+  .then(function () {
+    // always executed
+  });
+
+// GET 等價寫法
+
+// axios.get(url)
+axios.get('/user?ID=12345')
+// axios.get(url, config)
+axios.get('/user', { params: { ID: 12345 }})
+// axios(config)
+axios('/user/12345');
+
+// POST 等價寫法
+
+// axios.post(url, config)
+axios.post('/user/12345', {
+    firstName: 'Fred',
+    lastName: 'Flintstone'
+  })
+// axios(config)
+axios({
+  method: 'post',
+  url: '/user/12345',
+  data: {
+    firstName: 'Fred',
+    lastName: 'Flintstone'
+  }
+});
+
+// 也可改用 async 語法
+const getUser = async () => {
+  try {
+    const { data } = await axios.get('/user?ID=12345');
+    // handle success
+  } catch (error) {
+  	// handle error
+  }
+}
+
+// 也可產生新的 axios instance 以共用一些重複的 config
+const instance = axios.create({
+  baseURL: 'https://some-domain.com/api/',
+  timeout: 1000,
+  headers: {'X-Custom-Header': 'foobar'}
+});
+const instanceGet = async () => {
+	// url: baseURL + /user?ID=12345
+	const { data } = await instance.get('/user?ID=12345');
+	return data;
+}
+
+// 搭配 Promise.all 使用多個請求
+const getUserAccount = () => axios.get('/user/12345');
+const getUserPermissions = () => axios.get('/user/12345/permissions');
+
+Promise.all([getUserAccount(), getUserPermissions()])
+  .then(function (results) {
+    const acct = results[0];
+    const perm = results[1];
+  });
+
+// 先傳入 request config
+// 並獲得 response schema 
+
+// Request Config 可參考 document，下面列出幾個：
+const config = {
+	// request 使用的 url
+	url: '/user',
+	// request method, GET 為預設
+	method: 'get',
+	// 會接在 url 前面作為 prefix
+	baseURL: 'https://some-domain.com/api/',
+	// 客製化的 headers 資料
+	headers: {'X-Requested-With': 'XMLHttpRequest'},
+    // url parameters
+	params: {
+      ID: 12345
+	},
+	// 以 request body 傳送的資料
+	// 只適合在 'PUT', 'POST', 'DELETE , and 'PATCH' 使用
+	data: {
+      firstName: 'Fred'
+    },
+    // 字串的寫法
+    data: 'Country=Brasil&City=Belo Horizonte',
+}
+
+// Response Schema 為回傳的物件
+const schema = {
+  // 從 server 端傳回的資料
+  data: {},
+  // Http status code
+  status: 200,
+  // Http status message
+  statusText: 'OK',
+  // 資料的 header 描述
+  headers: {},
+  // 提供給幫助 axios config 的撰寫資訊
+  config: {},
+  // 產生這個 response 的 request 來源
+  // 是一個 XMLHttpRequest instance
+  request: {}
+}
+
+// 官方教學： https://github.com/axios/axios
+}catch{}
 
 
 
