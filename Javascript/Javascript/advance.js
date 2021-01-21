@@ -126,7 +126,7 @@ var child = {
 }
 Object.setPrototypeOf(child, parent); // 繼承
 
-// 字串樣版
+// template string 字串樣版
 var a=1; var b=1;
 var str = `line 1 
 line 2`;                      // 等價於 'line1\nline2'
