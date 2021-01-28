@@ -4,10 +4,21 @@ import gsap from 'gsap'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import * as dat from 'dat.gui'
 
-// renderer 透過 scene 和 camera 渲染出畫面
-// 其中 scene 可加入各種 object (mesh, light, camera)
-// mesh 包含了 geometry 和 material
-// 整個以 scene 為源頭的架構稱為 scenegraph (不見得包含 camera)
+// three.js 透過 WebGL 在 canvas 元件上製作 3D 效果
+// WebGL 是一個低階的系統，只能繪製 點、線、三角形
+// three.js 則可透過下面的方式，讓繪製的過程更加的方便：
+
+// Renderer: 主要項，接收 Scene 和 Camera，並把最終的結果渲染到 canvas 上
+// scenegraph: 樹狀結構，涵蓋了各式 object，例如： Scene, Mesh, Light, Group, Object3D, Camera
+// Scene: 為 scenegraph 的根源，定義了物件之間的繼承關係(一起移動)、背景 ... 等
+// Camera: 鏡頭，不見得要在 scenegraph 的分支下
+// Mesh: 決定 Geometry 和 Material，可供多個物體共用
+// Geometry: 有提供內建的 geometry primitives 形狀 
+// Material: 決定如何處理 Geometry 上的表面特性，可以使用多個 Texture
+// Texture: 各種來源的圖像
+// Light: 光源
+
+// 關係圖： https://threejsfundamentals.org/threejs/lessons/threejs-fundamentals.html
 
 // ############################################################### //
 // ##########################   Scene   ########################## //
@@ -61,6 +72,7 @@ const geometry_1 = () => {
 
 // 大多形狀都有 Buffer Geometry，會針對效能進行優化，建議使用
 // 一般使用上與原本相同，但若要進行更動或客製化會比較麻煩
+// Geometry 在後續版本將不支援，建議都使用 Buffer Geometry
 
 // 自己做一個 buffer geometry
 const geometry_2 = () => {
@@ -223,7 +235,7 @@ const functionMaterial = (type) => {
             material.opacity = 0.5
             // alphaMap 會把 texture 黑色的部分去除不顯示
             material.alphaMap = alphaTexture
-            // plane 預設為 THREE.FrontSide，下面表示兩面都顯示
+            // 預設為 THREE.FrontSide，下面表示兩面都顯示，BackSide 表示顯示後面或是內部
             material.side = THREE.DoubleSide
             break
         case 'Normal':
@@ -844,6 +856,85 @@ gui.add(helper, 'visible').name('Axis Grid');
 // 可以處理 數值範圍、顏色、文字、Checkbox、選單、按鈕、組織化的Folder，可參考下方範例：
 // https://jsfiddle.net/ikatyang/182ztwao/
 
+// ############################################################### //
+// #########################   Raycaster ######################### //
+// ############################################################### //
+
+// 給定一個點和一個方向，即可利用 Raycaster 判定在這個方向上有哪些物體
+// 即可做一些偵測，也可以搭配滑鼠達到跟物體互動的效果
+
+const mouse = new THREE.Vector2()
+// 建立 Raycaster 接受的滑鼠座標系統，讓右上為 (1,1) 左下為 (-1,-1)
+window.addEventListener('mousemove', (event) => {
+    mouse.x = event.clientX / sizes.width * 2 - 1
+    mouse.y = - (event.clientY / sizes.height) * 2 + 1
+})
+
+const raycaster_1 = () => {
+    // 先建立場景
+    const sphereMaterial = new THREE.MeshBasicMaterial( {color: 'red'} )
+    const cubeMaterial = new THREE.MeshBasicMaterial( {color: 'red'} )
+    const sphere = new THREE.Mesh(new THREE.SphereBufferGeometry(0.5, 64, 64), sphereMaterial)
+    const cube = new THREE.Mesh(new THREE.BoxBufferGeometry(1, 1, 1), cubeMaterial)
+    const meshes = [sphere, cube]
+    // sphere 位於 y=-1， cube 位於 y=1
+    sphere.position.set(0, -1, 0)
+    cube.position.set(0, 1, 0)
+    scene.add(sphere, cube)
+
+    const clock = new THREE.Clock()
+    // 加入 frame 動態偵測
+    const animate = () => {
+        const elapsedTime = clock.getElapsedTime()
+        
+        // 建立 raycaster (下面 1, 2 方法擇一使用)
+        const raycaster = new THREE.Raycaster()
+
+        // 1. 自定義向量
+        const rayOrigin = new THREE.Vector3(-3, 1, 0)    // 指定起始點
+        const rayDirection = new THREE.Vector3(10, 0, 0) // 指定方向 (必須 normalize)
+        rayDirection.normalize()                      
+        raycaster.set(rayOrigin, rayDirection)           // 開始偵測 (於 -3,1,0 指向 +x 方向)
+
+        // 2. 滑鼠+相機 產生向量
+        raycaster.setFromCamera(mouse, camera)
+
+        // 判斷 sphere, cube 是否有被 ray 打到
+        const intersects = raycaster.intersectObjects( meshes )
+        // 將被指到的物件變藍色，其餘維持紅色
+        meshes.forEach( obj => obj.material.color.set('red'))
+        intersects.forEach( e => e.object.material.color.set('blue') )
+
+        // 會回傳一個 array of object，將每個碰撞事件以物件方式紀錄，物件有下面屬性：
+        // 注意一個 mesh 可以被打到多次，若都沒打到會回傳空矩陣
+
+        // distance：與原點之間的距離
+        // face：物體的那個面被打到
+        // faceIndex：那個面的 Index
+        // object：被打到的 object
+        // point：被打到的點座標
+        // uv：被打到的點在 geometry 上的 uv 座標
+
+        window.requestAnimationFrame(animate)
+    }
+    animate()
+}
+
+// mesh.visible = false
+// raycaster_1()
+
+// ############################################################### //
+// ###########################   Else  ########################### //
+// ############################################################### //
+
 // const fog = new THREE.Fog('#262837', 1, 5) // 可用 fog 讓太遠的物體淡出 Fog (color, near, far)
 // renderer.setClearColor('#262837')          // 讓背景和 fog 色調一致
 // scene.fog = fog
+
+// 可將不需要的 geometry, material 捨棄掉節省空間，最後再從 scene 中 remove 掉 mesh 即可
+// geometry.dispose()
+// material.dispose()
+// scene.remove( mesh )
+
+// Object3D.clone() 可以將 three.js 物件複製下來成為獨立的另一個物件
+// color.lerp(x, alpha) 會將原本的 color 加入 x 的 alpha 比例混合
