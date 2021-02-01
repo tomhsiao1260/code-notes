@@ -52,30 +52,10 @@ const renderer = new THREE.WebGLRenderer({canvas: canvas})
 // 可以用 Geometries 製作 Mesh，但也可利用裡頭的 vertices 去產生 particles 系統
 // 每個 vertices 也可放入更多 data，例如：UV 座標, normals
 // 可以看 Document 找到自己要的 built-in geometries
+// r125 後不再支援 Geometry，只能用效能有優化的 Buffer Geometry (但名稱上需把 Buffer 去掉)
 
 // 自己做一個 geometry
 const geometry_1 = () => {
-    // 建立空的 geometry
-    const geometry = new THREE.Geometry()
-    // 建立三個 vertices
-    geometry.vertices.push(new THREE.Vector3(0, 0, 0))
-    geometry.vertices.push(new THREE.Vector3(0, 1, 0))
-    geometry.vertices.push(new THREE.Vector3(1, 0, 0))
-    // 透過 vertices 產生 faces，其中 Face3 裡輸入的是 vertices 矩陣裡的 index
-    // 每 push 一個 Face3 就會根據對應到的 vertices 點產生一個面
-    geometry.faces.push(new THREE.Face3(0, 1, 2))
-    // 可用 wireframe 看出 Geometries 的骨架
-    const material = new THREE.MeshBasicMaterial({ color: 0xff0000, wireframe: true })
-    const mesh = new THREE.Mesh(geometry, material)
-    scene.add(mesh)
-}
-
-// 大多形狀都有 Buffer Geometry，會針對效能進行優化，建議使用
-// 一般使用上與原本相同，但若要進行更動或客製化會比較麻煩
-// Geometry 在後續版本將不支援，建議都使用 Buffer Geometry
-
-// 自己做一個 buffer geometry
-const geometry_2 = () => {
     // 建立空的 buffer geometry
     const geometry = new THREE.BufferGeometry()
     // 因為使用矩陣長度一開始就確定的 Float32Array，可降低不少運算上的負擔
@@ -110,7 +90,6 @@ geometry.center()
 
 // mesh.visible = false
 // geometry_1()
-// geometry_2()
 
 // ############################################################### //
 // ########################   Textures   ######################### //
@@ -342,9 +321,9 @@ const functionMaterial = (type) => {
 
 const spherePlaneTorus = (material) => {
     // 產生測試用的三種 Geometry
-    const sphere = new THREE.Mesh(new THREE.SphereBufferGeometry(0.5, 64, 64), material)
-    const plane = new THREE.Mesh(new THREE.PlaneBufferGeometry(1, 1, 100, 100), material)
-    const torus = new THREE.Mesh(new THREE.TorusBufferGeometry(0.3, 0.2, 64, 128), material)
+    const sphere = new THREE.Mesh(new THREE.SphereGeometry(0.5, 64, 64), material)
+    const plane = new THREE.Mesh(new THREE.PlaneGeometry(1, 1, 100, 100), material)
+    const torus = new THREE.Mesh(new THREE.TorusGeometry(0.3, 0.2, 64, 128), material)
     sphere.position.x = -1.5
     torus.position.x = 1.5
     // 加入光線
@@ -385,13 +364,14 @@ pointLight.position.set(1, 1.5, 1)
 
 // 5. RectAreaLight：長方形光線，後兩項為光源的寬、高，只能作用在 Standard、Physical material
 const rectAreaLight = new THREE.RectAreaLight(0x4e00ff, 2, 0.5, 0.5)
-rectAreaLight.position.set(- 1.5, 0, 1.5)
+rectAreaLight.position.set(-1.5, 0, 1.5)
 rectAreaLight.lookAt(new THREE.Vector3(0, -1, 0))
 
 // 6. SpotLight：環狀聚光燈，後四項為，distance(影響距離)、angle(發散角)、penumbra(模糊度)、decay
 const spotLight = new THREE.SpotLight(0x78ff00, 0.5, 10, Math.PI * 0.1, 0.3, 3)
-spotLight.position.set(-2, 1, -0.5)
+spotLight.position.set(-2, 1, -1.5)
 // spotLight 會鎖定 target 的位置，但必須把 target 加進 scene 才能更新聚焦位置
+// 也可以加進某個 mesh 裡，讓 spotlight 跟著 mesh 移動
 spotLight.target.position.x = -1
 scene.add(spotLight.target)
 
@@ -407,21 +387,16 @@ const pointLightHelper = new THREE.PointLightHelper(pointLight, 0.2)
 const spotLightHelper = new THREE.SpotLightHelper(spotLight)
 const rectAreaLightHelper = new RectAreaLightHelper(rectAreaLight)
 
-// spotLight 和 reactAreaLight 比較麻煩要手動 update
-window.requestAnimationFrame(() => {
-    spotLightHelper.update()
-    rectAreaLightHelper.position.copy(rectAreaLight.position)
-    rectAreaLightHelper.quaternion.copy(rectAreaLight.quaternion)
-    rectAreaLightHelper.update()
-})
+// spotLight 比較麻煩要手動 update
+window.requestAnimationFrame(() => spotLightHelper.update())
 
 // 加入場景
 const sphereCubeTorus = () => {
     const material = new THREE.MeshStandardMaterial()
-    const sphere = new THREE.Mesh(new THREE.SphereBufferGeometry(0.5, 64, 64), material)
-    const cube = new THREE.Mesh(new THREE.BoxBufferGeometry(0.7, 0.7, 0.7), material)
-    const torus = new THREE.Mesh(new THREE.TorusBufferGeometry(0.3, 0.2, 64, 128), material)
-    const plane = new THREE.Mesh(new THREE.PlaneBufferGeometry(4, 4), material)
+    const sphere = new THREE.Mesh(new THREE.SphereGeometry(0.5, 64, 64), material)
+    const cube = new THREE.Mesh(new THREE.BoxGeometry(0.7, 0.7, 0.7), material)
+    const torus = new THREE.Mesh(new THREE.TorusGeometry(0.3, 0.2, 64, 128), material)
+    const plane = new THREE.Mesh(new THREE.PlaneGeometry(4, 4), material)
     sphere.position.x = -1.5
     torus.position.x = 1.5
     plane.rotation.x = -(Math.PI / 2)
@@ -454,8 +429,8 @@ const sphereCubeTorus = () => {
 const shadowCube = () => {
     // 建立場景
     const material = new THREE.MeshStandardMaterial()
-    const sphere = new THREE.Mesh(new THREE.SphereBufferGeometry(0.5, 64, 64), material)
-    const plane = new THREE.Mesh(new THREE.PlaneBufferGeometry(4, 4), material)
+    const sphere = new THREE.Mesh(new THREE.SphereGeometry(0.5, 64, 64), material)
+    const plane = new THREE.Mesh(new THREE.PlaneGeometry(4, 4), material)
     plane.rotation.x = -(Math.PI / 2)
     plane.position.y = -0.5
 
@@ -524,7 +499,7 @@ const shadowTrick = (plane, sphere) => {
     const simpleShadow = textureLoader.load('/textures/shadows/simpleShadow.jpg')
     // 用一個小平面乘載陰影的 texture
     const sphereShadow = new THREE.Mesh(
-        new THREE.PlaneBufferGeometry(1.5, 1.5),
+        new THREE.PlaneGeometry(1.5, 1.5),
         // 使用 Basic 不受光線影響，使用 alphaMap 以便調整 shadow 亮暗度
         new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, alphaMap: simpleShadow })
     )
@@ -728,7 +703,7 @@ scene.traverse( (object) => {
 
 const fontLoader = new THREE.FontLoader()
 
-// 可以用 TextBufferGeometry 顯示文字，但字體需要以 .json 為形式的 typeface font
+// 可以用 TextGeometry 顯示文字，但字體需要以 .json 為形式的 typeface font
 // 可在 three.js 內建的字體裡尋找 'three/examples/fonts/'，記得複製 license
 // 也可將其他字體轉為 typeface： http://gero3.github.io/facetype.js/
 
@@ -737,8 +712,8 @@ const text_1 = () => {
         // 載入字體
         '/fonts/helvetiker_regular.typeface.json',
         (font) => {
-            // 產生 TextBufferGeometry
-            const textGeometry = new THREE.TextBufferGeometry(
+            // 產生 TextGeometry
+            const textGeometry = new THREE.TextGeometry(
                 // 輸入文字
                 'Hello Three.js',
                 {
@@ -821,6 +796,11 @@ const spinControl = {
 }
 gui.add(spinControl, 'spin')
 
+// 如果不是 object 的參數想更動 (ex: color)，可以自己另外建一個 object 並更動自己的參數
+// 然後再用 onChange 或 onFinishChange 的 callback 去呼叫一個函數更新真正的參數
+// onFinishChange 不像 onChange 會連續呼叫，而是等一個連續的動作完成後被呼叫一次
+// 此外， color 屬性為 THREE.Color 所以不能給一個字串作為顏色，而是使用 set 語法更新顏色
+
 // 產生一個 class 給 dat.gui 使用
 // 可以將每個物件的 AxesHelper 和 GridHelper 的顯示同時開關
 class AxisGridHelper {
@@ -874,8 +854,8 @@ const raycaster_1 = () => {
     // 先建立場景
     const sphereMaterial = new THREE.MeshBasicMaterial( {color: 'red'} )
     const cubeMaterial = new THREE.MeshBasicMaterial( {color: 'red'} )
-    const sphere = new THREE.Mesh(new THREE.SphereBufferGeometry(0.5, 64, 64), sphereMaterial)
-    const cube = new THREE.Mesh(new THREE.BoxBufferGeometry(1, 1, 1), cubeMaterial)
+    const sphere = new THREE.Mesh(new THREE.SphereGeometry(0.5, 64, 64), sphereMaterial)
+    const cube = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), cubeMaterial)
     const meshes = [sphere, cube]
     // sphere 位於 y=-1， cube 位於 y=1
     sphere.position.set(0, -1, 0)
@@ -938,3 +918,5 @@ const raycaster_1 = () => {
 
 // Object3D.clone() 可以將 three.js 物件複製下來成為獨立的另一個物件
 // color.lerp(x, alpha) 會將原本的 color 加入 x 的 alpha 比例混合
+
+// 開發上，盡量使用一個 canvas，如果是需要配合 scroll 移動到不同場景，可使用 stencil 限制要渲染的區域
