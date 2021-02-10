@@ -58,7 +58,7 @@ void syntx()
     // cross, dot, mix, step, smoothstep, length
     // distance, reflect, refract, normalize
 
-    mod(1.2, 1.0);        // 取餘數即 0.2，圖形會是一段段的漸層色
+    mod(2.2, 1.0);        // 取餘數即 0.2，圖形會是一段段的漸層色
     step(0.5, 2.0);       // 此例基準為 0.5，小於此值回傳 0.0，大於則 1.0，會是一段段的分明線條
     abs(-1.0);            // 取絕對值，圖形常常左右對稱
     min(1.0, 2.0);        // 最小值，也就是會呈現兩張圖較暗處的疊圖，最大值則用 max (較亮處疊圖)
