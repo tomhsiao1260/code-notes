@@ -225,6 +225,70 @@ s.delete(1);   // 刪除 1 回傳 true
 s.delete('1'); // 回傳false
 s.clear();     // 清空 Set
 
+// 不同於 Java、C# 等基於類別 Class 的物件導向程式語言
+// 它們透過定義 Class、建立實例 instance 、指定繼承等方式來傳遞屬性及方法
+// Javascript 則是個基於原型 Prototype 的物件導向程式語言 
+// 透過預先建立出的原型物件，每當新物件建立時，便指定物件的原型要參照到哪個原型物件
+
+// 若有個叫做 Person 的函數，則可以把它當作 constructor
+function Person(name, age) {
+  this.name = name;
+  this.age = age;
+}
+
+// 並利用 new 關鍵字對這個 constructor 產生一個 instance
+var nick = new Person('nick', 18);
+var peter = new Person('peter', 20);
+// 不像其他語言用 class 去 new 一個 instance 物件 (因為 JS 沒有 class 而是原型)
+
+// 每個 constructor 內都有 prototype 屬性，即原型物件
+Person.prototype.log = function () {
+  var data = this.name + ', age:' + this.age;
+}
+// 原型物件內的屬性或方法可在 instance 間共用 (同個記憶體位置)
+nick.log === peter.log  // true
+
+// 此外每個 instance 都有個 __proto__ 屬性與 constructor 的原型物件連接
+nick.__proto__                === Person.prototype // true
+Object.getPrototypeOf( nick ) === Person.prototype // true (等效)
+
+// Person.prototype 物件本身也有 __proto__ 屬性與前一個原型鏈結
+// 這條透過 __proto__ 不斷鏈結在一起的鏈稱為 prototype chain
+// 當使用某個屬性或方法時會透過原型鏈一直往上尋找，直到 null
+
+Person.prototype.__proto__ === Object.prototype   // true
+Object.prototype.__proto__                        // null
+
+// constructor 函式本身也有 __proto__，原型鏈如下：
+Person.__proto__ === Function.prototype           // true
+Function.prototype.__proto__ === Object.prototype // true
+Object.prototype.__proto__                        // null
+
+// 此外，可用 hasOwnProperty 判別某屬性屬不屬於 instance 本身
+nick.hasOwnProperty('log')           // false
+nick.__proto__.hasOwnProperty('log') // true
+
+// A instanceof B 判斷 A 是不是 B 的 instance
+nick instanceof Person // true
+nick instanceof Object // true
+nick instanceof Array  // false
+
+// prototype 都會有一個叫做 constructor 的屬性，指向構造函數
+Person.prototype.constructor === Person        // true
+Person.prototype.hasOwnProperty('constructor') // true
+// 這段是要讓大家知道，這邊其實是往原型鍊的上面去找
+nick.constructor === Person                    // true
+nick.hasOwnProperty('constructor')             // false
+// A.prototype.constructor === A，用 Function, Person, Object 帶進去都成立
+
+// << new 做了下面幾件事 >>
+// 1. 創出一個新的 object，我們叫它 obj
+// 2. 把 obj 的 __proto__ 指向建構函式內的 prototype，以繼承原型鍊
+// 3. 呼叫建構函式，並回傳 obj
+
+// 參考：https://blog.techbridge.cc/2017/04/22/javascript-prototype/
+
+
 // class 關鍵字
 
 // 引入了一些新語法，可定義類別，能直觀的使用 JS 寫物件導向程式
