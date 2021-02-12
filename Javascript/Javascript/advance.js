@@ -239,7 +239,7 @@ function Person(name, age) {
 // 並利用 new 關鍵字對這個 constructor 產生一個 instance
 var nick = new Person('nick', 18);
 var peter = new Person('peter', 20);
-// 不像其他語言用 class 去 new 一個 instance 物件 (因為 JS 沒有 class 而是原型)
+// 不像其他語言用 class 去 new 一個 instance 物件 (因為 JS 沒有 class 只有原型)
 
 // 每個 constructor 內都有 prototype 屬性，即原型物件
 Person.prototype.log = function () {
@@ -248,7 +248,7 @@ Person.prototype.log = function () {
 // 原型物件內的屬性或方法可在 instance 間共用 (同個記憶體位置)
 nick.log === peter.log  // true
 
-// 此外每個 instance 都有個 __proto__ 屬性與 constructor 的原型物件連接
+// 這些原型物件會透過 instance 內的 __proto__ 屬性與 instance 連接
 nick.__proto__                === Person.prototype // true
 Object.getPrototypeOf( nick ) === Person.prototype // true (等效)
 
@@ -287,6 +287,7 @@ nick.hasOwnProperty('constructor')             // false
 // 3. 呼叫建構函式，並回傳 obj
 
 // 參考：https://blog.techbridge.cc/2017/04/22/javascript-prototype/
+// 參考：https://www.fooish.com/javascript/oop-object-oriented-programming.html
 
 
 // class 關鍵字
