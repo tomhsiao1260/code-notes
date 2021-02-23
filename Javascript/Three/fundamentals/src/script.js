@@ -20,6 +20,10 @@ import * as dat from 'dat.gui'
 
 // 關係圖： https://threejsfundamentals.org/threejs/lessons/threejs-fundamentals.html
 
+// 此外，three.js 不像 babylon.js 有實作物體間碰撞的物理
+// 它只是個 3D 渲染引擎，所以物體之間的互動關係要自己實作
+// 因為與 WebGL 僅隔著一層，更容易實作一些細節 (比 babylon.js 更底層)
+
 // ############################################################### //
 // ##########################   Scene   ########################## //
 // ############################################################### //
@@ -742,6 +746,80 @@ const text_1 = () => {
 // text_1()
 
 // ############################################################### //
+// ########################   Load Model  ######################## //
+// ############################################################### //
+
+import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js'
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
+
+const dracoLoader = new DRACOLoader()
+const gltfLoader = new GLTFLoader()
+
+// model 的 format 眾多，各有優缺點 (容量、兼容性、版權...)
+// 若是指使用 geometry 作為 model，可以改採用 OBJ, FBX, STL, PLY 等較輕量的格式
+// 眾多格式裡 GLTF 最被普遍使用，也成為各大引擎採用的標準，下方連結有公開的 model
+
+// https://github.com/KhronosGroup/glTF-Sample-Models
+
+// glTF         : 包含 gltf (JSON 格式), bin (存有所有 vertex 有關資料), png (texture)
+// glTF-Binary  : 只有一個 glb (儲存所有資訊的 binary file)，容量會比 glTF 小點，但不容易更動
+// glTF-Embedded: 只有一個 gltf ，唯一的好處只是可編輯檔且只有一個檔案 (容量較大)
+// glTF-Draco   : 與 glTF 格式相同，但使用了 Draco algorithm 大大壓縮了 bin 檔容量
+
+// 若想易編輯可用 glTF，想單一檔案則用 glTF-Binary (兩種都可搭配使用 Draco)
+// 若使用 Draco，執行前需引入某個 class，這會讓畫面短暫靜止
+// 所以 geometry 只有 100kB 不太需要使用，但有好幾 MB 的多個 model 則建議使用
+
+// 可使用下面連結測試 model，缺點是只能引入一個檔案，所以不能使用 glTF
+// https://threejs.org/editor/
+
+let mixer = null
+
+const model_1 = () => {
+    // 先加入光源才看得到 model
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.8)
+    const directionalLight = new THREE.DirectionalLight(0xffffff, 0.6)
+    directionalLight.position.set(5, 5, 5)
+    scene.add(ambientLight, directionalLight)
+
+    // 使用 draco
+    dracoLoader.setDecoderPath('/draco/')
+    gltfLoader.setDRACOLoader(dracoLoader)
+    // 會用到 decoder，這會改善效能，因為除了在 JS，也可在 Web Assembly、Worker 下執行
+    // 但使用 decoder 須將 /node_modules/three/examples/js/libs/draco/ 放進 static 內
+    // 若沒有使用到 draco 則會自動不載入 decoder
+
+    // load model
+    gltfLoader.load(
+        // 可載入 gltf, glb 檔
+        '/models/Fox/glTF/Fox.gltf',
+        (gltf) => {
+            // 記得先確認大小，太大太小都會看不見
+            gltf.scene.scale.set(0.02, 0.02, 0.02)
+            // 加到 scene 裡
+            scene.add(gltf.scene)
+            // 也可改用下面寫法：先把項目逐個加進 array，再逐個加到 scene 裡
+            // const children = [...gltf.scene.children]
+            // for(const child of children) { scene.add(child) }
+
+            // 使用動畫
+            mixer = new THREE.AnimationMixer(gltf.scene)
+            // console.log(gltf)
+            // clipAction 輸入為 AnimationClip 物件
+            const action = mixer.clipAction(gltf.animations[2])
+            action.play()
+            // 最後，記得在 tick() 內用下面語法更新動畫
+            // 也是因為會在 .load 外使用 mixer，所以 mixer 需在外面宣告
+            // if(mixer) { mixer.update( deltaTime ) }
+        }
+    )
+}
+
+// mesh.visible = false
+// model_1()
+
+
+// ############################################################### //
 // ####################   Renderer & Animate  #################### //
 // ############################################################### //
 
@@ -750,6 +828,8 @@ renderer.setSize(sizes.width, sizes.height)
 
 // 每台裝置的 FPS (frame per second) 不同，所以須用 clock 讓動畫速度保持一致
 const clock = new THREE.Clock()
+
+let previousTime = 0
 
 // 加入 Animation
 const animate = () => {
@@ -760,6 +840,11 @@ const animate = () => {
     controls.update()
     // 也可使用自己寫的 controls
     // customControls()
+
+    const deltaTime = elapsedTime - previousTime
+    previousTime = elapsedTime
+    // 此為 model 的動畫使用得參數 (略)
+    if(mixer) { mixer.update( deltaTime ) }
 
     // 渲染出畫面
     renderer.render(scene, camera)

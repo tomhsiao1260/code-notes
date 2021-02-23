@@ -135,7 +135,7 @@ var str = `sum a+b = ${a+b}`; // sum a+b = 2
 // Map 物件
 var myMap = new Map(); // 建立一個 map
 
-// Map 與一般 object 不同在於， key 不一定要是 string
+// Map 與一般 object 不同在於，不一定要是 string
 // 資料是有序的，會依照插入的順序遍歷
 
 var a = 'string';
@@ -236,19 +236,18 @@ function Person(name, age) {
   this.age = age;
 }
 
-// 並利用 new 關鍵字對這個 constructor 產生一個 instance
+// 並利用 new 關鍵字對這個 constructor 產生一個 instance 物件
 var nick = new Person('nick', 18);
 var peter = new Person('peter', 20);
-// 不像其他語言用 class 去 new 一個 instance 物件 (因為 JS 沒有 class 只有原型)
+// 設計上，不像其他語言用 class 而是用 constructor 去 new (因為 JS 只有原型沒 class)
 
-// 每個 constructor 內都有 prototype 屬性，即原型物件
+// constructor 內的 prototype 屬性會與 instance 的 __proto__ 屬性連接
 Person.prototype.log = function () {
   var data = this.name + ', age:' + this.age;
 }
-// 原型物件內的屬性或方法可在 instance 間共用 (同個記憶體位置)
+// 此 prototype 即為原型物件，會在不同 instance 間共用 (同個記憶體位置)
 nick.log === peter.log  // true
 
-// 這些原型物件會透過 instance 內的 __proto__ 屬性與 instance 連接
 nick.__proto__                === Person.prototype // true
 Object.getPrototypeOf( nick ) === Person.prototype // true (等效)
 
@@ -259,7 +258,7 @@ Object.getPrototypeOf( nick ) === Person.prototype // true (等效)
 Person.prototype.__proto__ === Object.prototype   // true
 Object.prototype.__proto__                        // null
 
-// constructor 函式本身也有 __proto__，原型鏈如下：
+// 另外，函式本身也有 __proto__，原型鏈如下：
 Person.__proto__ === Function.prototype           // true
 Function.prototype.__proto__ === Object.prototype // true
 Object.prototype.__proto__                        // null
@@ -267,6 +266,8 @@ Object.prototype.__proto__                        // null
 // 此外，可用 hasOwnProperty 判別某屬性屬不屬於 instance 本身
 nick.hasOwnProperty('log')           // false
 nick.__proto__.hasOwnProperty('log') // true
+
+// 也可使用 Object.create( obj ) 會回傳一個物件，其 __proto__ 屬性值為 obj
 
 // A instanceof B 判斷 A 是不是 B 的 instance
 nick instanceof Person // true
@@ -282,9 +283,10 @@ nick.hasOwnProperty('constructor')             // false
 // A.prototype.constructor === A，用 Function, Person, Object 帶進去都成立
 
 // << new 做了下面幾件事 >>
-// 1. 創出一個新的 object，我們叫它 obj
-// 2. 把 obj 的 __proto__ 指向建構函式內的 prototype，以繼承原型鍊
-// 3. 呼叫建構函式，並回傳 obj
+// 1. 創出一個新的 object，並把 constructor 裡的 this 指向此物件
+// 2. 把 object 的 __proto__ 屬性指向 constructor 裡的 prototype 屬性，以繼承原型鍊
+// 3. 把 object 的 __proto__.constructor 屬性值設為 constructor 函數
+// 3. 執行此 constructor，並回傳最終的 object
 
 // 參考：https://blog.techbridge.cc/2017/04/22/javascript-prototype/
 // 參考：https://www.fooish.com/javascript/oop-object-oriented-programming.html
@@ -304,8 +306,10 @@ class Animal {
         this.name = name;
         this.num = 0;
     }
+    // 在 constructor 外會被自動放在 __proto__ 屬性內作為原型繼承
     speak() {return this.name;}
     count() {return this.num;}
+    // 即 Animal.prototype.speak 和 .count
 }
 // a 為 Animal 這個 class 產生的 object (類實例)
 // 使用類別建立物件，就好比用新的資料型別 (class) 來建立一個類別變數 (object)
@@ -625,29 +629,42 @@ Promise.reject(new Error('Fail')).then((error) => {error;}
   
 // this 指向
 
-// this 指向 window
-this.name = 'hi'
-if (true) {this;}
+// JS 的直譯器會在執行時維護一個執行環境 execution context
+// 其中的 ThisBinding 儲存著 this 該指向哪個物件
+// 注意 function 內的 this 被哪個 object 呼叫就會指向它
 
-// this 指向 window
+// 全域執行環境 this 會指向全域物件 window
+this.name = 'hi'  
+if (true) {this;} 
+
+// 在全域環境執行的任意函式 this 都指向 window
 setTimeout(function() {this;}, 100);
 
 var obj = {
     bar: 'hello',
-    // fa 的 this 指向 obj 本身
+    // 被 obj 呼叫，所以 this 指向 obj 本身
     fa: function(){this;},
-    // fb 的 this 指向 window
-    fb: function(){setTimeout(function(){this;},100)},
-    // fc 的 this 指向 obj 本身
-    fc: function(){setTimeout(()=> {this;}, 200)},
+    // 同上原因， this 指向 obj 本身
+    fb: function(){setTimeout(this,100)},
+    // 在 setTimeout 這類函式裡執行 callback 會在 window 非同步執行，所以會改指向 window
+    fc: function(){setTimeout(function(){this;},100)},
+    // 可改用 arrow function 會自動把 this 指向外層環境，所以指向 obj 本身 
+    fd: function(){setTimeout(()=> {this;}, 200)},
 };
-obj.fa();
-obj.fb();
-obj.fc();
+obj.fa(); // 指向 obj
+obj.fb(); // 指向 obj
+obj.fc(); // 指向 window
+obj.fd(); // 指向 obj
 
-// this 指向 window
+// 在全域環境執行此函式，故 this 指向 window
 var f = obj.fa;
 f();
+
+// 與上方原理相同，被重新指派進函數作為參數也會導致 this 指向 window
+function xx(callback){ callback() };
+xx( obj.fa );
+// 所以把 function (或稱為 callback) 作為另一個 function 的參數傳入時，記得先 bind
+// 這也是 react 的 event handler 都會先 bind 的原因
 
 // this 指向 obj
 var obj = {
@@ -657,6 +674,19 @@ var obj = {
     }
 };
 obj.foo();
+
+// function prototype 有提供 call, apply, bind 方法指定 this 指向的物件
+var obj = { a:0, b:1 };
+
+function ff1(){ this };
+function ff2(x,y){ this };
+
+ff1.call(obj);        // ff1 裡的 this 指向 obj
+ff2.call(obj,1,2);    // 同上，並將 x=1, y=2 傳進函數
+ff2.apply(obj,[1,2]); // 同上，只是 apply 以矩陣方式傳入
+ff1.bind(obj);        // bind 會 return 一個新函數，裡頭的 this 指向 obj
+
+// 此外 array prototype 裡的 forEach, map, filter ... 也有指定 this 的方法
 
 // this 指向 window
 var obj = {

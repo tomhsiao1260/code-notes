@@ -18,6 +18,9 @@ npm install
 npm install [package] --save
 npm install [package] --save-dev
 
+移除套件
+npm uninstall [package]
+
 ----------------------------------------------
 npm start
 npm run develop
@@ -40,7 +43,8 @@ yarn init -y
 ----------------------------------------------
 安裝套件
 (有下面兩種寫法)
-(會產生 yarn.lock、node_modules)
+(會產生 node_modules)
+(會產生 yarn.lock 取代 package-lock.json)
 
 yarn
 yarn install
@@ -49,6 +53,9 @@ yarn install
 安裝套件
 yarn add [package]
 yarn add [package] --dev
+
+移除套件
+yarn remove [package]
 
 ----------------------------------------------
 yarn start

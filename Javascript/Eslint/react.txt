@@ -6,7 +6,7 @@
    到 node_module 看看 create react app 是否預先安裝了下面套件
    應該只會有 eslint-config-airbnb 需要安裝 (其他不用安裝，可能會衝突)
 
-   npm install eslint babel-eslint --save-dev
+   npm install eslint @babel/eslint-parser --save-dev
    npm install eslint-plugin-import eslint-plugin-react --save-dev
    npm install eslint-plugin-jsx-a11y eslint-plugin-react-hooks --save-dev
 

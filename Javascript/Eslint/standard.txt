@@ -1,6 +1,6 @@
 -------------------------------------------------------
 1. 安裝套件
-npm install eslint babel-eslint --save-dev
+npm install eslint @babel/eslint-parser --save-dev
 npm install eslint-config-airbnb-base --save-dev
 npm install eslint-plugin-import --save-dev
 

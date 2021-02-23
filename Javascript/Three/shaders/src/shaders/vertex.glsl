@@ -7,12 +7,17 @@ void main()
 {
     // 將轉換矩陣拆開來乘，就能夠對內部做一些變化
 
+    // 可以透過改變其 xyz，去逐個改變每個 vertex 點的空間位置
+    vec3 newPosition = position;
+    // newPosition.z += sin(newPosition.x * 10.0 - uTime) * 0.1;
+    // newPosition.z += sin(newPosition.y * 10.0 - uTime) * 0.1;
+
+    // 因為 postion 為 attribute，無法變更，所以新增 newPostion
+    // mesh 的一些 transforms 全部會作用在 modelMatrix 上
+    // 所以在 vertices 的一些 tricks 盡量寫在 modelMatrix 作用之前
+
     // 1. modelPosition 為 mesh transform 後的座標
-    vec4 modelPosition = modelMatrix * vec4(position, 1.0);
-    // 所以可以透過改變其 xyz，去逐個改變每個 vertex 點的空間位置
-    // modelPosition.z += sin(modelPosition.x * 10.0 - uTime) * 0.1;
-    // modelPosition.z += sin(modelPosition.y * 10.0 - uTime) * 0.1;
-    
+    vec4 modelPosition = modelMatrix * vec4(newPosition, 1.0);  
     // 2. viewPosition 為 camera transform 後的座標
     vec4 viewPosition = viewMatrix * modelPosition;
     // 3. projectedPosition 為 project 到 clip space 後的座標
