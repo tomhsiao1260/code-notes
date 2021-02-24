@@ -764,7 +764,7 @@ const gltfLoader = new GLTFLoader()
 // glTF         : 包含 gltf (JSON 格式), bin (存有所有 vertex 有關資料), png (texture)
 // glTF-Binary  : 只有一個 glb (儲存所有資訊的 binary file)，容量會比 glTF 小點，但不容易更動
 // glTF-Embedded: 只有一個 gltf ，唯一的好處只是可編輯檔且只有一個檔案 (容量較大)
-// glTF-Draco   : 與 glTF 格式相同，但使用了 Draco algorithm 大大壓縮了 bin 檔容量
+// glTF-Draco   : 使用了 Draco algorithm 大大壓縮了 bin 檔容量
 
 // 若想易編輯可用 glTF，想單一檔案則用 glTF-Binary (兩種都可搭配使用 Draco)
 // 若使用 Draco，執行前需引入某個 class，這會讓畫面短暫靜止
@@ -804,7 +804,6 @@ const model_1 = () => {
 
             // 使用動畫
             mixer = new THREE.AnimationMixer(gltf.scene)
-            // console.log(gltf)
             // clipAction 輸入為 AnimationClip 物件
             const action = mixer.clipAction(gltf.animations[2])
             action.play()
@@ -817,7 +816,6 @@ const model_1 = () => {
 
 // mesh.visible = false
 // model_1()
-
 
 // ############################################################### //
 // ####################   Renderer & Animate  #################### //
@@ -987,6 +985,114 @@ const raycaster_1 = () => {
 
 // mesh.visible = false
 // raycaster_1()
+
+// ############################################################### //
+// #####################   Realistic Render  ##################### //
+// ############################################################### //
+
+// 載入的 model 效果會因為各種光源的設定有所影響，下面是一些設定讓效果更加真實
+
+const model_2 = () => {
+    const directionalLight = new THREE.DirectionalLight(0xffffff, 1.5)
+    directionalLight.position.set(5, 2, 1)
+    scene.add(directionalLight)
+
+    // 加入四周環境
+    const cubeTextureLoader = new THREE.CubeTextureLoader()
+    const environmentMap = cubeTextureLoader.load([
+        '/textures/environmentMaps/0/px.jpg',
+        '/textures/environmentMaps/0/nx.jpg',
+        '/textures/environmentMaps/0/py.jpg',
+        '/textures/environmentMaps/0/ny.jpg',
+        '/textures/environmentMaps/0/pz.jpg',
+        '/textures/environmentMaps/0/nz.jpg',
+    ])
+    scene.background = environmentMap
+
+    dracoLoader.setDecoderPath('/draco/')
+    gltfLoader.setDRACOLoader(dracoLoader)
+
+    // load model
+    gltfLoader.load(
+        '/models/Hamberger/humberger.glb',
+        (gltf) => {
+            gltf.scene.scale.set(0.1, 0.1, 0.1)
+            scene.add(gltf.scene)
+
+            updateAllMaterials()
+        }
+    )
+
+    // 尋訪 scene 內的每個 mesh
+    const updateAllMaterials = () => {
+        scene.traverse((child) => {
+            if(child instanceof THREE.Mesh && child.material instanceof THREE.MeshStandardMaterial)
+            {
+                // 加入 envMap (使得物體受環境光源影響，並調整強度)
+                child.material.envMap = environmentMap
+                child.material.envMapIntensity = debugObject.envMapIntensity
+                // 也可不尋訪，在函數外用下面語法達到相同效果 (但就無法調整光源強度)
+                // scene.environment = environmentMap
+
+                // 處理 shadow (此種寫法較吃效能)
+                child.castShadow = true
+                child.receiveShadow = true
+            }
+        })
+    }
+
+    // 1. 使用物理通用的燈光單位 (強度數值標準變更)
+    renderer.physicallyCorrectLights = true
+    
+    // 2. 更改 toneMap，和強度 (與色彩對應有關)
+    renderer.toneMapping = THREE.ACESFilmicToneMapping
+    renderer.toneMappingExposure = 3
+
+    // 3. 編碼方式 (與色彩有關)： LinearEncoding (預設), sRGBEncoding, GammaEncoding
+    renderer.outputEncoding = THREE.sRGBEncoding
+    // 注意所有可直接看到的 texture 其 encoding 屬性也要改為 THREE.sRGBEncoding
+    // 例如 map 相關的就需更改，但 normalMap 則保持 LinearEncoding
+    // 所以 environmentMap 需更改，從 GLTF 載入的材質會自動設定所以不用另外變更
+    environmentMap.encoding = THREE.sRGBEncoding
+
+    // 4. 加入 antialias: true
+    // 在 model 邊緣處提升渲染密度，避免邊緣的鋸齒狀，注意不能在 renderer instance 後才加
+    // const renderer = new THREE.WebGLRenderer({..., antialias: true})
+
+    // 5. 加入 shadow
+    renderer.shadowMap.enabled = true
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap
+    directionalLight.castShadow = true
+    directionalLight.shadow.mapSize.set(1024, 1024)
+    // 避免 shadow acne (與精準度有關，會在表面意外產生微小不必要的 shadow，可設定個門檻以去除)
+    directionalLight.shadow.normalBias = 0.05
+
+    // 加入 GUI
+    const gui = new dat.GUI({ width: 345 })
+    const debugObject = { envMapIntensity: 0.7 }
+    const toneMapping = {}
+
+    toneMapping.No         = THREE.NoToneMapping
+    toneMapping.Linear     = THREE.LinearToneMapping
+    toneMapping.Reinhard   = THREE.ReinhardToneMapping
+    toneMapping.Cineon     = THREE.CineonToneMapping
+    toneMapping.ACESFilmic = THREE.ACESFilmicToneMapping
+
+    gui.add(directionalLight.position, 'x').min(- 5).max(5).step(0.001).name('lightX')
+    gui.add(directionalLight.position, 'y').min(- 5).max(5).step(0.001).name('lightY')
+    gui.add(directionalLight.position, 'z').min(- 5).max(5).step(0.001).name('lightZ')
+    gui.add(directionalLight, 'intensity').min(0).max(10).step(0.001).name('lightIntensity')
+    gui.add(debugObject, 'envMapIntensity').min(0).max(10).step(0.001).onChange(updateAllMaterials)
+    gui.add(renderer, 'toneMappingExposure').min(0).max(10).step(0.001)
+    gui.add(renderer, 'toneMapping', toneMapping ).onFinishChange(() => {
+        // 因為 JS 會自動把數字轉為字串，但這些屬性只能接受數字形式
+        renderer.toneMapping = Number(renderer.toneMapping)
+        updateAllMaterials()
+    })
+}
+
+// mesh.visible = false
+// model_2()
 
 // ############################################################### //
 // ###########################   Else  ########################### //
