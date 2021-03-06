@@ -1,8 +1,12 @@
 import './style.css'
+
 import * as THREE from 'three'
-import gsap from 'gsap'
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import * as dat from 'dat.gui'
+import Stats from 'stats.js'
+import gsap from 'gsap'
+
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
+import { BufferGeometryUtils } from 'three/examples/jsm/utils/BufferGeometryUtils.js'
 
 // three.js 透過 WebGL 在 canvas 元件上製作 3D 效果
 // WebGL 是一個低階的系統，只能繪製 點、線、三角形
@@ -448,6 +452,11 @@ const shadowCube = () => {
     directionalLight.castShadow = true
     spotLight.castShadow = true
     pointLight.castShadow = true
+
+    // 也可用下面指令關掉 shadowMap 更新以改進效能，適合用在靜止不動的陰影
+    // renderer.shadowMap.autoUpdate = false
+    // 若需要更新的地方執行一次下面指令，shadowMap 就會更新 '一次'
+    // renderer.shadowMap.needsUpdate = true
     
     // Directional Light 優化 (採用一個 OrthographicCamera)
     directionalLight.shadow.mapSize.width = 1024  // 提高 shadow map 解析度
@@ -820,7 +829,6 @@ const model_1 = () => {
 // ############################################################### //
 // ####################   Renderer & Animate  #################### //
 // ############################################################### //
-
 // 變更 canvas 的寬高，有考慮進 pixel ratio
 renderer.setSize(sizes.width, sizes.height)
 
@@ -987,6 +995,130 @@ const raycaster_1 = () => {
 // raycaster_1()
 
 // ############################################################### //
+// ########################   Performance  ####################### //
+// ############################################################### //
+
+// 最理想的情況是將 fps 控制在最大值 (60fps)，而且需要在各種裝置上測試，還需注意檔案大小等等
+// 效能視情況主要會受到 CPU, GPU 限制
+// 也可參考這篇：https://discoverthreejs.com/tips-and-tricks/
+
+// ----------------------------------------------------------------//
+// Monitor FPS
+const stats = new Stats()
+stats.showPanel(0)
+document.body.appendChild(stats.dom)
+// 有四種選擇： 0:fps, 1:ms, 2:mb, 3+:custom
+// 記得在 tick() 的開頭結尾分別加入 stats.begin(), stats.end()
+// 盡量在全螢幕測試，因為較小的螢幕效能通常較好
+
+// ----------------------------------------------------------------//
+// Disable FPS limit
+// 可以解除 60fps 上限的限制，一般在 150~200fps 以上才算安全
+// 若 80fps 左右代表可能會在其他較差的裝置上影響效能，需要改進
+// 測試前需將所有網頁關閉 (Chrome 下的小黑點也要結束掉)，有時候可能要試兩次才 work
+// 注意不要使用太久，應用可能會 crash，使用結束要把 Chrome 下的小黑點也結束掉
+
+// https://gist.github.com/brunosimon/c15e7451a802fa8e34c0678620022f7d
+// open -a "Google Chrome" --args --disable-gpu-vsync --disable-frame-rate-limit
+// ----------------------------------------------------------------//
+// Monitoring draw calls
+// draw calls 是 WebGL 渲染三角形時用到的 actions，越少 draw calls 效能越好
+// 可用 Chrome 套件 Spector.js 觀察螢幕的渲染情形和 draw calls 次數
+// 也可使用 renderer.info 查看渲染情形
+// 時時優化 tick() 內的 JS 效能
+// ----------------------------------------------------------------//
+// 不再使用的物件記得 dispose 掉
+// https://threejs.org/docs/#manual/en/introduction/How-to-dispose-of-objects
+
+// scene.remove(cube)
+// cube.geometry.dispose()
+// cube.material.dispose()
+// ----------------------------------------------------------------//
+// 可使用 scene.overrideMaterial 將所有材料都改為 basic material
+// 若效能有改進代表 GPU 影響效能較大，相反則 CPU 影響效能較大
+// ----------------------------------------------------------------//
+// 避免使用 light，需要使用則以  AmbientLight, DirectionalLight 優先
+// 執行時避免加入或移除光線，這會使相關的材料都重新編譯
+// ----------------------------------------------------------------//
+// 避免使用 shadow，以 baked texture 代替，若需使用記得優化 mapSize
+// 妥善使用 castShadow, receiveShadow，適時關掉 renderer 對陰影的自動更新
+// ----------------------------------------------------------------//
+// 關於 texture，因為 mipmap 的原因，圖檔長寬盡量是 2 的指數，以免圖檔變形
+// 圖檔解析度才會影響效能，容量大小影響的是載入的時間 (用 TinyPNG 降低大小)
+// 或進一步使用 .basis，讓 GPU 易讀取，檔案也大大縮小，但不易產生，可參考：
+// https://github.com/BinomialLLC/basis_universal
+// ----------------------------------------------------------------//
+// model 盡量使用 low poly，細節可用 normal maps 增添，用 Draco 可加快載入
+// 優化 camera 的 FOV, near, far
+// 不要使用 pixel ratio 大於 2 的渲染 (那只是商業上的操作但會嚴重影響效能)
+// ----------------------------------------------------------------//
+// 可在 renderer 的建構式內加入 powerPreference: 'high-performance'
+// 這會讓一些 multi-GPU 的裝置知道能切換 GPU 使用
+// 如果有開 Antialias 記得查看效能
+// 盡量把 postprocessing 的 passses 合成一個 (每多一個就多渲染一次)
+// ----------------------------------------------------------------//
+// 盡量使用同個 geometry, material 的 instance，可大大改善效能
+// 使用效能佳的 material 例如 Basic, Lambert, Phong
+// 少使用耗效能 material 例如 Standard, Physical
+// ----------------------------------------------------------------//
+// 在 shaderMaterial 那加入 precision: 'lowp' 可改善效能
+// shader 內避免使用 if，且程式越簡潔越好，盡量把程式放在 vertex shader (較少運算)
+// 少用需大量運算的函式 (cnoise)，建議使用 texture 傳入亂數
+// 不會變的常數以 #define 定義
+// ----------------------------------------------------------------//
+// 對於幾乎不移動的 mesh 使用 object.matrixAutoUpdate = false
+// 需移動時在執行 object.updateMatrix()
+// ----------------------------------------------------------------//
+
+const performance_1 = () => {
+    // 如果 geometry 不移動，可以將它們用 BufferGeometryUtils 來 merge 在一起
+    // 好處是只要需一次 draw call，數量多時可在進一步改善效能
+    const geometry_1 = new THREE.BoxGeometry(0.5, 0.5, 0.5)
+    const geometry_2 = new THREE.BoxGeometry(0.5, 0.5, 0.5)
+
+    geometry_1.rotateY(Math.PI / 4)
+    geometry_2.translate(0, 1, 0)
+
+    const geometries = []
+    geometries.push(geometry_1, geometry_2)
+
+    const mergedGeometry = BufferGeometryUtils.mergeBufferGeometries(geometries)
+    const mesh = new THREE.Mesh(mergedGeometry, new THREE.MeshNormalMaterial())
+
+    scene.add(mesh)
+}
+
+const performance_2 = () => {
+    // 如果 geometry 因為需要方便往後獨立控制不適合 merge，但使用相同 geometry, material
+    // 則可用 InstancedMesh，好處一樣是只需一次 draw call，但不易撰寫 (用 matrix 轉換)
+    const geometry = new THREE.BoxGeometry(0.5, 0.5, 0.5)
+    const material = new THREE.MeshNormalMaterial()
+    const mesh = new THREE.InstancedMesh(geometry, material, 2)
+    scene.add(mesh)
+
+    for(let i=0; i<2; i++) {
+        const position = new THREE.Vector3(0, i, 0)
+        const quaternion = new THREE.Quaternion()
+        quaternion.setFromEuler(new THREE.Euler(0, i * Math.PI / 4, 0))
+
+        // 注意要先 rotate 再設定 position，可能是因為 Quaternion 也有位置資訊
+        const matrix = new THREE.Matrix4()
+        matrix.makeRotationFromQuaternion(quaternion)
+        matrix.setPosition(position)
+        // 用 matrix 設定每個 index 對應的轉換
+        mesh.setMatrixAt(i, matrix)
+    }
+    // 若要在 tick() 內更新 matrix 需在 tick 內手動 update
+    // mesh.instanceMatrix.needsUpdate = true
+    // 同時使用下面的 mesh 設定可以改進一點 GPU 效能
+    // mesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage)
+}
+
+// mesh.visible = false
+// performance_1()
+// performance_2()
+
+// ############################################################### //
 // #####################   Realistic Render  ##################### //
 // ############################################################### //
 
@@ -1055,7 +1187,7 @@ const model_2 = () => {
     // 所以 environmentMap 需更改，從 GLTF 載入的材質會自動設定所以不用另外變更
     environmentMap.encoding = THREE.sRGBEncoding
 
-    // 4. 加入 antialias: true
+    // 4. 加入 antialias: true (會影響效能)
     // 在 model 邊緣處提升渲染密度，避免邊緣的鋸齒狀，注意不能在 renderer instance 後才加
     // const renderer = new THREE.WebGLRenderer({..., antialias: true})
 

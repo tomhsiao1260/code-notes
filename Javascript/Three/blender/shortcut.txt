@@ -11,30 +11,51 @@
 
 [N1, N3, N7]  正對 Y, X, Z 軸 (+ CL 反過來)
 [N0]          相機視角
-[N,]          鎖定某物件
+[N,]          鎖定某物件 (等效於左上角 ` 裡的 view selected)
 [N/]          只顯示某物件
 
-[SH]          取消選取某物件
+[SH]          取消選取某物件 (用點的)
+[CTL]         取消選取某物件 (用框的)
 [A]           全選 (A + A 全不選)
 [C]           圓弧選取 (可搭配 SH, 滑動 M)
 
-[SH + A]      新增 mesh
+[SH + A]      新增 mesh (SH + 右鍵 改變產生位置)
 [X]           刪除 mesh
 [SH + D]      複製 mesh
 [H]           隱藏 mesh (+ SH 隱藏選取以外的物件, + ALT 顯示全部)
 
 [T]           左側控制選單
-[G, R, S]     平移, 旋轉, 縮放 (+ X, Y, Z 控制軸， + SH 指定不運動軸)
+[G, R, S]     平移, 旋轉, 縮放 (+ X, Y, Z 控制軸， + SH 指定不運動軸，可指定數值)
 
 [CL + TAB]    改變 Mode (TAB 可在 object 和 edit 間轉換)
 [1, 2, 3]     點, 線, 面 (Edit Mode)
+[ALT]         選取某組點, 線, 面 (Edit Mode)
 [Z]           顯示 Shading (Object Mode)
-[CTL + R]     裁切 Geometry
+[CTL + B]     產生斜角 (線 Edit Mode)
+[CTL + R]     產生新截面 Loop cuts (滑 M 可選要幾個)
+[K]           產生新線斷，Enter 結束 (Knife)
+[J]           產生新線斷，兩點接合 (Join)
+[E]           拉伸點, 線, 面 (Extrude)
+[CTL + X]     刪除點
+[CTL + L]     將 material 或其他資料共用
+
+[M]           新增 collection (先選取所有物件)
+[SH + G]      選取 collection (先選取其一物件)
+
+[CTL + J]     將選取物件 Join 為一個
+[P]           去除 Join (在 edit mode 下，並選 Loose Parts)
+[SH + A]      查詢
 
 [FN + F12]    輸出渲染結果
 [FN + F3]     搜尋
 
 
-
 建議在 Edit Mode 下 Scale (會讓 mesh.scale 維持在 1，以免破壞 UV 等設定)
-https://docs.google.com/document/d/1wZzJrEgNye2ZQqwe8oBh54AXwF5cYIe56EGFe2bb0QU/edit
+若 scale 跑掉可使用 CTL + A 調回
+可使用右鍵 set origin -> origin to 3D cursor 指定物體參考點到 SH + 右鍵 位置
+
+簡寫查表：https://docs.google.com/document/d/1wZzJrEgNye2ZQqwe8oBh54AXwF5cYIe56EGFe2bb0QU/edit
+官方資源：https://www.youtube.com/user/BlenderFoundation
+學習資源：https://www.youtube.com/channel/UCOKHwx1VCdgnxwbjyb9Iu1g
+學習資源：https://www.youtube.com/channel/UCZFUrFoqvqlN8seaAeEwjlw
+學習資源：https://www.youtube.com/c/CGFastTrack/videos
