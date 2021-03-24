@@ -20,12 +20,14 @@
 [C]           圓弧選取 (可搭配 SH, 滑動 M)
 
 [SH + A]      新增 mesh (SH + 右鍵 改變產生位置)
-[X]           刪除 mesh
+[SH + X]      刪除 mesh
 [SH + D]      複製 mesh
 [H]           隱藏 mesh (+ SH 隱藏選取以外的物件, + ALT 顯示全部)
 
 [T]           左側控制選單
-[G, R, S]     平移, 旋轉, 縮放 (+ X, Y, Z 控制軸， + SH 指定不運動軸，可指定數值)
+[G, R, S]     平移, 旋轉, 縮放 (+ X, Y, Z 控制軸，連按為 local 軸)
+                             (+ SH 指定不運動軸，可指定數值)
+                             (S + Z + 0 可將平面水平切齊)
 
 [CL + TAB]    改變 Mode (TAB 可在 object 和 edit 間轉換)
 [1, 2, 3]     點, 線, 面 (Edit Mode)
@@ -34,10 +36,14 @@
 [CTL + B]     產生斜角 (線 Edit Mode)
 [CTL + R]     產生新截面 Loop cuts (滑 M 可選要幾個)
 [K]           產生新線斷，Enter 結束 (Knife)
-[J]           產生新線斷，兩點接合 (Join)
-[E]           拉伸點, 線, 面 (Extrude)
-[CTL + X]     刪除點
+[J]           產生新線斷，兩點接合 (Join)，也可用 F
+[E]           拉伸點, 線, 面 (Extrude 可搭配 x,y,z 使用，z 要按兩下)
+[F]           2 點連接、3 點以上成面 (Fill)
+[M]           2 點合為一點 (Merge)
+[X]           刪除點、線、面 (可搭配 disolve)
 [CTL + L]     將 material 或其他資料共用
+[SH + R]      重複前一個指令 (Repeat)
+[SH + V]      點沿著線移動
 
 [M]           新增 collection (先選取所有物件)
 [SH + G]      選取 collection (先選取其一物件)
@@ -59,3 +65,5 @@
 學習資源：https://www.youtube.com/channel/UCOKHwx1VCdgnxwbjyb9Iu1g
 學習資源：https://www.youtube.com/channel/UCZFUrFoqvqlN8seaAeEwjlw
 學習資源：https://www.youtube.com/c/CGFastTrack/videos
+
+曲面接合：https://www.youtube.com/watch?v=WbULqtUIyvw&ab_channel=JoshGambrell

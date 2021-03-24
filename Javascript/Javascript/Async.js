@@ -5,7 +5,7 @@
 // 有些時候需要非同步(asynchronous)的執行程序
 // 讓一些較花時間的指令被呼叫時，可以以 non-blocking 的方式執行
 // 也就是說讓程式可以當下就把執行的控制權要回來(以繼續執行下一個指令)
-// 並且 branch 出另外的執行緒來執行這個較花時間的指令，
+// 並且 branch 出另外的執行緒來執行這個較花時間的指令
 // 而且雙方約定好一個通知的方式 (e.g. callback function)
 // 讓對方完成的時候(不管是成功或是失敗)，本來的程式都會立即知道
 
@@ -22,7 +22,7 @@ function waitThreeSeconds(){
 
 console.log("started execution");
 waitThreeSeconds();
-setTimeout( () => console.log("timeout"), 50);
+setTimeout(() => console.log("timeout"), 50);
 console.log("finished execution");
 
 // 會依序打印

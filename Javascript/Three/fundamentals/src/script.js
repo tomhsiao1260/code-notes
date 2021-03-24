@@ -1007,6 +1007,7 @@ const raycaster_1 = () => {
 const stats = new Stats()
 stats.showPanel(0)
 document.body.appendChild(stats.dom)
+// import Stats from 'stats.js'
 // 有四種選擇： 0:fps, 1:ms, 2:mb, 3+:custom
 // 記得在 tick() 的開頭結尾分別加入 stats.begin(), stats.end()
 // 盡量在全螢幕測試，因為較小的螢幕效能通常較好
@@ -1096,7 +1097,7 @@ const performance_2 = () => {
     const mesh = new THREE.InstancedMesh(geometry, material, 2)
     scene.add(mesh)
 
-    for(let i=0; i<2; i++) {
+    for(let i=0; i<mesh.count; i++) {
         const position = new THREE.Vector3(0, i, 0)
         const quaternion = new THREE.Quaternion()
         quaternion.setFromEuler(new THREE.Euler(0, i * Math.PI / 4, 0))
