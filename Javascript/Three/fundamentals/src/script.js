@@ -935,7 +935,7 @@ gui.add(helper, 'visible').name('Axis Grid');
 // 即可做一些偵測，也可以搭配滑鼠達到跟物體互動的效果
 
 const mouse = new THREE.Vector2()
-// 建立 Raycaster 接受的滑鼠座標系統，讓右上為 (1,1) 左下為 (-1,-1)
+// 建立 Raycaster 接受的滑鼠座標系統，讓右上為 (1,1) 左下為 (-1,-1)，NDC 座標
 window.addEventListener('mousemove', (event) => {
     mouse.x = event.clientX / sizes.width * 2 - 1
     mouse.y = - (event.clientY / sizes.height) * 2 + 1
@@ -954,12 +954,13 @@ const raycaster_1 = () => {
     scene.add(sphere, cube)
 
     const clock = new THREE.Clock()
+
+    // 建立 raycaster (下面 1, 2 方法擇一使用)
+    const raycaster = new THREE.Raycaster()
+
     // 加入 frame 動態偵測
     const animate = () => {
         const elapsedTime = clock.getElapsedTime()
-        
-        // 建立 raycaster (下面 1, 2 方法擇一使用)
-        const raycaster = new THREE.Raycaster()
 
         // 1. 自定義向量
         const rayOrigin = new THREE.Vector3(-3, 1, 0)    // 指定起始點
@@ -1226,6 +1227,163 @@ const model_2 = () => {
 
 // mesh.visible = false
 // model_2()
+
+// ############################################################### //
+// #######################   Loading Page  ####################### //
+// ############################################################### //
+
+// 概念上是在載入期間使用 plane 填滿整個畫面
+const loading_1 = () => {
+    // 尚未執行 transform, project matrix 前，平面的長寬 2 剛好可填滿畫面的邊界 (-1 ~ 1)
+    // 此座標為 normalized device coordinates (NDC)
+    const geometry = new THREE.PlaneGeometry(2, 2, 1, 1)
+    // 使用 shader 有很好的效能也較容易客製化
+    const material = new THREE.ShaderMaterial({
+        // 使用 uAlpha 控制 fragment 讓平面在仔好後淡去，記得開起 transparent 才會作用
+        transparent: true,
+        uniforms: { uAlpha: { value: 1 } },
+        // 去除掉 projectionMatrix, modelViewMatrix 即可讓平面永遠在正前方!
+        vertexShader: `
+            void main() { gl_Position = vec4(position, 1.0); }
+        `,
+        fragmentShader: `
+            uniform float uAlpha;
+            void main() { gl_FragColor = vec4(0.0, 0.0, 0.0, uAlpha); }
+        `,
+    })
+    scene.add( new THREE.Mesh(geometry, material) )
+    loading_scene(material)
+}
+
+// 載入場景
+const loading_scene = (material) => {
+    // 加入一個簡易的 loading bar，因為是 html 所以需多注意 performance
+    const element = document.createElement("DIV")
+    element.className = "loading-bar"
+    document.body.appendChild(element)
+
+    // 可利用 DevTools 在開發階段模擬實際的載入環境：
+    // 1. 開啟 Network 欄位裡的 Disable cache (每次都重載資源)
+    // 2. 並加入客製化的 throttling 決定載入速度的 bandwidth
+
+    const loadingManager = new THREE.LoadingManager(
+        // Loaded
+        () => {
+            window.setTimeout(() => {
+                // 載好後讓 plane 淡去
+                gsap.to(material.uniforms.uAlpha, { duration: 3, value: 0, delay: 1 })
+                // 加入 ended 類別和去除 transform 讓 html 離開畫面
+                element.classList.add('ended')
+                element.style.transform = ''
+            }, 500)
+        },
+
+        // Progress
+        (itemUrl, itemsLoaded, itemsTotal) => {
+            // 載入的進度
+            const progressRatio = itemsLoaded / itemsTotal
+            // 更改 html 的長度，注意使用 transform 比直接改變 width 好，因為使用的是 GPU 運算
+            element.style.transform = `scaleX(${progressRatio})`
+        }
+    )
+
+    // 將所有的 loader 都加入 loadingManager
+    const cubeTextureLoader = new THREE.CubeTextureLoader(loadingManager)
+    const environmentMap = cubeTextureLoader.load([
+        '/textures/environmentMaps/0/px.jpg',
+        '/textures/environmentMaps/0/nx.jpg',
+        '/textures/environmentMaps/0/py.jpg',
+        '/textures/environmentMaps/0/ny.jpg',
+        '/textures/environmentMaps/0/pz.jpg',
+        '/textures/environmentMaps/0/nz.jpg',
+    ])
+    scene.background = environmentMap
+}
+
+// loading_1()
+
+// ############################################################### //
+// ##################   Mixing HTML and WebGL  ################### //
+// ############################################################### //
+
+const mixHTML_1 = async () => {
+    // 顯示載入頁面
+    loading_1()
+    // 先關掉 axis, grid helper
+    mesh.children = []
+
+    // 建立 html 元件 (point DIV 裡包含了 label 和 text DIV)
+    const pointElement = document.createElement("DIV")
+    const labelElement = document.createElement("DIV")
+    const textElement = document.createElement("DIV")
+
+    pointElement.className = "point point-0"
+    document.body.appendChild(pointElement)
+
+    labelElement.className = "label"
+    labelElement.innerText = "1"
+    pointElement.appendChild(labelElement)
+
+    textElement.className = "text"
+    textElement.innerText = "Lorem ipsum, dolor sit amet consectetur"
+    pointElement.appendChild(textElement)
+
+    // 載好後加入 visible 的 class (這裡暫時用 promise 代替)
+    await new Promise(resolve => setTimeout(resolve, 3000))
+    pointElement.className = "point point-0 visible"
+
+    // 將資料點的位置和 DOM 依序放進一個 array
+    const points = []
+    const point_0 = {}
+
+    // 可用 rayscaster 搭配 mouse 找出座標點 (intersects[0].point)
+    point_0.position = new THREE.Vector3(0.4, 0.1, 0.75)
+    point_0.element = document.querySelector('.point-0')
+    // 需要更多點只要把他們都加進 array 即可
+    points.push(point_0)
+
+    // 使用 raycaster 判別標示是否被物體擋住，決定要不要顯示
+    const raycaster = new THREE.Raycaster()
+
+    const tick = () => {
+        points.forEach( point => {
+            const screenPosition = point.position.clone()
+            // 使用 project 方法可以把三維的位置點轉換為畫面上的二維座標點!
+            // 只會用到前兩項即 x, y ，其範圍左下為 (-1, -1)，右上為 (1, 1)，NDC 座標
+            screenPosition.project(camera)
+            // 更新位置點，並把 html 移動到對應的位置，注意 Y 軸要加負號
+            const translateX = screenPosition.x * sizes.width * 0.5
+            const translateY = - screenPosition.y * sizes.height * 0.5
+            point.element.style.transform = `translateX(${translateX}px) translateY(${translateY}px)`
+
+            // 產生一個 ray 指向資料點，並判斷有沒有打到物體
+            raycaster.setFromCamera(screenPosition, camera)
+            const intersects = raycaster.intersectObjects(scene.children, true)
+
+            if(intersects.length === 0) {
+                // 這個方向沒有物體，可以顯示資料
+                point.element.classList.add('visible')
+            }
+            else {
+                // 取出 ray 打到物體的最近距離
+                const intersectionDistance = intersects[0].distance
+                // 計算資料點與相機的距離
+                const pointDistance = point.position.distanceTo(camera.position)
+                // 若資料點比物體近表示沒被擋住，可顯示，反之則不顯示
+                if(intersectionDistance < pointDistance) {
+                    point.element.classList.remove('visible')
+                }
+                else {
+                    point.element.classList.add('visible')
+                }
+            }
+        })
+        window.requestAnimationFrame(tick)
+    }
+    tick()
+}
+
+// mixHTML_1()
 
 // ############################################################### //
 // ###########################   Else  ########################### //

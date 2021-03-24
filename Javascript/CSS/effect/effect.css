@@ -101,6 +101,8 @@ transition: background 1s ease-out, border 0.5s linear;
 
 < overflow > 可活用 overflow: hidden;
 			 就可放心設計動畫將子元素移出 box，也不會顯示或作用
+
+這些 transform 比直接改變 position 或 width 好，因為使用的是 GPU 運算效能較好
 -----------------------------------------------------------------------------
 Animation
 

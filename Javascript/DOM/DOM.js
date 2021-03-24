@@ -31,6 +31,8 @@
 // myDIV.innerText = "Hello World";
 // myNode.appendChild(myDIV);
 
+// 這些 selector 和 createElement 吃效能，盡量避免在 loop 或 callback 才執行
+
 // myNode.children; 回傳 HTMLCollection
 
 // DOM nodeType
