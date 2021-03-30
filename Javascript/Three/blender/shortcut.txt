@@ -1,7 +1,9 @@
-[MIDDLE WHEEL] M
-[SHIFT]        SH
-[CTRL]         CL
-[NUMPAD]       N
+[Mouse WHEEL] M
+[Mouse Right] Right
+[Mouse Left]  Left
+[SHIFT]       SH
+[CTRL]        CL
+[NUMPAD]      N
 
 [M]           點擊旋轉、滾動縮放
 [SH + M]      平移
@@ -39,16 +41,26 @@
 [J]           產生新線斷，兩點接合 (Join)，也可用 F
 [E]           拉伸點, 線, 面 (Extrude 可搭配 x,y,z 使用，z 要按兩下)
 [F]           2 點連接、3 點以上成面 (Fill)
+[I]           產生新的內縮面，可搭配 E 使用
 [M]           2 點合為一點 (Merge)
 [X]           刪除點、線、面 (可搭配 disolve)
 [CTL + L]     將 material 或其他資料共用
 [SH + R]      重複前一個指令 (Repeat)
 [SH + V]      點沿著線移動
+[Alt + D]     複製 mesh ，且所有 mesh 在 edit mode 下的變更會同步
+
+[CL + P]      建立 parent (選 object，最後選取的物件或 empty axis 會成為 parent)
+[Alt + P]     取消 parent (選取某個 child，並選 clear and keep transformation)
+
+[O]           同時影響周圍的節點
+[SH + TAB]    會自動對齊到接近的節點 (Snap)
+[SH + Right]  改變參考點 (移動轉軸到此點：Right -> set origin -> 3D cursor)
+[CTL + A]     將 scale 歸一，避免破壞 UV 等設定 (也可在 Edit Mode 縮放維持 scale 不變)
 
 [M]           新增 collection (先選取所有物件)
 [SH + G]      選取 collection (先選取其一物件)
 
-[CTL + J]     將選取物件 Join 為一個
+[CTL + J]     將選取物件 Join 為一個 (在 Edit mode 新增的物件會自動 Join)
 [P]           去除 Join (在 edit mode 下，並選 Loose Parts)
 [SH + A]      查詢
 
@@ -56,14 +68,17 @@
 [FN + F3]     搜尋
 
 
-建議在 Edit Mode 下 Scale (會讓 mesh.scale 維持在 1，以免破壞 UV 等設定)
-若 scale 跑掉可使用 CTL + A 調回
-可使用右鍵 set origin -> origin to 3D cursor 指定物體參考點到 SH + 右鍵 位置
+< Modifier >
+1. Subdivision 面變得更細
+2. Solidify    給予平面厚度
+3. Decimate    降低物體的面數 (效能) 
+4. Boolean     用另一物體的形狀來裁切         
 
-簡寫查表：https://docs.google.com/document/d/1wZzJrEgNye2ZQqwe8oBh54AXwF5cYIe56EGFe2bb0QU/edit
+
 官方資源：https://www.youtube.com/user/BlenderFoundation
 學習資源：https://www.youtube.com/channel/UCOKHwx1VCdgnxwbjyb9Iu1g
 學習資源：https://www.youtube.com/channel/UCZFUrFoqvqlN8seaAeEwjlw
 學習資源：https://www.youtube.com/c/CGFastTrack/videos
 
+低多邊形：Sea Shack | beginners tutorial | Grant Abbitt
 曲面接合：https://www.youtube.com/watch?v=WbULqtUIyvw&ab_channel=JoshGambrell

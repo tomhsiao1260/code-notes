@@ -652,11 +652,12 @@ controls.enableDamping = true
 // quaternion：旋轉，為 Euler 類別
 
 // 移動 position
-mesh.position.x = 0.5                     // 往 +x 平移 0.5
-mesh.position.normalize()                 // Vector 長度設為 1
-mesh.position.set(2, 0, 0)                // 同時設定 x,y,z 值
-mesh.position.length()                    // Vector 長度
-mesh.position.distanceTo(camera.position) // 兩個 Vector 之間的距離
+mesh.position.x = 0.5                          // 往 +x 平移 0.5
+mesh.position.normalize()                      // Vector 長度設為 1
+mesh.position.set(2, 0, 0)                     // 同時設定 x,y,z 值
+mesh.position.copy(new THREE.Vector3(2, 0, 0)) // 同上
+mesh.position.length()                         // Vector 長度
+mesh.position.distanceTo(camera.position)      // 兩個 Vector 之間的距離
 
 // 縮放 scale
 mesh.scale.x = 0.5                        // x 大小縮放，語法和 position 類似
@@ -886,6 +887,10 @@ const spinControl = {
     spin: () => gsap.to(mesh.rotation, { duration: 1, y: mesh.rotation.y + Math.PI * 2 })
 }
 gui.add(spinControl, 'spin')
+// 選項 (選項為第三個參數以矩陣傳入)
+gui.add({ options: 'option1' }, 'options', ['option1', 'option2'])
+// 資料夾 (使用 myFolder.add(...) 即可)
+const myFolder = gui.addFolder('FolderName')
 
 // 如果不是 object 的參數想更動 (ex: color)，可以自己另外建一個 object 並更動自己的參數
 // 然後再用 onChange 或 onFinishChange 的 callback 去呼叫一個函數更新真正的參數
