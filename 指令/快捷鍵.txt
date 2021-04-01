@@ -10,10 +10,8 @@ c+s: 存擋
 c+o: 開啟舊檔
 c+n: 新增視窗
 c++: 字體放大
-c+a: 全選
-c+r: 重新整理
 c+f3: 檔案移到邊界
-cl+tab: 下個標籤頁
+c+cl+f: 全螢幕
 c+sh+5: 擷取螢幕
 
 c+/: 程式內容註解
@@ -38,14 +36,12 @@ c+w: 關閉頁面
 c+r: 重新整理
 c+t: 新增頁面
 c+l: 選取網址欄位
+c+op+i: 開發工具
 c+sh+n: 無痕搜尋
 c+left: 上一頁
-
-cl+num: VS 切換分頁
-
 c+num: 頁面分頁
 c+op+left: 前個頁面分頁
-c+op+i: 檢查欄位
+cl+num: VS 切換分頁
 
 !+tab: 自動生成 html starter
 (注意要先在 sublime 載入 emmet)

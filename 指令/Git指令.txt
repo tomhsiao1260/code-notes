@@ -143,7 +143,7 @@ npm 環境下開發
    git remote add origin [link]
 
 4. 在 package.json 加入
-   "homepage": "https://tomhsiao1260.github.io/[repoName]/",
+   "home": "https://tomhsiao1260.github.io/[repoName]/",
 
 5. 在 npm script 加入下面這段
 
