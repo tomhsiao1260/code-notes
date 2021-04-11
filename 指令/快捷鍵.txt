@@ -30,6 +30,12 @@ sh+left: 選取
 op+left: 跳到下個連字
 c+d: 選取其他與框選相同的字
 
+op+down: 將選取部分往下移
+c+enter: 換行
+c+sh+\: 跳到對應的 }, ), ]
+sh+op+down: 往下複製
+op+click: 多個游標
+
 c+tab: 應用程式切換
 c+x: 剪下
 c+w: 關閉頁面

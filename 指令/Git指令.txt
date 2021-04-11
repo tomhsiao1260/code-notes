@@ -161,7 +161,7 @@ npm 環境下開發
 
 7. 並執行 npm run deploy
    會把 build 的版本 push 到 gh-pages branch
-   可拜訪網址 https://[userName].github.io/[repoName]/
+   可拜訪網址 https://tomhsiao1260.github.io/[repoName]/
 
 8. 下次只要執行 6. 7. 步即可
 

@@ -169,7 +169,7 @@ Promise.race([yt, fb]).then(result => console.log(result));
 // -------------------------------------------------------------
 
 // Promise 寫法也可用 async function 搭配 await 的語法糖，在寫法上更直觀
-async function display(){
+async function display() {
 	const loggedUser = await loginUser_("eee@gmail.com");
 	// loggedUser 為 { userEmail: 'eee@gmail.com' }
 	const videos = await getUserVideos_(loggedUser.userEmail);
@@ -181,7 +181,8 @@ async function display(){
 
 display();
 
-// 注意 await 只接受 Promise，但回傳得不是 Promise 而是內部得到的東西
+// await 通常接收 Promise，但回傳得不是 Promise 本身，而是內部得到的東西
+// 若 async 函式有 return 值，則會回傳一個 Promise，外部需用 .then() 得到結果
 // 在 async function 內寫 try...catch 的語法，就可以做到除錯的功能
 // await 也可搭配 Promise.all 語法
 
@@ -194,6 +195,35 @@ async function sleep(ms){
 // const sleep = async(ms) => { something... } 也可寫成這樣 
 
 sleep(1000);
+
+// 有 await 修飾的函式內若有若有 return 值則必須是 Promise
+// 此 Promise 完成前不會執行 await 後的程序
+// 若無 return 值，則會執行到函式最後一行後才繼續 await 後的程序
+
+// 下面是 await 的各種使用方式，會依序執行完 stepA, stepB, stepC
+async function progress() {
+  const dataA = await stepA(); // dataA: 'This is dataA'
+  const dataB = await stepB(); // dataB: 'stepB: 1 second pass'
+  await stepC();               // 不見得要回傳值
+  console.log('Finish');       // 注意，若去掉 stepC 前的 await 則會先打印此行! (非同步)
+}
+// await 內的函式執行方式不變，只是有 return 時，會等回傳的 Promise 完成
+function stepA() {
+  return new Promise((resolve) => setTimeout(resolve('This is dataA'), 1000));
+}
+// 內部也可使用 await 語法
+async function stepB() {
+  // 此行為同步，回先等 1 秒再執行後面語句
+  await new Promise((resolve) => setTimeout(resolve, 1000));
+  // 此行為非同步，會在打印前就先 return，所以此行會比 'Finish' 晚打印
+  setTimeout(() => console.log('5 seconds pass'), 5000);
+  return Promise.resolve('stepB: 1 second pass');
+}
+// 不一定要有 return 值
+async function stepC() {
+  await new Promise((resolve) => setTimeout(resolve, 1000));
+  console.log('No dataC');
+}
 
 // Promise 為 ES6 出現的新語法
 // Async 和 Await 則為 ES7 出現的新語法 

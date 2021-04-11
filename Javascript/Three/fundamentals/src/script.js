@@ -711,6 +711,23 @@ scene.traverse( (object) => {
 })
 // 可用遍歷的方式控制多個物體的運動，也可改為將 mesh 存進自己的矩陣來遍歷
 
+// 可用下面函式獲得 mesh 在 Scene 的絕對位置
+async function getGlobalPosition(_mesh) {
+    // 場景初始前要等一下 matrix 的計算完成
+    await new Promise(resolve => setTimeout(resolve, 1000))
+    let current = _mesh
+    let position = current.position.clone()
+    // 沒有 parent 表示遍歷到 Scene 了
+    while (current.parent !== null) {
+        const matrix = current.parent.matrix.clone();
+        // 將現在座標的位置 apply 父物件的 matrix (即父物件下的座標)
+        position = position.applyMatrix4(matrix);
+        current = current.parent;
+    }
+    // 回傳為位置的 Promise，外部需使用 .then() 或 await 取得位置值
+    return position
+}
+
 // ############################################################### //
 // ##########################   3D Text  ######################### //
 // ############################################################### //
@@ -1341,7 +1358,7 @@ const mixHTML_1 = async () => {
     const points = []
     const point_0 = {}
 
-    // 可用 rayscaster 搭配 mouse 找出座標點 (intersects[0].point)
+    // 可用 raycaster 搭配 mouse 找出座標點 (intersects[0].point)
     point_0.position = new THREE.Vector3(0.4, 0.1, 0.75)
     point_0.element = document.querySelector('.point-0')
     // 需要更多點只要把他們都加進 array 即可
@@ -1361,7 +1378,7 @@ const mixHTML_1 = async () => {
             const translateY = - screenPosition.y * sizes.height * 0.5
             point.element.style.transform = `translateX(${translateX}px) translateY(${translateY}px)`
 
-            // 產生一個 ray 指向資料點，並判斷有沒有打到物體
+            // 產生一個 ray 指向資料點，並判斷有沒有打到物體 (true 表示會檢查 mesh 的子物件)
             raycaster.setFromCamera(screenPosition, camera)
             const intersects = raycaster.intersectObjects(scene.children, true)
 
