@@ -4,6 +4,8 @@
 [SHIFT]       SH
 [CTRL]        CL
 [NUMPAD]      N
+[_Keywords_]  search keywords
+
 
 [M]           點擊旋轉、滾動縮放
 [SH + M]      平移
@@ -44,7 +46,7 @@
 [I]           產生新的內縮面，可搭配 E 使用
 [M]           2 點合為一點 (Merge)
 [X]           刪除點、線、面 (可搭配 disolve)
-[CTL + L]     將 material 或其他資料共用
+[CTL + L]     將最後選取物件的 material 或其他資料共用
 [SH + R]      重複前一個指令 (Repeat)
 [SH + V]      點沿著線移動
 [Alt + D]     複製 mesh ，且所有 mesh 在 edit mode 下的變更會同步
@@ -54,25 +56,51 @@
 
 [O]           同時影響周圍的節點
 [SH + TAB]    會自動對齊到接近的節點 (Snap)
-[SH + Right]  改變參考點 (移動轉軸到此點：Right -> set origin -> 3D cursor)
+[SH + Right]  改變參考點 (物件產生點、3D cursor 參考點)
 [CTL + A]     將 scale 歸一，避免破壞 UV 等設定 (也可在 Edit Mode 縮放維持 scale 不變)
 
 [M]           新增 collection (先選取所有物件)
 [SH + G]      選取 collection (先選取其一物件)
 
 [CTL + J]     將選取物件 Join 為一個 (在 Edit mode 新增的物件會自動 Join)
-[P]           去除 Join (在 edit mode 下，並選 Loose Parts)
+[P]           去除 Join (在 edit mode 下，並選 Loose Parts 或 Selection)
 [SH + A]      查詢
 
-[FN + F12]    輸出渲染結果
+[FN + F12]    輸出渲染結果 (要有 camera)
 [FN + F3]     搜尋
 
+[_Bisect_]      裁切形狀，記得在 edit mdoe 下全選，且勾選 fill、clear outer
+[_Origin_]      改變轉軸參考點 (選 3D cursor 或 Geometry to Origin)
+[_Make Single_] 去除 [Alt + D] 物體間的同步 (選 Object & Data)
 
-< Modifier >
+
+[ Modifier ]
 1. Subdivision 面變得更細
 2. Solidify    給予平面厚度
 3. Decimate    降低物體的面數 (效能) 
-4. Boolean     用另一物體的形狀來裁切         
+4. Boolean     用另一物體的形狀來裁切  
+
+[ Notes ]
+* 可在 edit mode 新增物件，會直接 group 在一起
+* 可在 edit mode 移動位置來改變旋轉參考點
+* 面盡量是 3、4 邊型較能預測進入 three.js 裡時的三角形形狀
+* material 的 surface 選項改為 Emission 會有照光效果
+* Cycles 的 Render 為 512 就很好了(輸出圖片跑蠻久)，開發測試時先用 128
+* Cycles 裡 Denoising 的 NLM 勾選可以去雜訊(會多花時間)
+
+[ Baking ]
+* 先刪掉不必要的面、且盡量避免物體重疊、確定 scale 皆為 1、emmision 的材質不用 bake
+* 去掉所有 [Alt + D] 物件的相關性 (因為 Baking 位置要獨立)
+* 確定 face orientation 正確 (為藍色)，紅色在 edit mode 用[_flip_] 翻面
+* 設定 wrap 的裁切方式以盡量避免面的重疊 (可調 margin)、不變形 ([U] -> Mark Seam 決定裁切線)
+* 將相關的物件一組組的先用 [U] 排成方形，放在與其他組不重疊的位置，方便後續整理
+* 勾選 UV Editor 下的 Display Stretch 縮放每個面到相近的顏色 (確保面大小符合比例)
+* 試著把每組的面都放進方框內，並確保顏色一致，且每組都是方形好整理
+* 開始 bake (有點複雜，看影片)
+
+[U]       自動產生物件 unwrap 的座標 (選 Unwrap、Smart UV Project)
+[CTL + L] 在 UV Editor 使用會將選取的面所連接的其他面一同選取
+
 
 
 官方資源：https://www.youtube.com/user/BlenderFoundation

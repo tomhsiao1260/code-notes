@@ -36,11 +36,12 @@ const gui = new dat.GUI({ closed: true })
 
 // 有兩種主要的 shader 分別為 Vertex shader 和 Fragment shader
 // 前者負責運算每個 vertex 位置，並轉交給後者負責為每個 fragment 上色
-// 此外，vertex 點以外的 fragment 顏色無法設定，會自動以 vertex 的端點去混色
+// 此外，vertex 點以外的 fragment 顏色無法設定，會自動以 vertex 的端點去混色 (內差)
 
 // 若外部資料不會隨 vertex 點改變則為 unifrom 參數，可直接傳給這兩種 shader
 // 若外部資料會隨 vertex 點改變則為 attribute 參數，只能傳給 vertex shader
 // 不過 vertex shader 可以透過 varying 傳資料給 fragment shader 使用
+// 由於中間的數值是由內差計算且持續改變的，所以才會稱 varying
 
 // uniform   : vertex, fragment
 // attribute : vertex ---(varying)---> fragment
