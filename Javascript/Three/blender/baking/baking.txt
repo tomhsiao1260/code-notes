@@ -1,0 +1,51 @@
+##################################################
+#################### Wrapping ####################
+##################################################
+
+
+1.  刪掉不顯示的面, 盡量避免物體重疊, Scale 皆為 1, 去掉 [Alt + D] 物件的相關性
+2.  檢查 Face Orientation 皆為藍色，紅色則在 edit mode 用 [_flip_] 翻正
+3.  開啟 UV Editor，用 Mark Seam 裁切物件並 Unwrap (略過 Emission 材質)
+4.  調 margin 避免太近, 面不變形, 且 Display Stretch 的面的顏色都相近
+5.  將相關物件排成方形，並一區區放入 UV 座標的方框，且確保顏色都相近
+
+
+##################################################
+##################### Baking #####################
+##################################################
+
+6.  在 UV Editor 裡 New Image，並在同路徑存為 HDR 檔，參數如圖 (大小加總上限為 4096px) 
+7.  選取要 Bake 物件，開啟 Shader Editor，確認 Use Nodes 勾選，新增 Image Texture 並選好底圖
+8.  確認 Cycles 參數: Render 值 128, 不勾選 Clear Image, 確定 Image Texture 被點選
+9.  按 Cycles 下的 Bake，回到 7.，完成後 Save HDR Image
+10. 開啟 Compositor，確認 Use Nodes 勾選，準備用 Cycles 處理圖檔 (去雜訊, sRGB, Filmic)
+11. 新增 Image, Denoise 選單，並連接到最終的 Node，關閉原本的輸入 [M]
+12. 修改 Render 大小與圖檔一致，[F12] 開始算圖，結果存為 JPG 檔 (Quality 75%)
+
+
+##################################################
+##################### Export #####################
+##################################################
+
+13. 將所有 Mesh 複製並 Join 成一個 Collection (略過: Emission, Camera, Light)
+14. 只匯出 Join, Emission 的 Mesh (大幅降低 Draw Call)，記得不要匯出 Materials
+15. 在 JS 內載入 Model 和 UV Texture
+16. texture.flipY = false (需翻轉才符合 UV 座標)
+17. texture.encoding = THREE.sRGBEncoding
+    renderer.outputEncoding = THREE.sRGBEncoding
+18. joinMesh.material = new THREE.MeshBasicMaterial({ map: texture })
+	emissionMesh.material = new THREE.MeshBasicMaterial({ color: 0xffffe5 })
+
+
+##################################################
+###################### Notes #####################
+##################################################
+
+[U]       產生已選取 faces 的 UV 座標 (選 Unwrap 會根據 Mark Seam 裁切)
+[U]       產生已選取 faces 的 UV 座標 (選 Smart UV Project 會自動裁切)
+[U]       將選取的線作為裁切線 (選 Mark Seam，取消則選 Clear Seam)
+
+[CTL + L] 選取 UV Editor 下的某物件
+[SH + A]  在 editor 內新增選單
+[_Keys_]  查詢某關鍵字
+

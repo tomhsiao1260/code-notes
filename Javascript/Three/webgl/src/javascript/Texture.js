@@ -55,5 +55,9 @@ export default class Texture {
 
         // 把圖片加入 texture 內
         this.gl.texImage2D(this.gl.TEXTURE_2D, 0, this.gl.RGBA, this.gl.RGBA, this.gl.UNSIGNED_BYTE, this.image);
+
+        // 使用 png 的透明度 (optional)
+        this.gl.blendFunc(this.gl.SRC_ALPHA, this.gl.ONE_MINUS_SRC_ALPHA);
+        this.gl.enable(this.gl.BLEND);
     }
 }

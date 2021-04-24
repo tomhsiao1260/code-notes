@@ -6,23 +6,12 @@ export default class Rectangle {
         this.gl = _option.gl;
         this.program = _option.program;
 
+        this.setParameters();
         this.setUniforms();
         this.setAttributes();
     }
 
-    setUniforms() {
-        this.resolutionUniformLocation = this.gl.getUniformLocation(this.program, 'u_resolution');
-        this.matrixLocation = this.gl.getUniformLocation(this.program, 'u_matrix');
-    }
-
-    setAttributes() {
-        // 成立一個 attributes 並取出在 GPU 上的位置
-        this.positionAttributeLocation = this.gl.getAttribLocation(this.program, 'a_position');
-        // 建立 buffer 並綁定到 gl.ARRAY_BUFFER 這個 bind points
-        this.positionBuffer = this.gl.createBuffer();
-        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.positionBuffer);
-        // bind points 類似於 WebGL 內的全域變數，只要綁定在這裡的資源，都能被所有的 functions 所引用
-
+    setParameters() {
         this.rectangle = {};
         this.rectangle.width = 150;
         this.rectangle.height = 150;
@@ -30,7 +19,7 @@ export default class Rectangle {
         this.rectangle.angleInRadians = 0 * Math.PI;
         this.rectangle.translation = [this.gl.canvas.clientWidth / 2, this.gl.canvas.clientHeight / 2];
 
-        // 二維位置點 (px)，若想 transform，建議用 uniforms 或 matrix 對 vertex shader 更新，而不是改這些數值
+        // 二維位置點 (px)，若想 transform，建議用 uniforms 或 matrix 更新，而不是改這些 attributes 數值
         this.rectangle.positions = [];
         this.rectangle.positions.push(-this.rectangle.width / 2, -this.rectangle.height / 2);
         this.rectangle.positions.push(this.rectangle.width / 2, -this.rectangle.height / 2);
@@ -39,12 +28,6 @@ export default class Rectangle {
         this.rectangle.positions.push(this.rectangle.width / 2, -this.rectangle.height / 2);
         this.rectangle.positions.push(this.rectangle.width / 2, this.rectangle.height / 2);
 
-        // 將資料透過 bind points 放進指定的 buffer 位置 (即 positionBuffer 在 GPU 上的位置)
-        // 必須把陣列轉成 32bit 浮點矩陣的形式，STATIC_DRAW 表示資料本身不會時常更動 (內部優化用)
-        this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(this.rectangle.positions), this.gl.STATIC_DRAW);
-    }
-
-    render() {
         this.config = {};
         this.config.size = 2; // 每個 vertex 收連續的 2 個資料點 (1 ~ 4)
         this.config.type = this.gl.FLOAT; // 32bit floats 資料
@@ -53,7 +36,29 @@ export default class Rectangle {
         this.config.offset = 0; // 第一筆資料從 0 開始
         this.config.primitiveType = this.gl.TRIANGLES; // TRIANGLES 表示每產生 3 個 vertices 點 GPU 就會產生一個三角形
         this.config.count = 6; // 要處理的 vetices 數量
+    }
 
+    setUniforms() {
+        // 成立 uniforms 並取出在 GPU 上的位置
+        this.resolutionUniformLocation = this.gl.getUniformLocation(this.program, 'u_resolution');
+        this.matrixLocation = this.gl.getUniformLocation(this.program, 'u_matrix');
+    }
+
+    setAttributes() {
+        // 1. 成立一個 attributes 並取出在 GPU 上的位置
+        this.positionAttributeLocation = this.gl.getAttribLocation(this.program, 'a_position');
+        // 2. 建立 buffer 
+        this.positionBuffer = this.gl.createBuffer();
+        // 3. 綁定到 gl.ARRAY_BUFFER 這個 bind points
+        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.positionBuffer);
+        // bind points 類似於 WebGL 內的全域變數，只要綁定在這裡的資源，都能被所有的 functions 所引用
+
+        // 4. 將資料透過 bind points 放進指定的 buffer 位置 (即 positionBuffer 在 GPU 上的位置)
+        this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(this.rectangle.positions), this.gl.STATIC_DRAW);
+        // 必須把陣列轉成 32bit 浮點矩陣的形式，STATIC_DRAW 表示資料本身不會時常更動 (內部優化用)
+    }
+
+    render() {
         this.speed = this.time.elapsed * 0.001;
         this.cycle = (1 + Math.sin(this.speed)) / 2;
 
@@ -63,7 +68,7 @@ export default class Rectangle {
         this.rectangle.scale[1] = 1 - 0.5 * this.cycle;
         this.rectangle.translation = [this.gl.canvas.clientWidth / 2, this.gl.canvas.clientHeight / 2];
 
-        // 選擇要使用的 program，並開啟某個 attributes
+        // 選擇要使用的 program
         this.gl.useProgram(this.program);
 
         this.renderUniforms();
@@ -89,11 +94,11 @@ export default class Rectangle {
     }
 
     renderAttributes() {
+        // 1. 開啟某個 attributes
         this.gl.enableVertexAttribArray(this.positionAttributeLocation);
-        // 有可能前一次 bind 的位置不同，所以使用前記得 bind
+        // 2. 有可能前一次 bind 的位置不同，所以使用前記得 bind
         this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.positionBuffer);
-
-        // 告訴 attributes 如何從目前的 bind point (ARRAY_BUFFER) 拿資料，也就是 positionBuffer
+        // 3. 告訴 attributes 如何從目前的 bind point (ARRAY_BUFFER) 拿資料，也就是 positionBuffer
         this.gl.vertexAttribPointer(
             this.positionAttributeLocation,
             this.config.size,
