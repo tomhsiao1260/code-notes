@@ -194,6 +194,7 @@ const texture_2 = () => {
 // https://www.poliigon.com/
 // https://3dtextures.me/
 // https://www.arroway-textures.ch/
+// https://cc0textures.com/
 // 也可使用 Substance Designer 或 Photoshop 設計自己的 texture
 
 // mesh.visible = false
@@ -1092,6 +1093,15 @@ document.body.appendChild(stats.dom)
 // ----------------------------------------------------------------//
 // 對於幾乎不移動的 mesh 使用 object.matrixAutoUpdate = false
 // 需移動時在執行 object.updateMatrix()
+// ----------------------------------------------------------------//
+// 渲染與否直接影響到效能 (FPS)，下面是一些整理：
+// 沒加到 Scene 或不在 Camera 視角內不會渲染
+// 被物體擋住或只有部份在視角內都會全部渲染
+// mesh.visible 為 false 時不會渲染
+// material.opacity 為 0 時還是會被渲染
+// Raycaster 內不要放太大的 mesh (可用簡單且透明的 mesh 代替)
+// 只要沒有對 light 有反應的 material 就不太影響效能
+// 可用 Spector.js 來看哪些物體有被渲染
 // ----------------------------------------------------------------//
 
 const performance_1 = () => {

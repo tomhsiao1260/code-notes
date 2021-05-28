@@ -2,8 +2,7 @@
 #################### Wrapping ####################
 ##################################################
 
-
-1.  刪掉不顯示的面, 盡量避免物體重疊, Scale 皆為 1, 去掉 [Alt + D] 物件的相關性
+1.  架相機, 刪掉不顯示的面, 盡量避免物體重疊, Scale 皆為 1, 去掉 [Alt + D] 物件的相關性
 2.  檢查 Face Orientation 皆為藍色，紅色則在 edit mode 用 [_flip_] 翻正
 3.  開啟 UV Editor，用 Mark Seam 裁切物件並 Unwrap (略過 Emission 材質)
 4.  調 margin 避免太近, 面不變形, 且 Display Stretch 的面的顏色都相近
@@ -27,8 +26,8 @@
 ##################### Export #####################
 ##################################################
 
-13. 將所有 Mesh 複製並 Join 成一個 Collection (略過: Emission, Camera, Light)
-14. 只匯出 Join, Emission 的 Mesh (大幅降低 Draw Call)，記得不要匯出 Materials
+13. 將所有不動的 Mesh 複製並 Join 到另一個 Collection (略過: Emission, Camera, Light)
+14. 只匯出 Join, Emission 的 Mesh (大幅降低 Draw Call 和 Model 大小)，不要匯出 Materials
 15. 在 JS 內載入 Model 和 UV Texture
 16. texture.flipY = false (需翻轉才符合 UV 座標)
 17. texture.encoding = THREE.sRGBEncoding
@@ -48,4 +47,7 @@
 [CTL + L] 選取 UV Editor 下的某物件
 [SH + A]  在 editor 內新增選單
 [_Keys_]  查詢某關鍵字
+
+Join 會把 Modifier 調為同參數，所以 Subdivision Level 太高的要先部分 [_Covert to Mesh_]
+若 bake 是黑的可能是被其他物體擋住，記得得把不要渲染的物件點選 Disable in Render (小相機)
 

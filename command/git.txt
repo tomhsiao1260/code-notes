@@ -47,7 +47,7 @@ git reset HEAD --hard        將本地版本重置到與 origin/HEAD 相同 (發
 git reset ORIG_HEAD --hard   回到 merge 前的版本
 
 git clone [repository]       clone 下專案(若不想衝突記得刪除原始的.git)
-git branch [branch]          建立一個新branch (master, gh-pages)
+git branch [branch]          建立一個新branch，注意要先有過 commit (master, gh-pages)
 git checkout [branch]        切換 branch (master, gh-pages)
 git branch -a                查看所有的 branch (-a 會顯示 origin 開頭分支)
                              origin/[branch]、origin/HEAD 為本地追蹤分支

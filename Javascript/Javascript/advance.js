@@ -727,11 +727,13 @@ var people = [
 var myFilter = people.filter((item, index, array) => item.age > 15)
 // 回傳 Tom, Eric 這兩個物件形成的陣列
 // 若沒 return 條件，會回傳 []
+// people 陣列本身不會改變
 
 // find() 
 // 與 filter() 相似，但 find() 只會回傳一次值，且是第一次為 true 的值
 var myFind = people.find((item, index, array) => item.age > 15)
 // 若沒 return 條件，會回傳 undefined
+// people 陣列本身不會改變
 
 // forEach 
 // 是這幾個陣列函式最單純的一個，不會額外回傳值，只單純執行每個陣列內的物件或值
