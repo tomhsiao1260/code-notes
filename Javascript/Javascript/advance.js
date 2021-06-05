@@ -11,6 +11,9 @@
 // 用 let 寫法宣告物件，可以避免名字不小心重複使用
 // 盡量多多使用 const 寫法讓程式易讀且易維護
 
+// 覺得不錯但還沒整理的文章
+// https://turriate.com/articles/modern-javascript-everything-you-missed-over-10-years
+
 function f() {
     var x = 1;
     let y = 1;
