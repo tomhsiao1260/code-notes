@@ -1,6 +1,8 @@
 /* 
-參考： https://cssanimation.rocks/css-animation-101/#now-you-know-css-animation
-Tips: https://markodenic.com/css-tips/ (未讀)
+筆記參考： https://cssanimation.rocks/css-animation-101/#now-you-know-css-animation
+CSS Tips: https://markodenic.com/css-tips/
+SVG 動畫教學: https://blog.techbridge.cc/2019/11/06/svg-animation-in-10mins/
+SVG 動畫範例: https://onextrapixel.com/examples-of-svg-animations/
 
 -----------------------------------------------------------------------------
 transitions: 狀態的改變，通常被 action 觸發 (ex: hover)

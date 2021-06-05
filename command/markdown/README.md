@@ -1,7 +1,7 @@
 <!-- 
 
-線上編輯器:
-https://markdownlivepreview.com/ 
+線上編輯器: https://markdownlivepreview.com/
+GIF 製作: https://ezgif.com/
 
 -->
 
