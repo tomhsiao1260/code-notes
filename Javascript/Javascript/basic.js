@@ -365,6 +365,9 @@ myObj.myFun();    // 'Hi'
 myObj['myFun'](); // 'Hi'
 myObj['Hi Hi'];   // 'cool'
 
+// 複製另一個獨立的 obj 物件 (彼此互不影響)
+var obj = Object.assign({}, myObj);
+
 var obj = {};
 ({}==={});     // false 兩邊產生的是不同位址的物件
 (function(){}===function(){}); // false 同上原因

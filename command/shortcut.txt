@@ -25,6 +25,7 @@ c+sh+f:搜尋或取代關鍵字
 cl+sh+m: 選取括號內的內容
 sh+c+left: 選取到底
 cl+sh+k: 刪除整行
+c+sh+>: 顯示隱藏檔
 
 c+left: 跳到句尾
 sh+left: 選取

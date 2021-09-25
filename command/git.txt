@@ -48,8 +48,7 @@ git branch [branch]          建立一個新branch，注意要先有過 commit (
 git checkout [branch]        切換 branch (master, gh-pages)
 git branch -a                查看所有的 branch (-a 會顯示 origin 開頭分支)
                              origin/[branch]、origin/HEAD 為本地追蹤分支
-git branch -d [branch]       刪除某個 branch (記得先跳到其他 branch)
-git push origin :[branch]    刪除某個本地追蹤分支 origin/[branch]
+
 git merge [branch]           將所在的 branch 和指定的 branch 合併 (更動了目前的 branch)
                              merge 成功：即可 push 上遠端
                              merge 失敗：發生衝突 (conflict)，必須手動合併後
@@ -57,7 +56,28 @@ git merge [branch]           將所在的 branch 和指定的 branch 合併 (更
 git fetch origin [branch]    將遠端的儲存庫更新到本地的 origin/[branch] 分支裡
                              其實 git pull origin master 等同於執行了下面兩個指令：
                              git fetch origin master 和 git merge origin/master
-git branch -f master develop 強迫將 master 以 develop 的專案覆蓋掉 (要先 checkout 到 develop)
+git branch -m main [rename]  將 main 名稱改為 rename
+
+-----------------------------------------------------------
+清除分支
+
+git branch -a                先查看所有分支 
+git branch -d [branch]       刪除某個 local 分支，記得先 checkout 到其他 branch
+git push origin :[branch]    刪除某個 remote 追蹤分支 origin/[branch]
+
+-----------------------------------------------------------
+強迫將 main 以 develop 的專案覆蓋掉
+
+git checkout develop
+git merge --allow-unrelated-histories -s ours main
+git checkout main
+git merge develop
+
+-----------------------------------------------------------
+不小心 push 錯，想回到前次版本可以 ...
+
+git reset HEAD^ --hard       將本地版本重置到與 "前一次" origin/HEAD 相同
+git push origin +[branch]    強迫 push 上此次的版本
 
 -----------------------------------------------------------
 邀請協作 (Invite a collaborator)
@@ -189,6 +209,46 @@ Repository -> Settings -> Security & Analysis
 參考：https://github.blog/2020-06-01-keep-all-your-packages-up-to-date-with-dependabot/
 
 -----------------------------------------------------------
+刪除 Git 歷史資料
+
+1. 觀看歷史檔案大小(kb)，並列出所有 objects 名稱 
+git count-objects -v 
+find .git/objects -type f
+
+2. 列出前十大物件，越下面越大，第一個欄位為檔案的 kb 值
+git verify-pack -v .git/objects/pack/pack-bf42e050bf48d6db44c0275b6fc0f40b1ba522e2.idx \
+| sort -k 3 -n \
+| tail -10
+
+3. 查看某個 SHA1 的檔案名稱，並查看哪些 commit 有這個名稱的檔案
+git rev-list --objects --all | grep 9249c
+git log --oneline --branches -- index.html
+
+4. 在歷史裡刪除 index.html，注意這會讓擁有 index.html 的所以 commit 都改寫，並分別產生新的一組 SHA1 !
+git filter-branch --index-filter 'git rm --cached --ignore-unmatch index.html' --tag-name-filter cat -- --all
+
+5. 刪除相關的 reference
+rm -Rf .git/refs/original
+rm -Rf .git/logs/
+
+6. 重新壓縮優化進 pack 物件，並強迫更新改寫後的歷史
+git gc --aggressive --prune=now
+git push origin -f
+
+只有 4, 5 每刪一個檔案都要執行，6 只要最後整理完執行一次
+注意上面方法會改變一系列的 SHA1，所以可能要手動更改那個時間軸以後的所有相關 issue (有提及 SHA1 的內容)
+
+如果是 gh-pages 的 commit 太多造成，可以使用 orphan branch 讓該分支永遠只有一個 commit
+已有現成關於 gh-pages 的 git action，而且更動後也不會影響其他分支的 SHA1
+https://github.com/peaceiris/actions-gh-pages
+
+官方文件：https://git-scm.com/book/en/v2/Git-Internals-Maintenance-and-Data-Recovery
+社群討論: https://github.com/18F/C2/issues/439
+社群討論: https://github.com/WordPress/gutenberg/issues/29008
+
+-----------------------------------------------------------
+
+
 
 
 

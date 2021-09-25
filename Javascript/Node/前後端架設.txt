@@ -104,7 +104,7 @@ Root
 3. mongoose  為 JS 的 MongoDB ORM
 4. socket.io 負責多個 client 端的即時同步更新 
 
-ORM (Objec Relational Mapping)
+ORM (Object Relational Mapping)
 透過某些程式語言( Ruby, Java )，去操作資料庫語言( SQL )
 使得使用者更簡便、安全的去從資料庫讀取資料
 而這也是實作了物件導向的概念，產生的一種工具模式

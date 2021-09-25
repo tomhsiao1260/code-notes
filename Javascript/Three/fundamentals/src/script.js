@@ -905,8 +905,9 @@ const spinControl = {
     spin: () => gsap.to(mesh.rotation, { duration: 1, y: mesh.rotation.y + Math.PI * 2 })
 }
 gui.add(spinControl, 'spin')
-// 選項 (選項為第三個參數以矩陣傳入)
-gui.add({ options: 'option1' }, 'options', ['option1', 'option2'])
+// 選項，更改 colors 這個屬性值 (選項為第三個參數，以矩陣、物件傳入)
+// 注意選項會自動轉為字串，所以其他的屬性類別要寫 onFinishChange 去另外處理
+gui.add({ colors: 'option1' }, 'colors', ['option1', 'option2'])
 // 資料夾 (使用 myFolder.add(...) 即可)
 const myFolder = gui.addFolder('FolderName')
 
