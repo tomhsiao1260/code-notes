@@ -209,10 +209,19 @@ Repository -> Settings -> Security & Analysis
 參考：https://github.blog/2020-06-01-keep-all-your-packages-up-to-date-with-dependabot/
 
 -----------------------------------------------------------
-刪除 Git 歷史資料
+備份專案
+
+1. clone 下專案，並改名稱
+2. git fetch --all --tags 相關的 tags，並把所有 branch 都 checkout 一遍才能記到本地端
+3. git remote rm origin 去除原本的 remote 並更新為自己的
+4. git push --all && git push --tags 發布所有的 branch 和 tags
+5. 注意 issue 和 commit 內的留言本身無法備份，要另外紀錄
+
+-----------------------------------------------------------
+Rewrite Git History
 
 1. 觀看歷史檔案大小(kb)，並列出所有 objects 名稱 
-git count-objects -v 
+git count-objects -v
 find .git/objects -type f
 
 2. 列出前十大物件，越下面越大，第一個欄位為檔案的 kb 值
@@ -224,22 +233,37 @@ git verify-pack -v .git/objects/pack/pack-bf42e050bf48d6db44c0275b6fc0f40b1ba522
 git rev-list --objects --all | grep 9249c
 git log --oneline --branches -- index.html
 
-4. 在歷史裡刪除 index.html，注意這會讓擁有 index.html 的所以 commit 都改寫，並分別產生新的一組 SHA1 !
-git filter-branch --index-filter 'git rm --cached --ignore-unmatch index.html' --tag-name-filter cat -- --all
+4. 在歷史裡刪除檔案 my-file-name，注意這會讓擁有 index.html 的所以 commit 都改寫，並分別產生新的一組 SHA1 !
+git filter-branch --index-filter 'git rm --cached --ignore-unmatch my-file-name' --tag-name-filter cat -- --all
 
 5. 刪除相關的 reference
-rm -Rf .git/refs/original
-rm -Rf .git/logs/
+rm -Rf .git/refs/original && rm -Rf .git/logs/
 
-6. 重新壓縮優化進 pack 物件，並強迫更新改寫後的歷史
+6. 重新壓縮優化進 pack 物件 (建議每修剪一次都做)
 git gc --aggressive --prune=now
-git push origin -f
 
-只有 4, 5 每刪一個檔案都要執行，6 只要最後整理完執行一次
-注意上面方法會改變一系列的 SHA1，所以可能要手動更改那個時間軸以後的所有相關 issue (有提及 SHA1 的內容)
+7. 並強迫更新改寫後的歷史
+git push --all -f && git push --tags -f
+
+只有 4, 5, 6 每刪一個檔案都要執行，7 只要最後整理完執行一次
+
+-----------------------------------------------------------
+Rewrite Git History
+
+若是 clone 下來打算另外修剪，記得先 git fetch --all --tags 相關的 tags
+並把所有 branch 都 checkout 一遍才能記到本地端
+
+注意 filter-branch 會在某個時間軸後，產生一系列新的 SHA1，並接在對應的 branch 上
+舊的 SHA1 還是存在且可訪問，只是不屬於任何 branch
+只是本地端或 clone 下來並作為新的 repo 都不會有舊的 SHA1 紀錄，但在遠端 repo 這些舊紀錄都會一直存在
+因為遠端不會自動也無法跑 git gc 清理掉 orphan 的 objects
+
+這會導致提到 SHA1 的 commit，或是 issue 留言有提到 SHA1，仍都會指向舊有的那個 (不屬於任一 branch)
+但不太確定這些不屬於任一 branch 的 commit 在遠端會不會有天被某種方式意外刪除或更新 ... (應該是不會)
 
 如果是 gh-pages 的 commit 太多造成，可以使用 orphan branch 讓該分支永遠只有一個 commit
 已有現成關於 gh-pages 的 git action，而且更動後也不會影響其他分支的 SHA1
+可隨時依喜好開啟關閉，開啟 orphan 功能後，gh-pages 的歷史資料會自動從 git 中刪除
 https://github.com/peaceiris/actions-gh-pages
 
 官方文件：https://git-scm.com/book/en/v2/Git-Internals-Maintenance-and-Data-Recovery
@@ -247,6 +271,7 @@ https://github.com/peaceiris/actions-gh-pages
 社群討論: https://github.com/WordPress/gutenberg/issues/29008
 
 -----------------------------------------------------------
+
 
 
 
