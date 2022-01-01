@@ -149,7 +149,7 @@ const geometry = new THREE.PlaneGeometry(1, 1, 32, 32)
 // gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
 
 // gl_FragColor 為內建參數，為每個 vertex 的 rgba 值 (0~1)，數值超過會以 0 或 1 表示
-// 若要使用 alpha 記得打開 material 的 transparent: true 屬性
+// 若要使用 alpha 記得打開 material 的 transparent: true 屬性
 // 此外，vertex 間的顏色會以漸層的混色呈現
 
 // 在 Debug 方面沒有很好的辦法，除了看 console error 外
@@ -209,3 +209,52 @@ const tick = () => {
     window.requestAnimationFrame(tick)
 }
 tick()
+
+// ############################################################### //
+// #####################   Post-Processing   ##################### //
+// ############################################################### //
+
+// 對初始 Render 的結果進行後續影像處理稱為 Post-Processing (後製)
+// 原理是先將渲染後的圖像存進 Buffer，並透過一系列的 Pass 進行 shader 運算處理
+// 可以使用內建的 Pass[1]，也可搭配 ShaderPass 製作自己的 Pass
+// Three.js 透過 EffectComposer 管理這些 Pass[2, 3]
+
+// 每個內建的 Pass 都繼承自這個原型[4]，都會有各自的 render 方法
+// 當 EffectComposer 執行到某個 Pass 的 render 方法時
+// 通常會把輸入的 readBuffer，透過 shader 運算將結果寫入 writeBuffer
+// writeBuffer, readBuffer 最後互換，以便下個 Pass 可以接著運算 (needSwap === true 時)
+
+// 執行 Pass 內部的 render 方法時，流程如下： (也可直接透過 ShaderPass 完成[5])
+// 可以用自己的 shaderMaterial 或經典的 Basic, Depth 材質
+// shaderMaterial 初始化可參考 CopyShader，shader 內可 include 內建的 ShaderChunk[6]
+// FullScreenQuad 在初始時會產生一個剛好覆蓋螢幕的三角形(效能考量[7])，使用其 render 方法就會將 shader 的結果顯示出來[8]
+
+// fsQuad = new FullScreenQuad(null);                        // 先產生 FullScreenQuad (大三角形畫布)
+// fsQuad.material = material;                               // 指定 material (即要執行的 shader)
+// material.uniforms['tDiffuse'].value = readBuffer.texture; // 將一些 readBuffer 結果寫入 uniforms
+
+// buffer = new THREE.WebGLRenderTarget(w, h, parms);        // 產生初始化 buffer (即 writeBuffer)
+// renderer.setRenderTarget(buffer);                         // 指定渲染結果要寫進這個 buffer (null 則會直接渲染到 canvas)
+// renderer.clear();                                         // 清理掉 renderer 內的 color, depth, stencil 三種 buffer
+// fsQuad.render(renderer);                                  // 將大三角形畫布的渲染結果寫進 writeBuffer
+                                                             // 若想渲染原場景則改用 renderer.render(scene, camera);
+
+// 如果不想渲染到螢幕上，只是想要獲得最終的 buffer，可以使用下面方法：
+// composer = new EffectComposer(renderer);
+// composer.renderToScreen = false;
+// 獲得 composer.readBuffer 和 composer.writeBuffer
+
+// 1. Pass 內建: https://github.com/mrdoob/three.js/tree/dev/examples/jsm/postprocessing
+// 2. 導覽: https://threejs.org/docs/#manual/en/introduction/How-to-use-post-processing
+// 3. 範例: http://threejs.org/examples/?q=post#webgl_postprocessing_nodes
+// 4. Pass 原型: https://github.com/mrdoob/three.js/blob/dev/examples/jsm/postprocessing/Pass.js
+// 5. ShaderPass: https://github.com/mrdoob/three.js/blob/dev/examples/jsm/postprocessing/ShaderPass.js
+// 6. ShaderChunk: https://github.com/mrdoob/three.js/tree/dev/src/renderers/shaders/ShaderChunk
+// 7. FullScreenQuad: https://github.com/mrdoob/three.js/pull/21358
+// 8. FullScreenQuad: https://github.com/mrdoob/three.js/blob/dev/examples/jsm/postprocessing/Pass.js
+
+// 建議參考這個函式庫的寫法：https://github.com/vanruesc/postprocessing
+// OutlinePass 範例: https://github.com/mrdoob/three.js/blob/dev/examples/webgl_postprocessing_outline.html
+// Masking 範例: https://github.com/mrdoob/three.js/blob/dev/examples/webgl_postprocessing_masking.html
+// OutlinePass Pass: https://github.com/mrdoob/three.js/blob/dev/examples/jsm/postprocessing/OutlinePass.js
+// Masking Pass: https://github.com/mrdoob/three.js/blob/dev/examples/jsm/postprocessing/MaskPass.js

@@ -271,6 +271,16 @@ https://github.com/peaceiris/actions-gh-pages
 社群討論: https://github.com/WordPress/gutenberg/issues/29008
 
 -----------------------------------------------------------
+網址：https://git-lfs.github.com/ (Git Large File Storage 管理大檔案)
+
+git lfs track "*.psd"    將 psd 副檔名使用 lfs 管理
+git add .gitattributes   將這個新記錄加到 .gitattributes 中 (或自己手動編輯)
+
+上面流程只需在新檔案創建時跑一次，完成後一樣走下面流程：git add -> git commit -> git push
+以後就不會 clone 下這些大檔案，如果要載的話可以執行：git lfs pull
+
+-----------------------------------------------------------
+
 
 
 
