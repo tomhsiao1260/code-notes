@@ -158,6 +158,7 @@ npm 環境下開發
 
 4. 在 package.json 加入
    "home": "https://tomhsiao1260.github.io/[repoName]/",
+   "homepage": "https://tomhsiao1260.github.io/[repoName]/",
 
 5. 在 npm script 加入下面這段
 
@@ -280,6 +281,13 @@ git add .gitattributes   將這個新記錄加到 .gitattributes 中 (或自己�
 以後就不會 clone 下這些大檔案，如果要載的話可以執行：git lfs pull
 
 -----------------------------------------------------------
+切換 Git 帳戶
+
+1. 刪除原始密碼: 本機搜尋 Keychain access (鑰匙圈存取) -> 搜尋 git -> 刪除 github.com
+2. push 專案時輸入新帳戶的 username 和 token
+3. 完成後記得再執行 1, 2 切換回原始帳戶
+-----------------------------------------------------------
+
 
 
 

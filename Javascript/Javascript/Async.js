@@ -189,7 +189,7 @@ display();
 // 可用 await 語法在 async 內簡單實作過一段時間後想執行的指令
 async function sleep(ms){
 	console.log("clock start");
-	await new Promise(resolve => setTimeout(resolve, ms));
+	await new Promise((resolve) => { setTimeout(resolve, ms); });
 	console.log(`after ${ms} ms`)
 }
 // const sleep = async(ms) => { something... } 也可寫成這樣 
