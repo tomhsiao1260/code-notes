@@ -1,0 +1,87 @@
+教學：https://www.youtube.com/watch?v=3c-iBn73dDE&ab_channel=TechWorldwithNana
+
+-------------------------------------------------------------------------
+Image: 是個可以獨立執行的輕量級套件，其包含所有執行程式所需要的函式庫、環境變數與設定檔等
+Container: 則是一個 Image 的執行實體，就是將 Image 載入至記憶體中執行之後的環境
+
+計算機大致可分為三層: Application -> OS kernal -> Hardware
+
+Docker: Application
+VM: Application, OS kernal
+
+因為所有的 Container 能共用同個 OS kernal (Host 提供的)，不像 VM 要建立多個 OS
+所以在執行的 performance 和 memory 佔用 Docker 都會比傳統 VM 好
+
+可將這些 Image 開源到 Docker Hub 上，或放到私人 Repository (e.g. AWS ECS)
+另外 Container 內部有個 virtual file system 管理檔案
+透過 Host 的 port 與 Container 的 port 溝通 (port binded)
+
+-------------------------------------------------------------------------
+docker pull [IMAGE]                  下載 image 到本地端，指定版本可用 [IMAGE]:[Tag]
+docker run [IMAGE]                   創建屬於某個 images 的 container，並執行
+
+docker run -d                        打印 container 的 ID
+docker run --name [NAME]             為 container 取名
+docker run -p[HOST]:[CONTAINER]      將 host 和 container 的 port binded
+                                     不同 container ID 的 port 可以重複不衝突
+docker run --net [NAME]              創建在某個 network 內 (在同個 network 才能溝通) 
+
+docker start [NAME]                  執行某個 container
+docker stop [NAME]                   停止某個 container
+
+docker rm [ID]                       刪除 container
+docker rmi [ID]                      刪除 image (container 要先刪)
+
+docker network create [NAME]         創建 docker network
+docker network ls                    列出 docker network
+-------------------------------------------------------------------------
+docker images                        列出 images
+docker ps                            列出 container (執行的)
+docker ps -a                         列出 container (所有的)
+docker ps -a | grep [NAME]           列出 container (指定的)
+docker ps -a | tail                  列出 container (後幾個)
+
+docker logs [NAME]                   打印某個 container 的 logs 狀態
+docker logs [NAME] | tail            顯示部份的 logs
+docker logs [NAME] -f                follow logs 會在背景監聽更新
+
+docker exec -it [NAME] /bin/bash     進到某個 container 的 virtual file system
+                                     預設在 /data 位置，cd .. 並執行 env 看環境變數，exit 退出
+docker exec -it [NAME] /bin/sh       有的 container 要改用 /bin/sh
+-------------------------------------------------------------------------
+可統一寫在 YAML 檔自動化，內部的 container 會自動被創建在同個 network 內
+流程上，會先執行 docker network create 再執行一系列的 docker run
+
+docker compose -f [YAML] up          執行 (建立 container, network)
+docker compose -f [YAML] down        結束 (刪除 container, network)
+
+-------------------------------------------------------------------------
+可以使用 Dockerfile 將 script 創建為 Image，記得每次修改都要重 build 一次
+
+docker build -t [IMAGE]:[tag] [PATH] 產生 Image，Path 為 Dockerfile 位置
+docker build -t my-app:1.0 .         範例，"." 表示在根目錄
+
+-------------------------------------------------------------------------
+可透過 Amazon 的 ECR 部署私人的 image，部署後就可以像 Docker Hub 一樣拿下來用
+
+在 Amazon ECR 創建一個 repository (跟本地端 docker build 的 image 同名)
+點進去打開 View Push Command 並依序執行指令：
+
+1. aws ecr ...       身份認證
+2. docker build ...  創建 image
+3. docker tag ...    成立一個新的 image 並取別名
+4. docker push ...   把這個新的 image 推上 aws
+
+更新程式碼後都要重執行 2, 3, 4 指令，並記得改 tag 數字
+這些不同 tag 的 image 會被統一放在同的 aws repository 內
+之後也可以用 docker pull ... 載到本地端
+
+教學: https://www.youtube.com/watch?v=3c-iBn73dDE&t=7523s&ab_channel=TechWorldwithNana
+
+-------------------------------------------------------------------------
+更新 tag 會產生新的 image，但是因為 image 彼此的 virtual file system 不會共享
+表示資料庫 data 會在更新 image 後消失並重置，docker volume 可解決這個問題
+會在 host 端保有這些資料並在產生新的 image 時把資料同步上去 (看一下 yaml 範例的實作)
+這些資料會存在本地端的 /var/lib/docker/volumes (for Mac)
+
+-------------------------------------------------------------------------

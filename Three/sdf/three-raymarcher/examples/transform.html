@@ -1,0 +1,176 @@
+<!doctype html>
+<html>
+  <head>
+    <title>three-raymarcher</title>
+    <meta charset="utf-8">
+    <style>
+      body {
+        background: linear-gradient(to top, #0a0a0a, #181a1a, #2d2d2f);
+        margin: 0;
+      }
+      #controls {
+        pointer-events: none;
+        position: fixed;
+        width: 100%;
+        padding: 1rem 0;
+        left: 0;
+        bottom: 0;
+        color: rgba(255, 255, 255, 0.3);
+        font-family: monospace;
+        text-align: center;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="renderer"></div>
+    <div id="controls">
+      [W] translate | [E] rotate | [R] scale &nbsp;&nbsp; [Q] toggle world/local space
+    </div>
+    <script async src="https://cdn.jsdelivr.net/npm/es-module-shims@1.4.6/dist/es-module-shims.js"></script>
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "https://cdn.jsdelivr.net/npm/three@0.141.0/build/three.module.js",
+          "three-environment": "https://cdn.jsdelivr.net/npm/three@0.141.0/examples/jsm/environments/RoomEnvironment.js",
+          "three-orbit": "https://cdn.jsdelivr.net/npm/three@0.141.0/examples/jsm/controls/OrbitControls.js",
+          "three-transform": "https://cdn.jsdelivr.net/npm/three@0.141.0/examples/jsm/controls/TransformControls.js",
+          "three-raymarcher": "../module.js"
+        }
+      }
+    </script>
+    <script type="module">
+      import {
+        Color,
+        Group,
+        PerspectiveCamera,
+        PMREMGenerator,
+        Quaternion,
+        Raycaster,
+        Scene,
+        sRGBEncoding,
+        Vector2,
+        Vector3,
+        WebGLRenderer,
+      } from 'three';
+      import { RoomEnvironment } from 'three-environment';
+      import { OrbitControls } from 'three-orbit';
+      import { TransformControls } from 'three-transform';
+      import Raymarcher from 'three-raymarcher';
+
+      let needsUpdate = true;
+      const renderer = new WebGLRenderer({ alpha: true });
+      renderer.outputEncoding = sRGBEncoding;
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      const camera = new PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.01, 1000);
+      const controls = new OrbitControls(camera, renderer.domElement);
+      controls.addEventListener('change', () => { needsUpdate = true; });
+      document.getElementById('renderer').appendChild(renderer.domElement);
+      window.addEventListener('resize', () => {
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        needsUpdate = true;
+      }, false);
+  
+      const scene = new Scene();
+      camera.position.set(0, 4, 8);
+      controls.target.set(0, 4, 0);
+      controls.enableDamping = true;
+
+      const { operations, shapes } = Raymarcher;
+      const raymarcher = new Raymarcher({
+        resolution: 0.5,
+        envMapIntensity: 0.6,
+        envMap: (new PMREMGenerator(renderer)).fromScene(new RoomEnvironment()).texture,
+        layers: [Array.from({ length: 24 }, () => {
+          const shape = [shapes.box, shapes.capsule, shapes.sphere][Math.floor(Math.random() * 3)];
+          return {
+            color: new Color(Math.random() * 0xFFFFFF),
+            operation: operations.union,
+            position: (new Vector3(Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5))
+              .normalize()
+              .multiplyScalar(3)
+              .add(controls.target),
+            rotation: (new Quaternion())
+              .setFromAxisAngle(new Vector3(Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5), Math.random()),
+            scale: new Vector3(
+              (shape === shapes.capsule ? 0.25 : 1) + Math.random() * 0.25,
+              (shape === shapes.capsule ? 1.25 : 1) + Math.random() * 0.25,
+              1 - Math.random() * 0.25
+            ),
+            shape,
+          };
+        })],
+      });
+      scene.add(raymarcher);
+
+      const transform = new TransformControls(camera, renderer.domElement);
+      transform.addEventListener('change', () => { needsUpdate = true; });
+      transform.addEventListener('dragging-changed', ({ value }) => { controls.enabled = !value; });
+
+      const object = new Group();
+      const attach = (entity) => {
+        object.entity = entity;
+        object.position.copy(entity.position);
+        object.quaternion.copy(entity.rotation);
+        object.scale.copy(entity.scale);
+        transform.attach(object);
+      };
+      transform.addEventListener('objectChange', () => {
+        const { entity, position, quaternion, scale } = object;
+        entity.position.copy(position);
+        entity.rotation.copy(quaternion);
+        entity.scale.copy(scale);
+      });
+      scene.add(object);
+      scene.add(transform);
+      attach(raymarcher.userData.layers[0][0]);
+
+      const raycaster = new Raycaster();
+      const pointer = new Vector2();
+      window.addEventListener('mousedown', ({ button, clientX, clientY }) => {
+        if (button !== 0 || !controls.enabled) {
+          return;
+        }
+        pointer.set(
+          (clientX / window.innerWidth) * 2 - 1,
+          -(clientY / window.innerHeight) * 2 + 1
+        );
+        raycaster.setFromCamera(pointer, camera);
+        const [hit] = raycaster.intersectObject(raymarcher);
+        if (hit) {
+          attach(hit.entity);
+        } else {
+          transform.detach();
+        }
+        needsUpdate = true;
+      }, false);
+
+      window.addEventListener('keydown', ({ keyCode }) => {
+        switch (keyCode) {
+          case 81: // Q
+            transform.setSpace(transform.space === 'local' ? 'world' : 'local');
+            break;
+          case 87: // W
+            transform.setMode('translate');
+            break;
+          case 69: // E
+            transform.setMode('rotate');
+            break;
+          case 82: // R
+            transform.setMode('scale');
+            break;
+        }
+      });
+
+      renderer.setAnimationLoop(() => {
+        if (!needsUpdate) {
+          return;
+        }
+        needsUpdate = false;
+        controls.update();
+        renderer.render(scene, camera);
+      });
+    </script>
+  </body>
+</html>

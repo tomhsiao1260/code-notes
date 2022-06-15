@@ -130,9 +130,6 @@ mongoDB 架設
 3. 在本地端 mongoose.connect 內輸入字串 (coin-chat-demo 為例)
    mongodb+srv://coin-chat:demo1234@.../coin-chat-demo...
 
-mongoose 教學
-https://pjchender.github.io/2018/12/09/mongo-mongoose-%E6%93%8D%E4%BD%9C/
-
 ---------------------------------------------------------
 socket 使用
 

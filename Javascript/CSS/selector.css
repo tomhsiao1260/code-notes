@@ -16,7 +16,7 @@ element element      div p                  選擇所有在 div 內部的 p 元�
 element>element      div > p                選擇所有父元素為 div 的 p 元素
 element+element      div + p                選擇所有直接在 div 後方第一位的 p 元素 (被包的 p 不算)
 element1~element2    div ~ p                選擇所有在 div 後方的 p 元素 (被包的 p 不算)
- 
+
 [attribute]          [target]               選擇所有具有 target 屬性的元素
 [attribute=value]    [target=_blank]        選擇所有具有 target="_blank" 的元素
 [attribute~=value]   [title~=hi]	        選擇所有具有 title 屬性且其值內有 flower 的元素 (hi 選/hi yao 選/ hii 不選)

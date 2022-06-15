@@ -592,7 +592,7 @@ window.addEventListener('dblclick', () => {
 const fov = 75;                            // fov (field of view): 垂直視角，單位 deg
 const aspect = sizes.width / sizes.height; // aspect: 畫面長寬比，默認值為 2
 const near = 0.1;                          // near: 最近要被渲染的距離
-const far = 10;                             // far: 最遠要被渲染的距離
+const far = 10;                            // far: 最遠要被渲染的距離
 // 建立 Camera
 const camera = new THREE.PerspectiveCamera(fov, aspect, near, far)
 // Camera 預設在原點，x 指向右，y 指向上，z 指出畫面 (即往 -Z 方向看)
@@ -972,7 +972,7 @@ const raycaster_1 = () => {
     const sphere = new THREE.Mesh(new THREE.SphereGeometry(0.5, 64, 64), sphereMaterial)
     const cube = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), cubeMaterial)
     const meshes = [sphere, cube]
-    // sphere 位於 y=-1， cube 位於 y=1
+
     sphere.position.set(0, -1, 0)
     cube.position.set(0, 1, 0)
     scene.add(sphere, cube)

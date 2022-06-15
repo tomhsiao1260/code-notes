@@ -1,6 +1,0 @@
-下面是一些 CORS 不錯的文章：
-
-https://blog.techbridge.cc/2017/05/20/api-ajax-cors-and-jsonp/
-https://developer.mozilla.org/zh-TW/docs/Web/HTTP/CORS
-https://portswigger.net/web-security/cors
-https://auth0.com/blog/cors-tutorial-a-guide-to-cross-origin-resource-sharing/

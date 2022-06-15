@@ -1,0 +1,51 @@
+version: '3'
+services:
+  # my-app:
+  # image: ${docker-registry}/my-app:1.0
+  # ports:
+  # - 3000:3000
+
+  ## e.g. image: 183008172205.dkr.ecr.us-east-1.amazonaws.com/my-app:1.0
+
+  # container name
+  mongodb:
+    # image from Docker Hub
+    image: mongo
+    # port binded (Host:Container)
+    ports:
+      - 27017:27017
+    # env setting from Docker Hub document
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=password
+    # copy DB data into volume
+    volumes:
+      - mongo-data:/data/db
+      # mongodb: /data/db
+      # mysql: /var/lib/mysql
+      # postgres: /var/lib/postgresql/data
+  mongo-express:
+    image: mongo-express
+    restart: always # fixes MongoNetworkError when mongodb is not ready when mongo-express starts
+    ports:
+      - 8080:8081
+    environment:
+      - ME_CONFIG_MONGODB_ADMINUSERNAME=admin
+      - ME_CONFIG_MONGODB_ADMINPASSWORD=password
+      - ME_CONFIG_MONGODB_SERVER=mongodb
+# define all the names of volumes
+volumes:
+  # only one volume called mongo-data
+  mongo-data:
+    driver: local
+
+# 本範例有 3 個 images (my-app, mongo, mongo-express)
+# 第一個是打包後放到 AWS ECR 的 script 程式碼
+# 另外兩個是在 Docker Hub 的公開跟資料庫有關的 images
+# 注意只有在 Docker Hub 的 image 的 domain name 可以省略
+
+# 應用 host 在 :3000
+# 資料庫 host 在 :27017
+# 控制資料庫介面 host 在 :8080
+
+

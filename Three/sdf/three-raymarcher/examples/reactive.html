@@ -1,0 +1,211 @@
+<!doctype html>
+<html>
+  <head>
+    <title>three-raymarcher</title>
+    <meta charset="utf-8">
+    <style>
+      body {
+        background: linear-gradient(to top, #0a0a0a, #181a1a, #2d2d2f);
+        margin: 0;
+      }
+      #help {
+        pointer-events: none;
+        position: fixed;
+        width: 100%;
+        padding: 1rem 0;
+        left: 0;
+        bottom: 0;
+        color: rgba(255, 255, 255, 0.3);
+        font-family: monospace;
+        text-align: center;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="renderer"></div>
+    <div id="help">
+      Click to start playing. You can also drag &amp; drop an audio file into the window.
+    </div>
+    <script async src="https://cdn.jsdelivr.net/npm/es-module-shims@1.4.6/dist/es-module-shims.js"></script>
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "https://cdn.jsdelivr.net/npm/three@0.141.0/build/three.module.js",
+          "three-environment": "https://cdn.jsdelivr.net/npm/three@0.141.0/examples/jsm/environments/RoomEnvironment.js",
+          "three-orbit": "https://cdn.jsdelivr.net/npm/three@0.141.0/examples/jsm/controls/OrbitControls.js",
+          "three-stats": "https://cdn.jsdelivr.net/npm/three@0.141.0/examples/jsm/libs/stats.module.js",
+          "three-raymarcher": "../module.js"
+        }
+      }
+    </script>
+    <script type="module">
+      import {
+        Clock,
+        Color,
+        PerspectiveCamera,
+        PMREMGenerator,
+        Quaternion,
+        Raycaster,
+        Scene,
+        sRGBEncoding,
+        Vector2,
+        Vector3,
+        WebGLRenderer,
+      } from 'three';
+      import { RoomEnvironment } from 'three-environment';
+      import { OrbitControls } from 'three-orbit';
+      import Stats from 'three-stats';
+      import Raymarcher from 'three-raymarcher';
+
+      const stats = new Stats();
+      document.body.appendChild(stats.dom);
+      const renderer = new WebGLRenderer({ alpha: true });
+      renderer.outputEncoding = sRGBEncoding;
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      const camera = new PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.01, 1000);
+      const clock = new Clock();
+      document.addEventListener('visibilitychange', () => (
+        document.visibilityState === 'visible' && clock.start()
+      ));
+      const controls = new OrbitControls(camera, renderer.domElement);
+      document.getElementById('renderer').appendChild(renderer.domElement);
+      window.addEventListener('resize', () => {
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+      }, false);
+
+      const scene = new Scene();
+      camera.position.set(0, 0, 6);
+      controls.enableDamping = true;
+      controls.autoRotate = true;
+
+      const { operations, shapes } = Raymarcher;
+      const raymarcher = new Raymarcher({
+        resolution: 0.5,
+        envMapIntensity: 0.6,
+        envMap: (new PMREMGenerator(renderer)).fromScene(new RoomEnvironment()).texture,
+        layers: [Array.from({ length: 16 }, () => ({
+          color: (new Color()).setHSL(Math.random(), 0.8, 0.6),
+          operation: operations.union,
+          position: (new Vector3(Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5))
+            .normalize(),
+          rotation: (new Quaternion())
+            .setFromAxisAngle(new Vector3(Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5), Math.random()),
+          scale: new Vector3(
+            1 + Math.random() * 0.5,
+            1 + Math.random() * 0.5,
+            1 + Math.random() * 0.5
+          ),
+          shape: shapes.sphere,
+        }))],
+      });
+      scene.add(raymarcher);
+
+      const aux = new Vector3();
+      const animations = raymarcher.userData.layers[0].map(({ position, scale }, i) => ({
+        octave: i % 8,
+        position: position.clone(),
+        scale: scale.clone(),
+      }));
+      renderer.setAnimationLoop(() => {
+        const delta = Math.min(clock.getDelta(), 1);
+        const octaves = getOctaves();
+        raymarcher.userData.layers[0].forEach((entity, i) => {
+          const animation = animations[i];
+          const intensity = octaves[animation.octave];
+          entity.color.offsetHSL(delta * 0.1, 0, 0);
+          entity.position
+            .copy(animation.position)
+            .multiplyScalar(0.5 + intensity * 3);
+          entity.scale.add(
+            aux
+              .copy(animation.scale)
+              .multiplyScalar(0.5 + intensity * 1.5)
+              .sub(entity.scale)
+              .multiplyScalar(delta)
+          );
+        });
+
+        controls.update();
+        stats.update();
+        renderer.render(scene, camera);
+      });
+    </script>
+    <script type="module">
+      const context = new AudioContext();
+
+      const analyser = context.createAnalyser();
+      analyser.fftSize = 8192;
+      const equalTemperament = (note) => ((2 ** ((note - 69) / 12)) * 440);
+      analyser.octaves = Array.from({ length: 9 }, (v, i) => Math.round(
+        (equalTemperament((i + 1) * 12) * analyser.fftSize) / context.sampleRate
+      ));
+      analyser.buffer = new Uint8Array(analyser.frequencyBinCount);
+      analyser.current = new Float32Array(analyser.octaves.length - 1);
+      analyser.previous = new Float32Array(analyser.octaves.length - 1);
+      analyser.smoothing = 0.8;
+      analyser.threshold = 0.2;
+
+      const player = new Audio();
+      player.crossOrigin = 'anonymous';
+      player.loop = true;
+      player.src = 'https://cdn.glitch.global/7f964a76-a4ad-453b-810f-dbe64358e478/test.ogg?v=1645643245428';
+
+      const source = context.createMediaElementSource(player);
+      source.connect(analyser);
+      const gain = context.createGain();
+      gain.gain.setValueAtTime(0.5, context.currentTime);
+      analyser.connect(gain);
+      gain.connect(context.destination);
+
+      window.getOctaves = () => {
+        const {
+          buffer,
+          current,
+          octaves,
+          previous,
+          smoothing,
+          threshold,
+        } = analyser;
+        analyser.getByteFrequencyData(buffer);
+        for (let i = 0, l = octaves.length - 1; i < l; i++) {
+          const from = octaves[i];
+          const to = octaves[i + 1];
+          const count = to - from;
+          let sum = 0;
+          for (let j = from; j < to; j++) {
+            sum += (buffer[j] / 0xFF) ** 2;
+          }
+          const sample = Math.max(Math.sqrt(sum / count), previous[i] * smoothing);
+          current[i] = Math.max(sample - threshold, 0) / (1 - threshold);
+          previous[i] = sample;
+        }
+        return current;
+      };
+
+      const onInteraction = () => {
+        if (context.state !== 'running') {
+          context.resume();
+        }
+        if (player.paused) {
+          player.play();
+        }
+      };
+      window.addEventListener('mousedown', onInteraction);
+      window.addEventListener('keydown', onInteraction);
+
+      window.addEventListener('dragover', (e) => e.preventDefault());
+      window.addEventListener('drop', (e) => {
+        e.preventDefault();
+        if (
+          e.dataTransfer
+          && e.dataTransfer.files.length === 1
+          && e.dataTransfer.files[0].type.indexOf('audio/') === 0
+        ) {
+          player.src = URL.createObjectURL(e.dataTransfer.files[0]);
+        }
+      });
+    </script>
+  </body>
+</html>
