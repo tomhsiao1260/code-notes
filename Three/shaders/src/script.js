@@ -253,7 +253,7 @@ tick()
 // 7. FullScreenQuad: https://github.com/mrdoob/three.js/pull/21358
 // 8. FullScreenQuad: https://github.com/mrdoob/three.js/blob/dev/examples/jsm/postprocessing/Pass.js
 
-// 建議參考這個函式庫的寫法：https://github.com/vanruesc/postprocessing
+// 建議參考這個函式庫的寫法：https://github.com/pmndrs/postprocessing
 // OutlinePass 範例: https://github.com/mrdoob/three.js/blob/dev/examples/webgl_postprocessing_outline.html
 // Masking 範例: https://github.com/mrdoob/three.js/blob/dev/examples/webgl_postprocessing_masking.html
 // OutlinePass Pass: https://github.com/mrdoob/three.js/blob/dev/examples/jsm/postprocessing/OutlinePass.js
