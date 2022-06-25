@@ -76,7 +76,7 @@ void syntx()
     mix(1.0, 2.0, 0.3);   // (a, b, r) 回傳 (1-r)a + rb，常被用在混色
 
     // 上面函式若以向量傳入則會逐項運算並回傳向量，下面是參考資料：
-    // https://www.shaderific.com/glsl-functions
+    // hhttps://shaderific.com/glsl.html
     // https://www.khronos.org/registry/OpenGL-Refpages/gl4/html/indexflat.php
     // https://thebookofshaders.com/glossary/
 }
