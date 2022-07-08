@@ -64,9 +64,10 @@ uniform float u_time;
 // st 為座標值，pct 為函數的回傳值
 float plot(vec2 st, float pct){
 	// smoothstep(s,t,u) 功能如下：
-	// 當 u 在 s~t 之間回傳 1，否則為 0
+	// u 從 0 漸進到 1，也就是說 s->t 區間值介於 0->1
   return  smoothstep( pct-0.02, pct, st.y) -
           smoothstep( pct, pct+0.02, st.y);
+  // 所以這是個沿著 st.y 軸的 peak，中心在 pct，寬度為 0.04
 }
 
 void main() {
@@ -76,7 +77,7 @@ void main() {
   float y = pow(st.x,3.0);
   // 根據函數畫出灰階背景色
   vec3 color = vec3(y);
-  // 根據函數畫出線
+  // 根據函數畫出線 (垂直掃描)
   float pct = plot(st,y);
   // 綠線與背景色融合成為最終顏色
   color = (1.0-pct)*color+pct*vec3(0.0,1.0,0.0);
