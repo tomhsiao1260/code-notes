@@ -190,3 +190,67 @@ void main() {
 //####################### Shape ######################//
 //####################################################//
 
+//####################################################//
+//###################### Random ######################//
+//####################################################//
+
+// 下面的都是 random deterministic，又稱 pseudo-random
+// 也就是只要輸入值相同，輸出就會是同一個
+
+// 要產生這類的隨機數，一種主流的方式是用 fract (取小數)
+// 想想看 fract(sin(x)) 長什麼樣子
+
+// 當有一個均勻的隨機分佈函數，可使用一些手法去操控這些分佈
+// 注意下面連結使用 Math.random()，而不是 pseudo-random
+// https://pixelero.wordpress.com/2008/04/24/various-functions-and-various-distributions-with-mathrandom/
+
+#ifdef GL_ES
+precision mediump float;
+#endif
+
+uniform vec2 u_resolution;
+uniform vec2 u_mouse;
+uniform float u_time;
+
+// 為了產生 2D 隨機變數，可把座標跟任一向量內積，作為 fract(sin(x)) 的輸入
+// 下面的參數需特別挑選才能達到視覺上的隨機
+float random (vec2 st) {
+    vec2 t = vec2(12.9898,78.233);
+    return fract(sin(dot(st.xy,t))*43758.5453123);
+}
+
+void main() {
+    vec2 st = gl_FragCoord.xy/u_resolution.xy;
+
+    // 1. 產生二為亂數
+    float rnd1 = random( st );
+
+    // 2. 產生 10*10 亂數網格
+    st *= 10.0;
+    vec2 ipos = floor(st); // integer
+    vec2 fpos = fract(st); // fraction
+
+    float rnd2 = random( ipos );
+    // 可用 fpos 作為每個網格的 uv 座標
+    // 這麼一來就可產生既規律卻又隨機的各種圖案
+
+    gl_FragColor = vec4(vec3(rnd1),1.0);
+    //gl_FragColor = vec4(vec3(rnd2),1.0);
+}
+
+// 其實這類的亂數還有很多的變化，最經典的就是 Ryoji Ikeda
+// 可以他的作品並作 book of shader 提到的練習
+
+//####################################################//
+//###################### Noise #######################//
+//####################################################//
+
+// 前一章提到的都不太像大自然的亂數，例如：下雨、山脈、股市波動
+// 原因是自然通常有在空間上還是有一定的 correlation
+// 這正是 Ken Perlin 當時在思考的，可看下面進一步了解他的思路
+
+
+
+
+
+
