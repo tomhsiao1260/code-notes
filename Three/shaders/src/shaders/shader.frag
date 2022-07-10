@@ -209,8 +209,6 @@ precision mediump float;
 #endif
 
 uniform vec2 u_resolution;
-uniform vec2 u_mouse;
-uniform float u_time;
 
 // 為了產生 2D 隨機變數，可把座標跟任一向量內積，作為 fract(sin(x)) 的輸入
 // 下面的參數需特別挑選才能達到視覺上的隨機
@@ -227,12 +225,12 @@ void main() {
 
     // 2. 產生 10*10 亂數網格
     st *= 10.0;
-    vec2 ipos = floor(st); // integer
-    vec2 fpos = fract(st); // fraction
+    vec2 i = floor(st); // integer
+    vec2 f = fract(st); // fraction
 
-    float rnd2 = random( ipos );
-    // 可用 fpos 作為每個網格的 uv 座標
-    // 這麼一來就可產生既規律卻又隨機的各種圖案
+    float rnd2 = random( i );
+    // 可用 f 作為每個網格的 uv 座標
+    // 這麼一來就可產生既規律卻又隨機的各種網格圖案
 
     gl_FragColor = vec4(vec3(rnd1),1.0);
     //gl_FragColor = vec4(vec3(rnd2),1.0);
@@ -247,10 +245,61 @@ void main() {
 
 // 前一章提到的都不太像大自然的亂數，例如：下雨、山脈、股市波動
 // 原因是自然通常有在空間上還是有一定的 correlation
+
 // 這正是 Ken Perlin 當時在思考的，可看下面進一步了解他的思路
+// 這讓 Random 本身帶有 Organic 的感覺
 
+// float i = floor(x);  // integer
+// float f = fract(x);  // fraction
 
+// y = rand(i);
+// y = mix(rand(i), rand(i + 1.0), f);
+// y = mix(rand(i), rand(i + 1.0), smoothstep(0.,1.,f));
 
+#ifdef GL_ES
+precision mediump float;
+#endif
 
+uniform vec2 u_resolution;
+
+float random (vec2 st) {
+    vec2 t = vec2(12.9898,78.233);
+    return fract(sin(dot(st.xy,t))*43758.5453123);
+}
+
+// 如果套用到 2D 就是對某參考點周圍 4 點的值去運算，所以又稱 value noise
+float noise (in vec2 st) {
+    vec2 i = floor(st);
+    vec2 f = fract(st);
+
+    // Four corners in 2D of a tile
+    float a = random(i);
+    float b = random(i + vec2(1.0, 0.0));
+    float c = random(i + vec2(0.0, 1.0));
+    float d = random(i + vec2(1.0, 1.0));
+
+    // Smooth Interpolation
+
+    // Cubic Hermine Curve. Same as SmoothStep()
+    vec2 u = f*f*(3.0-2.0*f);
+    // u = smoothstep(0.,1.,f);
+
+    // Mix 4 coorners percentages
+    return mix(a, b, u.x) +
+            (c - a)* u.y * (1.0 - u.x) +
+            (d - b) * u.x * u.y;
+}
+
+void main() {
+    vec2 st = gl_FragCoord.xy/u_resolution.xy;
+
+    // 5*5 grid noise
+    vec2 pos = vec2(st*5.0);
+    float n = noise(pos);
+
+    gl_FragColor = vec4(vec3(n), 1.0);
+}
+
+// 還沒看完，看到 Using Noise in Generative Designs，感覺有很多要慢慢體會的細節
 
 
