@@ -217,6 +217,27 @@ float random (vec2 st) {
     return fract(sin(dot(st.xy,t))*43758.5453123);
 }
 
+float random2 (vec2 st) {
+    st = vec2( dot(st,vec2(127.1,311.7)),
+              dot(st,vec2(269.5,183.3)));
+    return -1.0+2.0*fract(sin(dot(st.xy,vec2(12.9898,78.233)))*43758.5453123);
+}
+
+// 另一種常用的 random 為 hash
+float hash(vec2 st) {
+    vec2 t  = 50.0*fract( st*0.3183099 + vec2(0.71,0.113));
+    return -1.0+2.0*fract( t.x*t.y*(t.x+t.y) );
+}
+
+// 3 維雜湊，輸入任一正整數 (e.g. uint(3.1) , 3u)，輸出介於 0~1 的三維雜湊
+vec3 hash3( uint n ) {
+    // integer hash copied from Hugo Elias
+    n = (n << 13U) ^ n;
+    n = n * (n * n * 15731U + 789221U) + 1376312589U;
+    uvec3 k = n * uvec3(n,n*16807U,n*48271U);
+    return vec3( k & uvec3(0x7fffffffU))/float(0x7fffffff);
+}
+
 void main() {
     vec2 st = gl_FragCoord.xy/u_resolution.xy;
 
@@ -256,27 +277,36 @@ void main() {
 // y = mix(rand(i), rand(i + 1.0), f);
 // y = mix(rand(i), rand(i + 1.0), smoothstep(0.,1.,f));
 
+// 其實不一定要用 rand，可以是任何函數例如調變 sin(1.7x) + sin(2.3x)
+
 #ifdef GL_ES
 precision mediump float;
 #endif
 
 uniform vec2 u_resolution;
 
-float random (vec2 st) {
-    vec2 t = vec2(12.9898,78.233);
-    return fract(sin(dot(st.xy,t))*43758.5453123);
+float random2 (vec2 st) {
+    st = vec2( dot(st,vec2(127.1,311.7)),
+              dot(st,vec2(269.5,183.3)));
+    return -1.0+2.0*fract(sin(dot(st.xy,vec2(12.9898,78.233)))*43758.5453123);
+}
+
+vec2 random3 (vec2 st) {
+    st = vec2( dot(st,vec2(127.1,311.7)),
+              dot(st,vec2(269.5,183.3)) );
+    return -1.0+2.0*fract(sin(st)*43758.5453123);
 }
 
 // 如果套用到 2D 就是對某參考點周圍 4 點的值去運算，所以又稱 value noise
-float noise (in vec2 st) {
+float vnoise (in vec2 st) {
     vec2 i = floor(st);
     vec2 f = fract(st);
 
     // Four corners in 2D of a tile
-    float a = random(i);
-    float b = random(i + vec2(1.0, 0.0));
-    float c = random(i + vec2(0.0, 1.0));
-    float d = random(i + vec2(1.0, 1.0));
+    float a = random2(i);
+    float b = random2(i + vec2(1.0, 0.0));
+    float c = random2(i + vec2(0.0, 1.0));
+    float d = random2(i + vec2(1.0, 1.0));
 
     // Smooth Interpolation
 
@@ -285,9 +315,23 @@ float noise (in vec2 st) {
     // u = smoothstep(0.,1.,f);
 
     // Mix 4 coorners percentages
-    return mix(a, b, u.x) +
-            (c - a)* u.y * (1.0 - u.x) +
-            (d - b) * u.x * u.y;
+    return mix(mix(a, b, u.x), mix(c, d, u.x), u.y);
+}
+
+// 上面方法因為是從 random value 疊加出來的，所以又稱 Value Noise
+// 缺點是雜訊本身會看起來一塊塊的，因此 Ken Perlin 改良出 Gradient Noise
+// 疊加的對象從某些特定的 Value 改為漸進式的 Gradient 值
+float gnoise (in vec2 st) {
+    vec2 i = floor(st);
+    vec2 f = fract(st);
+
+    float a = dot(random3(i), f);
+    float b = dot(random3(i + vec2(1.0, 0.0)), f - vec2(1.0,0.0));
+    float c = dot(random3(i + vec2(0.0, 1.0)), f - vec2(0.0,1.0));
+    float d = dot(random3(i + vec2(1.0, 1.0)), f - vec2(1.0,1.0));
+
+    vec2 u = f*f*(3.0-2.0*f);
+    return mix(mix(a, b, u.x), mix(c, d, u.x), u.y);
 }
 
 void main() {
@@ -295,11 +339,24 @@ void main() {
 
     // 5*5 grid noise
     vec2 pos = vec2(st*5.0);
-    float n = noise(pos);
+    float n = vnoise(pos);
+    //float n = gnoise(pos);
 
     gl_FragColor = vec4(vec3(n), 1.0);
 }
 
-// 還沒看完，看到 Using Noise in Generative Designs，感覺有很多要慢慢體會的細節
+// Inigo 有實作這兩種 noise 的差異以及對 fbm 的影響
+// vnoise: https://www.shadertoy.com/view/lsf3WH
+// gnoise: https://www.shadertoy.com/view/XdXGW8
 
+// 1. 其實可以更活用，好比說把 noise 加在 position 上，就可給單調的平行線木頭的質感
+// 2. 或是加在 distance field 上產生噴濺的效果
+// 3. 也可以拿來調變線條本身
+// https://thebookofshaders.com/edit.php#11/wood.frag
+// https://thebookofshaders.com/edit.php#11/splatter.frag
+// https://thebookofshaders.com/edit.php#11/circleWave-noise.frag
 
+// 試試看畫出大自然的東西，e.g. 大理石, 岩漿, 水流
+// 或是調變形狀, 物體運動, 生成藝術
+
+// 看到 Improved Noise
