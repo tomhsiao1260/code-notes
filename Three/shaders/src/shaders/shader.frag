@@ -229,6 +229,8 @@ float hash(vec2 st) {
     return -1.0+2.0*fract( t.x*t.y*(t.x+t.y) );
 }
 
+float hash1( float n ) { return fract(sin(n)*43758.5453123); }
+
 // 3 維雜湊，輸入任一正整數 (e.g. uint(3.1) , 3u)，輸出介於 0~1 的三維雜湊
 vec3 hash3( uint n ) {
     // integer hash copied from Hugo Elias

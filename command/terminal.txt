@@ -50,11 +50,13 @@ fi
 export ZSH=$HOME/.oh-my-zsh
 export JAVA_HOME=$(/usr/libexec/java_home)
 export DEFAULT_USER="$(whoami)"
+export NVM_DIR=~/.nvm
+[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
 
 4.主題選擇
 ZSH_THEME="agnoster"
 
-也可手動開啟編輯: Finder -> 前往的欄位 -> 個人專屬 -> 開啟隱藏檔.zshrc
+也可手動開啟編輯: Finder -> 前往 -> 個人專屬 -> 開啟隱藏檔.zshrc
 vscode 路徑是為了使用 code . 指令開啟應用
 -----------------------------------------------------------
 
