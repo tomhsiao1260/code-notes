@@ -211,33 +211,10 @@ precision mediump float;
 uniform vec2 u_resolution;
 
 // 為了產生 2D 隨機變數，可把座標跟任一向量內積，作為 fract(sin(x)) 的輸入
-// 下面的參數需特別挑選才能達到視覺上的隨機
+// 下面的參數需特別挑選才能達到視覺上的隨機，其中一種常用的 random 為 hash
 float random (vec2 st) {
     vec2 t = vec2(12.9898,78.233);
     return fract(sin(dot(st.xy,t))*43758.5453123);
-}
-
-float random2 (vec2 st) {
-    st = vec2( dot(st,vec2(127.1,311.7)),
-              dot(st,vec2(269.5,183.3)));
-    return -1.0+2.0*fract(sin(dot(st.xy,vec2(12.9898,78.233)))*43758.5453123);
-}
-
-// 另一種常用的 random 為 hash
-float hash(vec2 st) {
-    vec2 t  = 50.0*fract( st*0.3183099 + vec2(0.71,0.113));
-    return -1.0+2.0*fract( t.x*t.y*(t.x+t.y) );
-}
-
-float hash1( float n ) { return fract(sin(n)*43758.5453123); }
-
-// 3 維雜湊，輸入任一正整數 (e.g. uint(3.1) , 3u)，輸出介於 0~1 的三維雜湊
-vec3 hash3( uint n ) {
-    // integer hash copied from Hugo Elias
-    n = (n << 13U) ^ n;
-    n = n * (n * n * 15731U + 789221U) + 1376312589U;
-    uvec3 k = n * uvec3(n,n*16807U,n*48271U);
-    return vec3( k & uvec3(0x7fffffffU))/float(0x7fffffff);
 }
 
 void main() {
