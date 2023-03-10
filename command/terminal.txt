@@ -32,6 +32,27 @@ python2: python -m SimpleHTTPServer
 python3: python3 -m http.server
 
 -----------------------------------------------------------
+虛擬環境
+
+conda create --name [name]      創建
+conda activate [name]           啟動
+conda env list                  列出
+conda deactivate                退出
+conda env remove --name [name]  刪除
+
+python -m venv [name]           創建
+. [name]/bin/activate           啟動
+deactivate                      退出
+
+conda install [name]            安裝套件
+conda list                      列出套件
+
+pip install [name]              安裝套件
+pip list                        列出套件
+pip freeze > requirements.txt   紀錄套件
+pip install -r requirements.txt 安裝套件
+
+-----------------------------------------------------------
 .zshrc 設定
 
 模板: https://github.com/ohmyzsh/ohmyzsh/blob/master/templates/zshrc.zsh-template

@@ -56,7 +56,7 @@ void syntx()
 
     // 另外還有 mat2, mat3, mat4, sampler2D
     // 盡量不要在 GLSL 內寫 if 判斷式子，會降低效能，建議用一些 step 函式取代
-    // 但可以使用迴圈 for(float i=1.0; i<=3; i++){ ... }
+    // 但可以使用迴圈 for(int i=1; i<=3; i++){ ... }
 
     // GLSL 有內建一些函式，使用方法可參考連結：
     // sin, cos, max, min, pow, exp, mod, clamp
@@ -76,7 +76,7 @@ void syntx()
     mix(1.0, 2.0, 0.3);   // (a, b, r) 回傳 (1-r)a + rb，常被用在混色
 
     // 上面函式若以向量傳入則會逐項運算並回傳向量，下面是參考資料：
-    // hhttps://shaderific.com/glsl.html
+    // https://shaderific.com/glsl.html
     // https://www.khronos.org/registry/OpenGL-Refpages/gl4/html/indexflat.php
     // https://thebookofshaders.com/glossary/
 }
