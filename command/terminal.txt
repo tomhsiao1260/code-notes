@@ -41,7 +41,7 @@ conda deactivate                退出
 conda env remove --name [name]  刪除
 
 python -m venv [name]           創建
-. [name]/bin/activate           啟動
+source [name]/bin/activate      啟動
 deactivate                      退出
 
 conda install [name]            安裝套件
@@ -52,7 +52,37 @@ pip list                        列出套件
 pip freeze > requirements.txt   紀錄套件
 pip install -r requirements.txt 安裝套件
 
+jupyter nbconvert --to python [name].ipynb .ipynb轉.py
+
 -----------------------------------------------------------
+Hugging Face
+
+create a space & git clone
+
+python3 -m venv env
+source env/bin/activate
+echo "env/" >> .gitignore
+
+python3 --version
+python_version: 3.x.x (update README.md)
+
+pip3 install gradio
+pip3 freeze > requirements.txt
+
+touch app.py & coding
+python3 app.py
+
+git add -> commit -> push
+
+API Testing
+URL: https://USER_NAME-SPACE_NAME.hf.space/run/predict
+Body: { "data": [ "hi" ] } (JSON)
+
+來源：https://www.tomsoderlund.com/ai/building-ai-powered-rest-api
+
+-----------------------------------------------------------
+
+cd SPACE_NAME
 .zshrc 設定
 
 模板: https://github.com/ohmyzsh/ohmyzsh/blob/master/templates/zshrc.zsh-template
