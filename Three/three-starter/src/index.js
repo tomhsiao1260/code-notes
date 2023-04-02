@@ -31,7 +31,7 @@ camera.position.z = 3
 scene.add(camera)
 
 // Test
-const cube = new THREE.Mesh(new THREE.BoxBufferGeometry(1, 1, 1), new THREE.MeshNormalMaterial())
+const cube = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), new THREE.MeshNormalMaterial())
 scene.add(cube)
 
 // Renderer
