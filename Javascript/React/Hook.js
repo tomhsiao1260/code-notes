@@ -71,7 +71,7 @@ function A(props) {
   ///////////////////////////////////////////////////////////
 
   // memoization 是一種優化技術主要用來加速程式透過存取複雜函數的計算結果
-  // 並在下次相同輸入發生時直接會傳 cache 的結果
+  // 並在下次相同輸入發生時直接回傳 cache 的結果
 
   function computeExpensiveValue() { return 1 * Math.PI; }
   // useMemo 會回傳 memorized 後的數值

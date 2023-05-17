@@ -2,8 +2,8 @@ import './style.css'
 import ReactDOM from 'react-dom/client'
 import { Canvas } from '@react-three/fiber'
 
-// import Basic from './Basic'
-import { BasicC } from './Basic'
+import Basic from './Basic'
+import { BasicB } from './Basic'
 
 // React Three Fiber 是一種 React 的 Renderer
 // 能把 JSX 程式和 data 轉換為 Three.js Scene 的形式呈現
@@ -25,6 +25,13 @@ const root = ReactDOM.createRoot(document.querySelector('#root'))
 
 root.render(
     <Canvas>
-        <BasicC />
+        <Basic />
     </Canvas>
 )
+
+// 開始： https://docs.pmnd.rs/react-three-fiber/getting-started/introduction
+// 效能： https://docs.pmnd.rs/react-three-fiber/advanced/scaling-performance#instancing
+// 資源： https://twitter.com/0xca0a/status/1445409346305892353
+// 資源： https://journey.pmnd.rs/
+
+
