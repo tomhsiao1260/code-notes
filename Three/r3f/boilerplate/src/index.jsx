@@ -14,3 +14,4 @@ root.render(
 )
 
 // npm install three@0.148 @react-three/fiber@8.9
+// npm install @react-three/drei@9.50
