@@ -4,6 +4,8 @@ import { useEffect, useRef, useMemo, useState } from 'react'
 import { useThree, extend, useFrame } from '@react-three/fiber'
 import { Float, Text, Html, PivotControls, TransformControls, OrbitControls } from '@react-three/drei'
 import { OrbitControls as ThreeOrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
+import { useControls, button } from 'leva'
+import { Perf } from 'r3f-perf'
 
 // React 本來就會把子 component 加到 children
 // 所以這裡的 mesh 很自然會被加進 scene graph
@@ -241,6 +243,56 @@ export function DreiC()
                 <meshNormalMaterial />
             </Text>
         </Float>
+    </>
+}
+
+// 在 Debug 方面
+export function DebugA()
+{
+    // 可以加 StrictMode 讓系統檢查，這會讓 develop 時多渲染一次，但 production 時則不會
+    // 還可以加入 React Developer Tools 瀏覽器套件，這能顯示 components 結構和動態微調相關參數
+    // 還可使用 Leva 面板調參以及 R3F-Perf 查看裝置狀態和效能
+
+    const { c, d, i } = useControls({
+        // value, vector (joystick 反轉操控軸)
+        a: -2,
+        b: { value: -2, min: -4, max: 4, step: 0.01 },
+        c: { value: { x: -1.5, y: 0 }, step: 0.01, joystick: 'invertY' },
+        // color (alpha 需開啟材質透明功能)
+        d: 'rgb(255, 0, 0)',
+        e: 'orange',
+        f: 'hsl(100deg, 100%, 50%)',
+        g: 'hsla(100deg, 100%, 50%, 0.5)',
+        h: { r: 200, g: 106, b: 125, a: 0.4 },
+    })
+    // 其他功能 (新資料夾)
+    const { visible, perfVisible } = useControls('folder', {
+        visible: true,
+        perfVisible: true,
+        interval: { min: 0, max: 10, value: [ 4, 5 ] },
+        select: { options: [ 'a', 'b', 'c' ] },
+        btn: button(() => { console.log('ok') }),
+    })
+
+    // 調整 Leva 的配置 (加 <Leva/> 進 root.render)
+    // https://github.com/pmndrs/leva/blob/main/docs/configuration.md
+    // https://codesandbox.io/examples/package/leva
+
+    return <>
+        { perfVisible && <Perf position="top-left" /> }
+
+        <OrbitControls makeDefault />
+        <directionalLight position={ [ 1, 2, 3 ] } intensity={ 1.5 } />
+        <ambientLight intensity={ 1.5 } />
+
+        <mesh position={ [ c.x, c.y, 0 ] } visible={ visible }>
+            <sphereGeometry />
+            <meshStandardMaterial color={ d } />
+        </mesh>
+        <mesh position-x={ 1.5 } scale={ 1.5 }>
+            <boxGeometry />
+            <meshStandardMaterial color="mediumpurple" />
+        </mesh>
     </>
 }
 
