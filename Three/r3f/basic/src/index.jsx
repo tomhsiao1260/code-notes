@@ -4,7 +4,7 @@ import { Canvas } from '@react-three/fiber'
 import ReactDOM from 'react-dom/client'
 
 import Basic from './Basic'
-import { BasicA, DreiC, DebugA } from './Basic'
+import { BasicA, DreiC, DebugA, ModelA } from './Basic'
 
 // React Three Fiber 是一種 React 的 Renderer
 // 能把 JSX 程式和 data 轉換為 Three.js Scene 的形式呈現
@@ -27,7 +27,7 @@ const root = ReactDOM.createRoot(document.querySelector('#root'))
 root.render(
     <StrictMode>
         <Canvas>
-            <DebugA />
+            <ModelA />
         </Canvas>
     </StrictMode>
 )

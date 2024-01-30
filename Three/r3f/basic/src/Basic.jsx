@@ -7,6 +7,12 @@ import { OrbitControls as ThreeOrbitControls } from 'three/examples/jsm/controls
 import { useControls, button } from 'leva'
 import { Perf } from 'r3f-perf'
 
+import { useLoader } from '@react-three/fiber'
+import { useGLTF, useAnimations, Clone } from '@react-three/drei'
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
+import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js'
+import { Suspense } from 'react'
+
 // React 本來就會把子 component 加到 children
 // 所以這裡的 mesh 很自然會被加進 scene graph
 // 但 geometry, material 等 r3f 則會以屬性的方式加到父物件上 (mesh)
@@ -139,6 +145,10 @@ export function BasicE(props)
     </>
 }
 
+// ############################################################### //
+// ###########################   Drei  ########################### //
+// ############################################################### //
+
 // R3F 社群開發了許多可重複使用的 hooks 和 components (或稱 helpers)
 // 其中一部分被整理到 Drei 生態系下，讓大家不用從頭造輪子
 // 要注意的是 Drei 為 PascalCase 不像 R3F 為 camelcase
@@ -246,7 +256,11 @@ export function DreiC()
     </>
 }
 
-// 在 Debug 方面
+// ############################################################### //
+// ##########################   Debug   ########################## //
+// ############################################################### //
+
+// Debug 方面
 export function DebugA()
 {
     // 可以加 StrictMode 讓系統檢查，這會讓 develop 時多渲染一次，但 production 時則不會
@@ -295,4 +309,98 @@ export function DebugA()
         </mesh>
     </>
 }
+
+// ############################################################### //
+// #######################   Load Models   ####################### //
+// ############################################################### //
+
+// Model 載入方面
+export function ModelA()
+{
+    // 可利用 DevTools 在開發階段模擬實際的載入環境：
+    // 1. 開啟 Network 欄位裡的 Disable cache (每次都重載資源)
+    // 2. 並加入客製化的 throttling 決定載入速度的 bandwidth
+
+    // 使用 Suspense 處理 lazy loading 這會讓其他場景在模型還沒載入前先渲染
+    // Suspense 完成之前會顯示 fallback 裡的內容 (Placeholder)
+    // 另外 shadow-normalBias 避免 shadow acne (避免跟鄰近表面產生陰影)
+
+    return <>
+        <Perf position="top-left" />
+
+        <OrbitControls makeDefault />
+        <directionalLight castShadow position={ [ 1, 2, 3 ] } intensity={ 1.5 } shadow-normalBias={ 0.04 } />
+        <ambientLight intensity={ 0.5 } />
+
+        <mesh receiveShadow position-y={ -1 } rotation-x={ -Math.PI * 0.5 } scale={ 10 }>
+            <planeGeometry />
+            <meshStandardMaterial color="greenyellow" />
+        </mesh>
+
+        <Suspense fallback={ <mesh position-y={ 0.5 }><boxGeometry args={ [ 2, 2, 2 ] } /><meshBasicMaterial wireframe color="red" /></mesh> }>
+            <BurgerA />
+        </Suspense>
+
+        <Fox />
+    </>
+}
+
+// useGLTF (建議)
+function BurgerA()
+{
+    const model = useGLTF('./hamburger.glb')
+    // 用 Draco
+    // const model = useGLTF('./hamburger-draco.glb')
+
+    return <primitive object={ model.scene } scale={ 0.35 } />
+}
+// 可加上 preload 預先載入 而不是組件確定渲染時才開始載入
+useGLTF.preload('./hamburger.glb')
+
+// useLoader (客製化)
+function BurgerB()
+{
+    const model = useLoader(GLTFLoader, './hamburger.glb')
+    // 用 Draco (記得加 draco 資料夾到 public)
+    // const model = useLoader(GLTFLoader, './hamburger-draco.glb', (loader) => {
+    //     const dracoLoader = new DRACOLoader()
+    //     dracoLoader.setDecoderPath('./draco/')
+    //     loader.setDRACOLoader(dracoLoader)
+    // })
+    return <primitive object={ model.scene } scale={ 0.35 } />
+}
+
+// Instancing (共用幾何形狀)
+function BurgerC()
+{
+    const model = useGLTF('./hamburger-draco.glb')
+    return <>
+        <Clone primitive object={ model.scene } scale={ 0.35 } position-x={ -4 } />
+        <Clone primitive object={ model.scene } scale={ 0.35 } position-x={ 0 } />
+        <Clone primitive object={ model.scene } scale={ 0.35 } position-x={ 4 } />
+    </>
+}
+
+// GLTF to R3F component (自動產生模型載入程式)
+// command-line: https://github.com/pmndrs/gltfjsx
+// online: https://gltf.pmnd.rs/
+
+// Model Animation
+function Fox()
+{
+    // 使用 useAnimations 獲得 AnimationAction
+    const fox = useGLTF('./Fox/glTF/Fox.gltf')
+    const animations = useAnimations(fox.animations, fox.scene)
+    const { animationName } = useControls({ animationName: { options: animations.names } })
+    
+    useEffect(() => {
+        const action = animations.actions[animationName]
+        action.reset().fadeIn(0.5).play()
+
+        return () => { action.fadeOut(0.5) }
+    }, [ animationName ])
+
+    return <primitive object={ fox.scene } scale={ 0.008 } position={ [ 0, 1.9, 0 ] } rotation-y={ 0.3 } />
+}
+
 
