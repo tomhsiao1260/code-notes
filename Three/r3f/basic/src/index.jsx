@@ -4,7 +4,7 @@ import { Canvas } from '@react-three/fiber'
 import ReactDOM from 'react-dom/client'
 
 import Basic from './Basic'
-import { BasicA, DreiC, DebugA, ModelA } from './Basic'
+import { BasicA, DreiC, DebugA, ModelA, PortalSceneA } from './Basic'
 
 // React Three Fiber 是一種 React 的 Renderer
 // 能把 JSX 程式和 data 轉換為 Three.js Scene 的形式呈現
@@ -20,14 +20,14 @@ import { BasicA, DreiC, DebugA, ModelA } from './Basic'
 // 1. npm create vite@latest
 // 2. 選擇 React + Javascript
 // 3. npm install & npm run dev
-// 4. npm install three@0.148 @react-three/fiber@8.9 @react-three/drei@9.88 leva@0.9 r3f-perf@7.1
+// 4. npm install three@0.148 @react-three/fiber@8.9 @react-three/drei@9.88 leva@0.9 r3f-perf@7.1 vite-plugin-glsl
 
 const root = ReactDOM.createRoot(document.querySelector('#root'))
 
 root.render(
     <StrictMode>
         <Canvas>
-            <ModelA />
+            <PortalSceneA />
         </Canvas>
     </StrictMode>
 )

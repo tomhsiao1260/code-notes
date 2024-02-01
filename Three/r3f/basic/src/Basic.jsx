@@ -1,17 +1,22 @@
 import * as THREE from 'three'
+import { Perf } from 'r3f-perf'
 import { Canvas } from '@react-three/fiber'
 import { useEffect, useRef, useMemo, useState } from 'react'
 import { useThree, extend, useFrame } from '@react-three/fiber'
-import { Float, Text, Html, PivotControls, TransformControls, OrbitControls } from '@react-three/drei'
+import { PivotControls, TransformControls, OrbitControls } from '@react-three/drei'
 import { OrbitControls as ThreeOrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import { useControls, button } from 'leva'
-import { Perf } from 'r3f-perf'
 
+import { Suspense } from 'react'
 import { useLoader } from '@react-three/fiber'
 import { useGLTF, useAnimations, Clone } from '@react-three/drei'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
 import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js'
-import { Suspense } from 'react'
+import { Float, Text, Html, Center, useTexture, Sparkles, shaderMaterial } from '@react-three/drei'
+
+import portalVertexShader from './shaders/portal/vertex.glsl'
+import portalFragmentShader from './shaders/portal/fragment.glsl'
+
 
 // React 本來就會把子 component 加到 children
 // 所以這裡的 mesh 很自然會被加進 scene graph
@@ -29,11 +34,15 @@ export default function Basic()
         <torusKnotGeometry />
         <meshNormalMaterial />
     </mesh>
+
+    // return <mesh geometry={ new THREE.torusKnotGeometry() }>
+    //     <meshNormalMaterial />
+    // </mesh>
 }
 
 // 可以覆蓋這些默認的數值，都是跟 Three 文件相互對應，矩陣傳入，好比說
 // scale={ [ 1, 1, 1 ] }, scale={ 1 }
-// 但有些屬性值有特殊處理，直接簡化傳字串進去即可
+// 但有些屬性值有特殊處理，直接簡化傳字串進去即可，'-' 表示訪問某物件底下的某屬性
 // color="orange", scale="1", position-x="1"
 // 如果是類的初始化值，則以 args 的矩陣傳入
 // args={ [ 1.5, 32, 32 ] }
@@ -392,7 +401,7 @@ function Fox()
     const fox = useGLTF('./Fox/glTF/Fox.gltf')
     const animations = useAnimations(fox.animations, fox.scene)
     const { animationName } = useControls({ animationName: { options: animations.names } })
-    
+
     useEffect(() => {
         const action = animations.actions[animationName]
         action.reset().fadeIn(0.5).play()
@@ -403,4 +412,66 @@ function Fox()
     return <primitive object={ fox.scene } scale={ 0.008 } position={ [ 0, 1.9, 0 ] } rotation-y={ 0.3 } />
 }
 
+// ############################################################### //
+// ######################   Portal Scene   ####################### //
+// ############################################################### //
 
+// 這段會將之前用 three.js 完成的 Portal Scene 改用 R3F 重寫一次
+
+// 如果要使用 glsl 記得 npm i vite-plugin-glsl，並將 vite.config.js 加入對應的 plugin
+// drei 提供 shaderMaterial 來建立對應的 shader class 並用 extend 做成 component
+const PortalMaterial = shaderMaterial({
+        uTime: 0,
+        uColorStart: new THREE.Color('#ffffff'),
+        uColorEnd: new THREE.Color('#000000')
+    },
+    portalVertexShader,
+    portalFragmentShader
+)
+extend({ PortalMaterial })
+
+export function PortalSceneA()
+{
+    const { nodes } = useGLTF('./Portal/portal.glb')
+
+    const bakedTexture = useTexture('./Portal/baked.jpg')
+    bakedTexture.flipY = false
+
+    // 場景預設會有 toneMapping 這表示材質的顏色並不會是顯示在畫面的顏色
+    // 可以在 <Canvas flat> 加上 flat 屬性取消掉 toneMapping 渲染出材質本身的顏色
+    // 在這裡記得要加上 flat 因為 blender 產生材質時已經 toneMapping 過了
+
+    // 下面把場景分為五塊分別處理，套用對應的幾何和材質，位置旋轉縮放
+    // 大部分場景、右邊的燈、左邊的燈、魔鏡、小光球
+    // color 那行會在 parent 的 background 屬性加入 THREE.Color
+
+    // 利用 useRef, useFrame 來更新 shader 內部的 uniforms
+    const portalMaterial = useRef()
+    useFrame((state, delta) => { portalMaterial.current.uTime += delta })
+
+    return <>
+        <OrbitControls makeDefault />
+        <color args={ ['#030202'] } attach="background" />
+
+        <Center>
+            <mesh geometry={ nodes.baked.geometry }>
+                <meshBasicMaterial map={ bakedTexture } />
+                {/*<meshBasicMaterial map={ bakedTexture } map-flipY={ false } />*/}
+            </mesh>
+
+            <mesh geometry={ nodes.poleLightA.geometry } position={ nodes.poleLightA.position }>
+                <meshBasicMaterial color="#ffffe5" />
+            </mesh>
+
+            <mesh geometry={ nodes.poleLightB.geometry } position={ nodes.poleLightB.position }>
+                <meshBasicMaterial color="#ffffe5" />
+            </mesh>
+
+            <mesh geometry={ nodes.portalLight.geometry } position={ nodes.portalLight.position } rotation={ nodes.portalLight.rotation }>
+                <portalMaterial ref={ portalMaterial } />
+            </mesh>
+
+            <Sparkles size={ 6 } scale={ [ 4, 2, 4 ] } position-y={ 1 } speed={ 0.2 } count={ 40 } />
+        </Center>
+    </>
+}
