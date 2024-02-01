@@ -9,9 +9,9 @@ import { useControls, button } from 'leva'
 
 import { Suspense } from 'react'
 import { useLoader } from '@react-three/fiber'
-import { useGLTF, useAnimations, Clone } from '@react-three/drei'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
 import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js'
+import { useGLTF, useAnimations, Clone, meshBounds, Bvh } from '@react-three/drei'
 import { Float, Text, Html, Center, useTexture, Sparkles, shaderMaterial } from '@react-three/drei'
 
 import portalVertexShader from './shaders/portal/vertex.glsl'
@@ -270,7 +270,7 @@ export function DreiC()
 // ############################################################### //
 
 // Debug 方面
-export function DebugA()
+export function Debug()
 {
     // 可以加 StrictMode 讓系統檢查，這會讓 develop 時多渲染一次，但 production 時則不會
     // 還可以加入 React Developer Tools 瀏覽器套件，這能顯示 components 結構和動態微調相關參數
@@ -324,7 +324,7 @@ export function DebugA()
 // ############################################################### //
 
 // Model 載入方面
-export function ModelA()
+export function Model()
 {
     // 可利用 DevTools 在開發階段模擬實際的載入環境：
     // 1. 開啟 Network 欄位裡的 Disable cache (每次都重載資源)
@@ -430,7 +430,7 @@ const PortalMaterial = shaderMaterial({
 )
 extend({ PortalMaterial })
 
-export function PortalSceneA()
+export function PortalScene()
 {
     const { nodes } = useGLTF('./Portal/portal.glb')
 
@@ -475,3 +475,76 @@ export function PortalSceneA()
         </Center>
     </>
 }
+
+// ############################################################### //
+// ######################   Mouse Events   ####################### //
+// ############################################################### //
+
+// 只要在 mesh 上加入對應屬性 就能在特定條件下觸發 Raycast
+
+export function MouseEvents()
+{
+    // onClick         電腦左鍵點擊、手機觸及
+    // onContextMenu   電腦右鍵點擊 (CTRL + 左鍵)、手機長按
+    // onDoubleClick   連點
+    // onPointerUp     鬆開點擊時
+    // onPointerDown   點下點擊時
+    // onPointerOver   游標進入物體上方時
+    // onPointerEnter  同上
+    // onPointerOut    游標離開物體上方時
+    // onPointerLeave  同上
+    // onPointerMove   游標移動且在物體上方時
+    // onPointerMissed 沒點擊到該物體時 (放到 <Canvas> 上則會在點擊背景時觸發)
+
+    // 一些 RTS 即時戰略遊戲的使用情境：
+    // 點擊某物體時，物體能被選取
+    // 透過點擊搭配拖曳來繪製矩形，當使用者放開時，能選取矩形內的所有物體
+    // 透過點擊搭配 Shift 鍵時，新增選取該物件或取消選取它們
+    // 當點擊卻沒打到物體時，取消選取所有物體
+
+    // 預設 Raycast 會掃過沿路的所有 mesh (包含 children)
+    // e 內留下許多觸發的相關資訊，螢幕點位置、物體距離、uv、點下時鍵盤狀態等等
+    // e.stopPropagation 能讓 Raycast 到該物件時停止，不繼續往後觸發
+    // e.object 為實際打到的 mesh
+    // e.eventObject 為綁定事件的那個 mesh
+
+    // 這些監聽通常吃 CPU 效能，應持續留意，並盡量少用
+    // 尤其是需要連續監聽的 e.g. over, enter, leave, out, move
+    // 對於較複雜的幾何，建議用 meshBounds 來簡化計算的幾何形狀
+    // 複雜的幾何卻又想有精確的計算，建議用 BVH，這類技術也常用在物理碰撞的運算上
+    // 用法大致像這樣 <Bvh><Scene/></Bvh> 可參考文檔
+
+    const cube = useRef()
+    useFrame((state, delta) => { cube.current.rotation.y += delta * 0.2 })
+
+    const eventHandler = (e) => { cube.current.material.color.set(`hsl(${Math.random() * 360}, 100%, 75%)`) }
+
+    return <>
+        <color args={ ['#030202'] } attach="background" />
+        <OrbitControls makeDefault />
+        <directionalLight position={ [ 1, 2, 3 ] } intensity={ 4.5 } />
+        <ambientLight intensity={ 1.5 } />
+
+        <mesh
+            position-x={ -2 }
+            onClick={ (e) => e.stopPropagation() }
+            onPointerEnter={ (e) => e.stopPropagation() }
+        >
+            <sphereGeometry />
+            <meshStandardMaterial color="orange" />
+        </mesh>
+
+        <mesh
+            ref={ cube }
+            raycast={ meshBounds }
+            onClick={ eventHandler }
+            onPointerEnter={ () => { document.body.style.cursor = 'pointer' } }
+            onPointerLeave={ () => { document.body.style.cursor = 'default' } }
+        >
+            <boxGeometry />
+            <meshStandardMaterial color="mediumpurple"/>
+        </mesh>
+    </>
+}
+
+
