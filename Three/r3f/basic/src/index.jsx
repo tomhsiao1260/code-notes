@@ -4,10 +4,10 @@ import { Canvas } from '@react-three/fiber'
 import ReactDOM from 'react-dom/client'
 
 import Basic from './Basic'
-import { BasicA, DreiC, Debug, Model, PortalScene, MouseEvents } from './Basic'
+import { BasicA, DreiC, Debug, Model, PortalScene, MouseEvents, Texts } from './Basic'
 
 // React Three Fiber 是一種 React 的 Renderer
-// 能把 JSX 程式和 data 轉換為 Three.js Scene 的形式呈現
+// 能把 JSX 程式和 data 轉換,為 Three.js Scene 的形式呈現
 
 // 作者 Paul Henschel 也被稱為 0xca0a
 // 他是 Poimandres (PMNDRS) 的創辦人，裡面集結了許多開發者的開源的函式庫
@@ -27,7 +27,7 @@ const root = ReactDOM.createRoot(document.querySelector('#root'))
 root.render(
     <StrictMode>
         <Canvas>
-            <MouseEvents />
+            <Texts />
         </Canvas>
     </StrictMode>
 )

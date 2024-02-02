@@ -12,7 +12,7 @@ import { useLoader } from '@react-three/fiber'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
 import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js'
 import { useGLTF, useAnimations, Clone, meshBounds, Bvh } from '@react-three/drei'
-import { Float, Text, Html, Center, useTexture, Sparkles, shaderMaterial } from '@react-three/drei'
+import { Float, Text, Text3D, Html, Center, useTexture, Sparkles, shaderMaterial, useMatcapTexture } from '@react-three/drei'
 
 import portalVertexShader from './shaders/portal/vertex.glsl'
 import portalFragmentShader from './shaders/portal/fragment.glsl'
@@ -511,8 +511,10 @@ export function MouseEvents()
     // 這些監聽通常吃 CPU 效能，應持續留意，並盡量少用
     // 尤其是需要連續監聽的 e.g. over, enter, leave, out, move
     // 對於較複雜的幾何，建議用 meshBounds 來簡化計算的幾何形狀
+
     // 複雜的幾何卻又想有精確的計算，建議用 BVH，這類技術也常用在物理碰撞的運算上
     // 用法大致像這樣 <Bvh><Scene/></Bvh> 可參考文檔
+    // 優點是大大優化空間訪問的速度，缺點是需要建立 boundsTree，會在最初花點時間
 
     const cube = useRef()
     useFrame((state, delta) => { cube.current.rotation.y += delta * 0.2 })
@@ -544,6 +546,91 @@ export function MouseEvents()
             <boxGeometry />
             <meshStandardMaterial color="mediumpurple"/>
         </mesh>
+    </>
+}
+
+// ############################################################### //
+// ##########################   Text   ########################### //
+// ############################################################### //
+
+// 共用 geometry, material
+const torusGeometry = new THREE.TorusGeometry(1, 0.6, 16, 32)
+const material = new THREE.MeshMatcapMaterial()
+
+// 當有許多相同的幾何形狀時，應該共享同一個 geometry
+// material 不論有沒有共享，系統好像都會整理成同個 shader，但在開發撰寫上，寫在一起會比較方便
+// 下面是共享的寫法，但可以試著把 geometry 獨立寫進每個 mesh 比較看看儀表板的差異
+
+// 共享的做法會讓 geometry, material 需寫在 component 外
+// 此外 material 需要再透過 useEffect 做一些處理 (e.g. 加入 texture, 手動把顏色編譯跑掉的部分改回來)
+
+export function Texts()
+{
+    // 材質方面 drei 的 useMatcapTexture 裡有許多預設的 matcap 可以使用
+    // 可以在下面連結找到想要的 id，而第二個參數與解析度有關，可以是 64, 128, 256, 512, 1024
+    // https://github.com/emmelleppi/matcaps
+    const [ matcapTexture ] = useMatcapTexture('7B5254_E9DCC7_B19986_C8AC91', 256)
+
+    useEffect(() =>
+    {
+        matcapTexture.colorSpace = THREE.SRGBColorSpace
+        matcapTexture.needsUpdate = true
+
+        material.matcap = matcapTexture
+        material.needsUpdate = true
+    }, [])
+
+    
+    // 同時對這些 donuts 建立 ref 產生動畫，建立 group 是為了能逐個訪問 children
+    const donuts = useRef()
+    useFrame((state, delta) =>
+    {
+        for(const donut of donuts.current.children) { donut.rotation.y += delta * 0.2 }
+    })
+
+    return <>
+        <Perf position="top-left" />
+        <OrbitControls makeDefault />
+
+        <Center>
+            <Text3D
+                // Text3D 的屬性來自於 three.js 文檔裡的 TextGeometry
+                font="./fonts/helvetiker_regular.typeface.json"
+                size={ 0.75 }
+                height={ 0.2 }
+                curveSegments={ 12 }
+                bevelEnabled
+                bevelThickness={ 0.02 }
+                bevelSize={ 0.02 }
+                bevelOffset={ 0 }
+                bevelSegments={ 5 }
+            >
+                HELLO R3F
+                <meshMatcapMaterial matcap={ matcapTexture } />
+            </Text3D>
+        </Center>
+
+        <group ref={ donuts }>
+            { [...Array(100)].map((value, i) =>
+                <mesh
+                    key={ i }
+                    geometry={ torusGeometry }
+                    material={ material }
+                    scale={ 0.2 + Math.random() * 0.2 }
+                    rotation={ [ Math.random() * Math.PI, Math.random() * Math.PI, 0 ] }
+                    position={ [ (Math.random() - 0.5) * 10, (Math.random() - 0.5) * 10, (Math.random() - 0.5) * 10 ] }
+                />
+                // <mesh
+                //     key={ i }
+                //     scale={ 0.2 + Math.random() * 0.2 }
+                //     rotation={ [ Math.random() * Math.PI, Math.random() * Math.PI, 0 ] }
+                //     position={ [ (Math.random() - 0.5) * 10, (Math.random() - 0.5) * 10, (Math.random() - 0.5) * 10 ] }
+                // >
+                //     <torusGeometry />
+                //     <meshMatcapMaterial matcap={ matcapTexture } />
+                // </mesh>
+            ) }
+        </group>
     </>
 }
 
