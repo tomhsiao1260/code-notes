@@ -32,6 +32,18 @@ python2: python -m SimpleHTTPServer
 python3: python3 -m http.server
 
 -----------------------------------------------------------
+vscode
+
+shift + alt + F 自動縮排
+cmd + P         檔案查詢
+ctrl + `        開啟終端
+ctrl + tab      切換檔案
+
+cmd + alt + E   檔案欄
+cmd + alt + F   關鍵字搜尋
+cmd + B         左側選單
+
+-----------------------------------------------------------
 虛擬環境
 
 conda create --name [name]      創建

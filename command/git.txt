@@ -42,6 +42,7 @@ git rm --cached [file]       將不在版本庫的檔案移出暫存區
 git reset HEAD [file]        將已經在版本庫的檔案移出暫存區(而不會取消版本庫的 tracked)
 git reset HEAD --hard        將本地版本重置到與 origin/HEAD 相同 (發生版本衝突時使用)
 git reset ORIG_HEAD --hard   回到 merge 前的版本
+git reset HEAD^              回到前一個 commit (把意外加入的檔案移出 .git)
 
 git clone [repository]       clone 下專案(若不想衝突記得刪除原始的.git)
 git branch [branch]          建立一個新branch，注意要先有過 commit (master, gh-pages)
