@@ -19,7 +19,11 @@ git push --all               push 所有分支
 git pull origin [branch]     pull 遠端資料到本地資料夾，origin 為遠端儲存庫的預設別名
 
 gitmoji --commit             用 gitmoji 取代 git commit
-gitmoji --list               可用的 emoji 列表            
+gitmoji --list               可用的 emoji 列表
+
+git fetch origin pull/ID/head:BRANCHNAME 把 PR 載入下來
+
+git remote add origin https://github.com/tomhsiao1260/[REPO].git
 
 -----------------------------------------------------------
 push 失敗 (rejected)
@@ -63,7 +67,7 @@ git branch -m main [rename]  將 main 名稱改為 rename
 清除分支
 
 git branch -a                先查看所有分支 
-git branch -d [branch]       刪除某個 local 分支，記得先 checkout 到其他 branch
+git branch -D [branch]       刪除某個 local 分支，記得先 checkout 到其他 branch
 git push origin :[branch]    刪除某個 remote 追蹤分支 origin/[branch]
 
 -----------------------------------------------------------

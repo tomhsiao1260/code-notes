@@ -64,6 +64,8 @@ pip list                        列出套件
 pip freeze > requirements.txt   紀錄套件
 pip install -r requirements.txt 安裝套件
 
+python -m pip install --upgrade pip
+
 jupyter nbconvert --to python [name].ipynb .ipynb轉.py
 
 -----------------------------------------------------------

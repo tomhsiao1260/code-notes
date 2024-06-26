@@ -557,6 +557,24 @@ var copy = str.split(' ', 3);     // 以 space 分段取前三項
                                   // copy = ['Hello', 'World!', 'Well'];
 var copy = str.split(' ');        // copy = ['Hello', 'World!', 'Well', 'done.'];
 
+
+// 不同屬性 call 不同函數，對 myObj 做客製化的操作
+var myObj = {}
+
+const keyFunctions = {
+    a: function () { console.log('hi') },
+    b: function (data) { console.log(data) },
+    c: function (data) { this.mykey = data }
+}
+
+var fa = keyFunctions.a;
+fa.call()
+var fb = keyFunctions.b;
+fb.call(myObj, 'some data')
+var fc = keyFunctions.c;
+fc.call(myObj, 'data in c')
+// console.log(myObj)
+
 // 程式執行時間測量
 console.time('label')
 var num  = 1 + 1
