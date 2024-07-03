@@ -24,6 +24,7 @@ gitmoji --list               可用的 emoji 列表
 git fetch origin pull/ID/head:BRANCHNAME 把 PR 載入下來
 
 git remote add origin https://github.com/tomhsiao1260/[REPO].git
+git remote set-url origin https://github.com/tomhsiao1260/[REPO].git
 
 -----------------------------------------------------------
 push 失敗 (rejected)
