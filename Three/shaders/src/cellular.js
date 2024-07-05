@@ -5,7 +5,7 @@ import { FullScreenQuad } from 'three/examples/jsm/postprocessing/Pass.js'
 // init setup
 const screen = { w: window.innerWidth, h: window.innerHeight }
 const data = { w: 100, h: 100 * screen.h / screen.w }
-const state = { frame: 0, computing: false }
+const state = { frame: 0 }
 
 const canvas = document.querySelector('.webgl')
 const renderer = new THREE.WebGLRenderer({ canvas })
