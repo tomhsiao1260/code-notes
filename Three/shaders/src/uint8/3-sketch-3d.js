@@ -1,36 +1,34 @@
 import './style.css'
 import * as THREE from 'three'
+import { GUI } from "three/examples/jsm/libs/lil-gui.module.min.js"
 import { FullScreenQuad } from 'three/examples/jsm/postprocessing/Pass.js'
 
 // init setup
 const screen = { w: window.innerWidth, h: window.innerHeight }
-const data = { w: 1000, h: 1000 * screen.h / screen.w }
-const state = { frame: 0, dot: 5 }
+const shape = { w: 3, h: 1, d: 5 }
+const state = { frame: 0, dot: 0.1, layer: 0 }
 
 const canvas = document.querySelector('.webgl')
 const renderer = new THREE.WebGLRenderer({ canvas })
 renderer.autoClear = false // GLSL discard need this
 
-// randomly create a data texture
-const dataArray = new Uint8Array(data.w * data.h * 4)
+// create a data texture
+const data = new Uint8Array(shape.w * shape.h * shape.d * 4)
 
-for (let i = 0; i < data.w * data.h ; i++) {
-    const value = Math.random() < 0.5 ? 0 : 255
-    dataArray[i * 4 + 3] = 255
-}
+for (let i = 0; i < shape.w * shape.h * shape.d; i++) { data[i * 4 + 3] = 255 }
 
 // create a render target with a given data texture
-const renderTarget = createRenderTarget(dataArray, data.w, data.h)
+const renderTarget = createRenderTarget(data, shape.w, shape.h, shape.d)
 
-function createRenderTarget(data, width, height) {
-    const texture = new THREE.DataTexture(data, width, height)
+function createRenderTarget(data, w, h, d) {
+    const texture = new THREE.Data3DTexture(data, w, h, d)
     texture.format = THREE.RGBAFormat
     texture.type = THREE.UnsignedByteType
     texture.minFilter = THREE.NearestFilter
     texture.magFilter = THREE.NearestFilter
     texture.needsUpdate = true
 
-    const renderTarget = new THREE.WebGLRenderTarget(width, height)
+    const renderTarget = new THREE.WebGL3DRenderTarget(w, h, d)
     renderTarget.texture = texture
     return renderTarget
 }
@@ -66,35 +64,54 @@ const computeRenderer = new FullScreenQuad(computeShader)
 
 // fullScreenPass to render the result on screen
 const shaderPass = new THREE.ShaderMaterial({
-    uniforms: { tDiffuse: { value: null } },
+    uniforms: {
+        tDiffuse: { value: null },
+        layer: { value: 0 }
+    },
     vertexShader: `
         varying vec2 vUv;
         void main() { vUv = uv; gl_Position = vec4(position, 1.0); }
     `,
     fragmentShader: `
-        precision highp sampler2D;
-        uniform sampler2D tDiffuse;
+        precision highp sampler3D;
+        uniform sampler3D tDiffuse;
+        uniform float layer;
         varying vec2 vUv;
-        void main() { gl_FragColor = texture2D(tDiffuse, vUv); }
+        void main() { gl_FragColor = texture(tDiffuse, vec3(vUv, layer)); }
     `,
 })
 const fullScreenPass = new FullScreenQuad(shaderPass)
 
 // render the compute result on screen (1st frame)
-shaderPass.uniforms.tDiffuse.value = renderTarget.texture
-renderer.setSize(window.innerWidth, window.innerHeight)
-renderer.setRenderTarget(null)
-fullScreenPass.render(renderer)
+renderOnScreen()
 
-// update the sketch
+function renderOnScreen() {
+    const layer = (state.layer + 0.5) / shape.d
+
+    shaderPass.uniforms.tDiffuse.value = renderTarget.texture
+    shaderPass.uniforms.layer.value = layer
+    renderer.setSize(window.innerWidth, window.innerHeight)
+    renderer.setRenderTarget(null)
+    fullScreenPass.render(renderer)
+}
+
+// create gui panel
+const gui = new GUI()
+gui.add(state, 'layer', 0, shape.d-1, 1).onChange(renderOnScreen)
+gui.add({ read: readBuffer }, 'read').name('read buffer')
+
+// mouse event handling
 window.addEventListener('mousedown', (e) => {
-    update(e)
+    if (e.target.tagName.toLowerCase() !== 'canvas') return
     window.addEventListener('mousemove', update)
+    update(e)
 })
 window.addEventListener('mouseup', (e) => {
+    if (e.target.tagName.toLowerCase() !== 'canvas') return
     window.removeEventListener('mousemove', update)
 })
 
+// update the sketch
 function update(e) {
     // bottom-left (0,0) top-right (1,1)
     const mouseX = e.clientX / screen.w
@@ -102,22 +119,25 @@ function update(e) {
 
     // compute the next frame
     computeShader.uniforms.mouse.value.set(mouseX, mouseY)
-    computeShader.uniforms.resolution.value.set(data.w, data.h)
-    renderer.setSize(data.w, data.h)
-    renderer.setRenderTarget(renderTarget)
+    computeShader.uniforms.resolution.value.set(shape.w, shape.h)
+    renderer.setSize(shape.w, shape.h)
+    renderer.setRenderTarget(renderTarget, state.layer)
     computeRenderer.render(renderer)
 
     // render the compute result on screen
-    shaderPass.uniforms.tDiffuse.value = renderTarget.texture
-    renderer.setSize(window.innerWidth, window.innerHeight)
-    renderer.setRenderTarget(null)
-    fullScreenPass.render(renderer)
-
-    // // debugging
-    // renderer.readRenderTargetPixels(renderTarget, 0, 0, data.w, data.h, renderTarget.texture.image.data)
-    // console.log(renderTarget.texture.image.data)
+    renderOnScreen()
 }
 
+// extract the result from each layer
+function readBuffer() {
+    const layerData = new Uint8Array(shape.w * shape.h * 4)
 
-
+    for (let layer = 0; layer < shape.d; layer++) {
+        const offset = layer * shape.w * shape.h * 4
+        renderer.setRenderTarget(renderTarget, layer)
+        renderer.readRenderTargetPixels(renderTarget, 0, 0, shape.w, shape.h, layerData)
+        data.set(layerData, offset)
+    }
+    console.log(data)
+}
 

@@ -4,7 +4,7 @@ import { FullScreenQuad } from 'three/examples/jsm/postprocessing/Pass.js'
 
 // init setup
 const screen = { w: window.innerWidth, h: window.innerHeight }
-const data = { w: 100, h: 100 * screen.h / screen.w }
+const data = { w: 100, h: Math.round(100 * screen.h / screen.w) }
 const state = { frame: 0 }
 
 const canvas = document.querySelector('.webgl')
@@ -135,9 +135,3 @@ document.addEventListener('keypress', (e) => {
         // console.log(outputTarget.texture.image.data)
     }
 })
-
-
-
-
-
-

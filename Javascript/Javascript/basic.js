@@ -580,6 +580,24 @@ console.time('label')
 var num  = 1 + 1
 console.timeEnd('label')
 
+// 儲存圖片 (Blob or ImageData)
+function saveImage() {
+    const redDot = new Uint8Array([137, 80, 78, 71, 13, 10, 26, 10, 0, 0, 0, 13, 73, 72, 68, 82, 0, 0, 0, 5, 0, 0, 0, 5, 8, 6, 0, 0, 0, 141, 111, 38, 229, 0, 0, 0, 28, 73, 68, 65, 84, 8, 215, 99, 248, 255, 255, 63, 195, 127, 6, 32, 5, 195, 32, 18, 132, 208, 49, 241, 130, 88, 205, 4, 0, 14, 245, 53, 203, 209, 142, 14, 31, 0, 0, 0, 0, 73, 69, 78, 68, 174, 66, 96, 130])
+    const blob = new Blob([ redDot.buffer ], { type: 'image/png' })
+    const url = URL.createObjectURL(blob)
+
+    const link = document.createElement('a')
+    link.download = 'sketch.png'
+    link.href = url
+    link.click()
+
+    // const imgData = canvas.toDataURL('image/png')
+    // const link = document.createElement('a')
+    // link.download = 'sketch.png'
+    // link.href = imgData
+    // link.click()
+}
+
 // 當腳本在 browser 上運行時會產生一個 window object，為全域變數
 // 當 HTML 檔載入 browser 後會產生一個 document object，也為全域變數
 // window 和 document object 主要是為了方便 JS 和 browser 與 HTML 有更多的互動
