@@ -598,6 +598,11 @@ function saveImage() {
     // link.click()
 }
 
+// 執行時間
+console.time('Execution Time')
+const myCalculation = 1 + 1
+console.timeEnd('Execution Time')
+
 // 當腳本在 browser 上運行時會產生一個 window object，為全域變數
 // 當 HTML 檔載入 browser 後會產生一個 document object，也為全域變數
 // window 和 document object 主要是為了方便 JS 和 browser 與 HTML 有更多的互動

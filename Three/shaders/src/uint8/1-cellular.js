@@ -14,7 +14,7 @@ const renderer = new THREE.WebGLRenderer({ canvas })
 const dataA = new Uint8Array(data.w * data.h * 4)
 const dataB = new Uint8Array(data.w * data.h * 4)
 
-for (let i = 0; i < data.w * data.h ; i++) {
+for (let i = 0; i < data.w * data.h; i++) {
     const value = Math.random() < 0.5 ? 0 : 255
     dataA[i * 4 + 0] = value
     dataA[i * 4 + 1] = value
