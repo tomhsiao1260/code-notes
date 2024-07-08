@@ -339,3 +339,14 @@ void main() {
 // 或是調變形狀, 物體運動, 生成藝術
 
 // 看到 Improved Noise
+
+// 整數 usampler3D 實作
+// 1. 把 3D texture 設為 integer format
+// maskTex.format = THREE.RedIntegerFormat;
+// 2. 資料引入 glsl
+// precision highp usampler3D;
+// uniform usampler3D myTexture;
+// uniform uint myInteger;
+// 3. 讀取資料並比較
+// uint m = texture(maskTex, uv).r; // 0u, 1u, 2u, …
+// gl_FragColor = (piece == m) ? vec4(1.0) : vec4(0.0);

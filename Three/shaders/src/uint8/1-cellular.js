@@ -4,52 +4,63 @@ import { FullScreenQuad } from 'three/examples/jsm/postprocessing/Pass.js'
 
 // init setup
 const screen = { w: window.innerWidth, h: window.innerHeight }
-const data = { w: 100, h: Math.round(100 * screen.h / screen.w) }
+const shape = { w: 128, h: Math.round(128 * screen.h / screen.w) }
 const state = { frame: 0 }
 
 const canvas = document.querySelector('.webgl')
 const renderer = new THREE.WebGLRenderer({ canvas })
 
 // randomly create a data texture
-const dataA = new Uint8Array(data.w * data.h * 4)
-const dataB = new Uint8Array(data.w * data.h * 4)
+const dataA = new Uint8Array(shape.w * shape.h)
+const dataB = new Uint8Array(shape.w * shape.h)
 
-for (let i = 0; i < data.w * data.h; i++) {
-    const value = Math.random() < 0.5 ? 0 : 255
-    dataA[i * 4 + 0] = value
-    dataA[i * 4 + 1] = value
-    dataA[i * 4 + 2] = value
-    dataA[i * 4 + 3] = 255
-}
+for (let i = 0; i < shape.w * shape.h; i++) { dataA[i] = Math.random() < 0.5 ? 0 : 255 }
 
 // create a render target with a given data texture
-const renderTargetA = createRenderTarget(dataA, data.w, data.h)
-const renderTargetB = createRenderTarget(dataB, data.w, data.h)
+const renderTargetA = createRenderTarget(dataA, shape.w, shape.h)
+const renderTargetB = createRenderTarget(dataB, shape.w, shape.h)
 
-function createRenderTarget(data, width, height) {
-    const texture = new THREE.DataTexture(data, width, height)
-    texture.format = THREE.RGBAFormat
+function createRenderTarget(data, w, h) {
+    const texture = new THREE.DataTexture(data, w, h)
+    texture.internalFormat = 'R8UI'
+    texture.format = THREE.RedIntegerFormat
     texture.type = THREE.UnsignedByteType
     texture.minFilter = THREE.NearestFilter
     texture.magFilter = THREE.NearestFilter
     texture.needsUpdate = true
 
-    const renderTarget = new THREE.WebGLRenderTarget(width, height)
+    const renderTarget = new THREE.WebGLRenderTarget(w, h)
     renderTarget.texture = texture
     return renderTarget
 }
 
 // create a compute shader to write data
-const computeShader = new THREE.ShaderMaterial({
+const computeShader = new THREE.RawShaderMaterial({
+    glslVersion: THREE.GLSL3,
     uniforms: {
         resolution: { value: new THREE.Vector2() },
-        tDiffuse: { value: null },
+        map: { value: null },
     },
-    vertexShader: `void main() { gl_Position = vec4(position, 1.0); }`,
+    vertexShader: `
+        precision highp float;
+        precision highp int;
+
+        in vec3 position;
+        out vec2 uv;
+
+        void main() {
+            gl_Position = vec4(position, 1.0);
+            uv = position.xy * 0.5 + 0.5;
+        }
+    `,
     fragmentShader: `
-        precision highp sampler2D;
-        uniform sampler2D tDiffuse;
+        precision highp usampler2D;
+        precision highp float; 
+        precision highp int;
+
+        uniform usampler2D map;
         uniform vec2 resolution;
+        out uvec4 fragColor;
 
         void main() {
             vec2 k = gl_FragCoord.xy + vec2(-1.0, -1.0);
@@ -62,18 +73,18 @@ const computeShader = new THREE.ShaderMaterial({
             vec2 r = gl_FragCoord.xy + vec2( 0.0, +1.0);
             vec2 s = gl_FragCoord.xy + vec2(+1.0, +1.0);
 
-            vec4 vk = texture(tDiffuse, k / resolution.xy);
-            vec4 vl = texture(tDiffuse, l / resolution.xy);
-            vec4 vm = texture(tDiffuse, m / resolution.xy);
-            vec4 vn = texture(tDiffuse, n / resolution.xy);
-            vec4 vo = texture(tDiffuse, o / resolution.xy);
-            vec4 vp = texture(tDiffuse, p / resolution.xy);
-            vec4 vq = texture(tDiffuse, q / resolution.xy);
-            vec4 vr = texture(tDiffuse, r / resolution.xy);
-            vec4 vs = texture(tDiffuse, s / resolution.xy);
+            uint vk = texture(map, k / resolution.xy).r;
+            uint vl = texture(map, l / resolution.xy).r;
+            uint vm = texture(map, m / resolution.xy).r;
+            uint vn = texture(map, n / resolution.xy).r;
+            uint vo = texture(map, o / resolution.xy).r;
+            uint vp = texture(map, p / resolution.xy).r;
+            uint vq = texture(map, q / resolution.xy).r;
+            uint vr = texture(map, r / resolution.xy).r;
+            uint vs = texture(map, s / resolution.xy).r;
 
-            float neighbors = (vk + vl + vm + vn + vp + vq + vr + vs).x;
-            bool alive = vo.x > 0.5;
+            float neighbors = float(vk + vl + vm + vn + vp + vq + vr + vs) / 255.0;
+            bool alive = vo > 128u;
             bool survive = false;
 
             if (alive) {
@@ -82,29 +93,47 @@ const computeShader = new THREE.ShaderMaterial({
                 if (neighbors > 2.5 && neighbors < 3.5) { survive = true; }
             }
 
-            gl_FragColor = survive ? vec4(1.0) : vec4(0.0, 0.0, 0.0, 1.0);
+            fragColor = survive ? uvec4(255u, 0, 0, 0) : uvec4(0);
         }`,
 })
 const computeRenderer = new FullScreenQuad(computeShader)
 
 // fullScreenPass to render the result on screen
-const shaderPass = new THREE.ShaderMaterial({
-    uniforms: { tDiffuse: { value: null } },
+const shaderPass = new THREE.RawShaderMaterial({
+    glslVersion: THREE.GLSL3,
+    uniforms: { map: { value: null } },
     vertexShader: `
-        varying vec2 vUv;
-        void main() { vUv = uv; gl_Position = vec4(position, 1.0); }
+        precision highp float;
+        precision highp int;
+
+        in vec3 position;
+        out vec2 uv;
+
+        void main() {
+            gl_Position = vec4(position, 1.0);
+            uv = position.xy * 0.5 + 0.5;
+        }
     `,
     fragmentShader: `
-        precision highp sampler2D;
-        uniform sampler2D tDiffuse;
-        varying vec2 vUv;
-        void main() { gl_FragColor = texture2D(tDiffuse, vUv); }
+        precision highp usampler2D;
+        precision highp float; 
+        precision highp int;
+
+        uniform usampler2D map;
+        out vec4 fragColor;
+        in vec2 uv;
+
+        void main() {
+            uint texel = texture(map, uv).r;
+            float v = float(texel) / 255.0;
+            fragColor = vec4(v, v, v, 1.0);
+        }
     `,
 })
 const fullScreenPass = new FullScreenQuad(shaderPass)
 
 // render the compute result on screen (1st frame)
-shaderPass.uniforms.tDiffuse.value = renderTargetA.texture
+shaderPass.uniforms.map.value = renderTargetA.texture
 renderer.setSize(window.innerWidth, window.innerHeight)
 renderer.setRenderTarget(null)
 fullScreenPass.render(renderer)
@@ -118,20 +147,24 @@ document.addEventListener('keypress', (e) => {
         const outputTarget = state.frame ? renderTargetB : renderTargetA
 
         // compute the next frame
-        computeShader.uniforms.tDiffuse.value = inputTarget.texture
-        computeShader.uniforms.resolution.value.set(data.w, data.h)
-        renderer.setSize(data.w, data.h)
+        computeShader.uniforms.map.value = inputTarget.texture
+        computeShader.uniforms.resolution.value.set(shape.w, shape.h)
+        renderer.setSize(shape.w, shape.h)
         renderer.setRenderTarget(outputTarget)
         computeRenderer.render(renderer)
 
         // render the compute result on screen
-        shaderPass.uniforms.tDiffuse.value = outputTarget.texture
+        shaderPass.uniforms.map.value = outputTarget.texture
         renderer.setSize(window.innerWidth, window.innerHeight)
         renderer.setRenderTarget(null)
         fullScreenPass.render(renderer)
 
         // // debugging
-        // renderer.readRenderTargetPixels(outputTarget, 0, 0, data.w, data.h, outputTarget.texture.image.data)
-        // console.log(outputTarget.texture.image.data)
+        // const readBuffer = outputTarget.texture.image.data
+        // renderer.readRenderTargetPixels(outputTarget, 0, 0, shape.w, shape.h, readBuffer)
+        // console.log(readBuffer)
     }
 })
+
+// If you use R channel only instead of RGBA, readRenderTargetPixels
+// can't work properly unless shape.w is a multiple of 8 (it's a trick).

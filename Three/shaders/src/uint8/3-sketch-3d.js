@@ -5,7 +5,7 @@ import { FullScreenQuad } from 'three/examples/jsm/postprocessing/Pass.js'
 
 // init setup
 const screen = { w: window.innerWidth, h: window.innerHeight }
-const shape = { w: 3, h: 1, d: 5 }
+const shape = { w: 8, h: 3, d: 5 }
 const state = { frame: 0, dot: 0.1, layer: 0 }
 
 const canvas = document.querySelector('.webgl')
@@ -13,16 +13,15 @@ const renderer = new THREE.WebGLRenderer({ canvas })
 renderer.autoClear = false // GLSL discard need this
 
 // create a data texture
-const data = new Uint8Array(shape.w * shape.h * shape.d * 4)
-
-for (let i = 0; i < shape.w * shape.h * shape.d; i++) { data[i * 4 + 3] = 255 }
+const data = new Uint8Array(shape.w * shape.h * shape.d)
 
 // create a render target with a given data texture
 const renderTarget = createRenderTarget(data, shape.w, shape.h, shape.d)
 
 function createRenderTarget(data, w, h, d) {
     const texture = new THREE.Data3DTexture(data, w, h, d)
-    texture.format = THREE.RGBAFormat
+    texture.internalFormat = 'R8UI'
+    texture.format = THREE.RedIntegerFormat
     texture.type = THREE.UnsignedByteType
     texture.minFilter = THREE.NearestFilter
     texture.magFilter = THREE.NearestFilter
@@ -34,17 +33,33 @@ function createRenderTarget(data, w, h, d) {
 }
 
 // create a compute shader to write data
-const computeShader = new THREE.ShaderMaterial({
+const computeShader = new THREE.RawShaderMaterial({
+    glslVersion: THREE.GLSL3,
     uniforms: {
         resolution: { value: new THREE.Vector2() },
         mouse: { value: new THREE.Vector2() },
         dot: { value: state.dot },
     },
-    vertexShader: `void main() { gl_Position = vec4(position, 1.0); }`,
+    vertexShader: `
+        precision highp float;
+        precision highp int;
+
+        in vec3 position;
+        out vec2 uv;
+
+        void main() {
+            gl_Position = vec4(position, 1.0);
+            uv = position.xy * 0.5 + 0.5;
+        }
+    `,
     fragmentShader: `
+        precision highp float; 
+        precision highp int;
+
         uniform vec2 resolution;
         uniform vec2 mouse;
         uniform float dot;
+        out uvec4 fragColor;
 
         void main() {
             vec2 r = resolution.xy;
@@ -57,27 +72,45 @@ const computeShader = new THREE.ShaderMaterial({
             float distance = length(target - grid);
 
             if (distance > dot) discard;
-            gl_FragColor = vec4(1.0);
+            fragColor = uvec4(255.0, 0, 0, 0);
         }`,
 })
 const computeRenderer = new FullScreenQuad(computeShader)
 
 // fullScreenPass to render the result on screen
-const shaderPass = new THREE.ShaderMaterial({
+const shaderPass = new THREE.RawShaderMaterial({
+    glslVersion: THREE.GLSL3,
     uniforms: {
-        tDiffuse: { value: null },
+        map: { value: null },
         layer: { value: 0 }
     },
     vertexShader: `
-        varying vec2 vUv;
-        void main() { vUv = uv; gl_Position = vec4(position, 1.0); }
+        precision highp float;
+        precision highp int;
+
+        in vec3 position;
+        out vec2 uv;
+
+        void main() {
+            gl_Position = vec4(position, 1.0);
+            uv = position.xy * 0.5 + 0.5;
+        }
     `,
     fragmentShader: `
-        precision highp sampler3D;
-        uniform sampler3D tDiffuse;
+        precision highp usampler3D;
+        precision highp float; 
+        precision highp int;
+
+        uniform usampler3D map;
         uniform float layer;
-        varying vec2 vUv;
-        void main() { gl_FragColor = texture(tDiffuse, vec3(vUv, layer)); }
+        out vec4 fragColor;
+        in vec2 uv;
+
+        void main() {
+            uint texel = texture(map, vec3(uv, layer)).r;
+            float v = float(texel) / 255.0;
+            fragColor = vec4(v, v, v, 1.0);
+        }
     `,
 })
 const fullScreenPass = new FullScreenQuad(shaderPass)
@@ -88,7 +121,7 @@ renderOnScreen()
 function renderOnScreen() {
     const layer = (state.layer + 0.5) / shape.d
 
-    shaderPass.uniforms.tDiffuse.value = renderTarget.texture
+    shaderPass.uniforms.map.value = renderTarget.texture
     shaderPass.uniforms.layer.value = layer
     renderer.setSize(window.innerWidth, window.innerHeight)
     renderer.setRenderTarget(null)
@@ -130,14 +163,13 @@ function update(e) {
 
 // extract the result from each layer
 function readBuffer() {
-    const layerData = new Uint8Array(shape.w * shape.h * 4)
+    const layerData = new Uint8Array(shape.w * shape.h)
 
     for (let layer = 0; layer < shape.d; layer++) {
-        const offset = layer * shape.w * shape.h * 4
+        const offset = layer * shape.w * shape.h
         renderer.setRenderTarget(renderTarget, layer)
         renderer.readRenderTargetPixels(renderTarget, 0, 0, shape.w, shape.h, layerData)
         data.set(layerData, offset)
     }
     console.log(data)
 }
-

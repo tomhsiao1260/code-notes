@@ -5,7 +5,7 @@ import { FullScreenQuad } from 'three/examples/jsm/postprocessing/Pass.js'
 
 // init setup
 const screen = { w: window.innerWidth, h: window.innerHeight }
-const shape = { w: 1000, h: Math.round(1000 * screen.h / screen.w) }
+const shape = { w: 1280, h: Math.round(1280 * screen.h / screen.w) }
 const state = { frame: 0, dot: 5 }
 
 const canvas = document.querySelector('.webgl')
@@ -13,16 +13,15 @@ const renderer = new THREE.WebGLRenderer({ canvas })
 renderer.autoClear = false // GLSL discard need this
 
 // create a data texture
-const data = new Uint8Array(shape.w * shape.h * 4)
-
-for (let i = 0; i < shape.w * shape.h; i++) { data[i * 4 + 3] = 255 }
+const data = new Uint8Array(shape.w * shape.h)
 
 // create a render target with a given data texture
 const renderTarget = createRenderTarget(data, shape.w, shape.h)
 
 function createRenderTarget(data, w, h) {
     const texture = new THREE.DataTexture(data, w, h)
-    texture.format = THREE.RGBAFormat
+    texture.internalFormat = 'R8UI'
+    texture.format = THREE.RedIntegerFormat
     texture.type = THREE.UnsignedByteType
     texture.minFilter = THREE.NearestFilter
     texture.magFilter = THREE.NearestFilter
@@ -34,17 +33,33 @@ function createRenderTarget(data, w, h) {
 }
 
 // create a compute shader to write data
-const computeShader = new THREE.ShaderMaterial({
+const computeShader = new THREE.RawShaderMaterial({
+    glslVersion: THREE.GLSL3,
     uniforms: {
         resolution: { value: new THREE.Vector2() },
         mouse: { value: new THREE.Vector2() },
         dot: { value: state.dot },
     },
-    vertexShader: `void main() { gl_Position = vec4(position, 1.0); }`,
+    vertexShader: `
+        precision highp float;
+        precision highp int;
+
+        in vec3 position;
+        out vec2 uv;
+
+        void main() {
+            gl_Position = vec4(position, 1.0);
+            uv = position.xy * 0.5 + 0.5;
+        }
+    `,
     fragmentShader: `
+        precision highp float; 
+        precision highp int;
+
         uniform vec2 resolution;
         uniform vec2 mouse;
         uniform float dot;
+        out uvec4 fragColor;
 
         void main() {
             vec2 r = resolution.xy;
@@ -57,23 +72,41 @@ const computeShader = new THREE.ShaderMaterial({
             float distance = length(target - grid);
 
             if (distance > dot) discard;
-            gl_FragColor = vec4(1.0);
+            fragColor = uvec4(255.0, 0, 0, 0);
         }`,
 })
 const computeRenderer = new FullScreenQuad(computeShader)
 
 // fullScreenPass to render the result on screen
-const shaderPass = new THREE.ShaderMaterial({
-    uniforms: { tDiffuse: { value: null } },
+const shaderPass = new THREE.RawShaderMaterial({
+    glslVersion: THREE.GLSL3,
+    uniforms: { map: { value: null } },
     vertexShader: `
-        varying vec2 vUv;
-        void main() { vUv = uv; gl_Position = vec4(position, 1.0); }
+        precision highp float;
+        precision highp int;
+
+        in vec3 position;
+        out vec2 uv;
+
+        void main() {
+            gl_Position = vec4(position, 1.0);
+            uv = position.xy * 0.5 + 0.5;
+        }
     `,
     fragmentShader: `
-        precision highp sampler2D;
-        uniform sampler2D tDiffuse;
-        varying vec2 vUv;
-        void main() { gl_FragColor = texture2D(tDiffuse, vUv); }
+        precision highp usampler2D;
+        precision highp float; 
+        precision highp int;
+
+        uniform usampler2D map;
+        out vec4 fragColor;
+        in vec2 uv;
+
+        void main() {
+            uint texel = texture(map, uv).r;
+            float v = float(texel) / 255.0;
+            fragColor = vec4(v, v, v, 1.0);
+        }
     `,
 })
 const fullScreenPass = new FullScreenQuad(shaderPass)
@@ -82,7 +115,7 @@ const fullScreenPass = new FullScreenQuad(shaderPass)
 renderOnScreen()
 
 function renderOnScreen() {
-    shaderPass.uniforms.tDiffuse.value = renderTarget.texture
+    shaderPass.uniforms.map.value = renderTarget.texture
     renderer.setSize(window.innerWidth, window.innerHeight)
     renderer.setRenderTarget(null)
     fullScreenPass.render(renderer)
