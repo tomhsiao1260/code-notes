@@ -9,6 +9,7 @@ const state = { frame: 0 }
 
 const canvas = document.querySelector('.webgl')
 const renderer = new THREE.WebGLRenderer({ canvas })
+renderer.setSize(window.innerWidth, window.innerHeight)
 
 // randomly create a data texture
 const dataA = new Uint8Array(shape.w * shape.h)
@@ -149,13 +150,13 @@ document.addEventListener('keypress', (e) => {
         // compute the next frame
         computeShader.uniforms.map.value = inputTarget.texture
         computeShader.uniforms.resolution.value.set(shape.w, shape.h)
-        renderer.setSize(shape.w, shape.h)
+        // renderer.setSize(shape.w, shape.h) // bottle neck, perhaps dont need this
         renderer.setRenderTarget(outputTarget)
         computeRenderer.render(renderer)
 
         // render the compute result on screen
         shaderPass.uniforms.map.value = outputTarget.texture
-        renderer.setSize(window.innerWidth, window.innerHeight)
+        // renderer.setSize(window.innerWidth, window.innerHeight)
         renderer.setRenderTarget(null)
         fullScreenPass.render(renderer)
 

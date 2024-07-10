@@ -10,6 +10,7 @@ const state = { frame: 0, dot: 5 }
 
 const canvas = document.querySelector('.webgl')
 const renderer = new THREE.WebGLRenderer({ canvas })
+renderer.setSize(window.innerWidth, window.innerHeight)
 renderer.autoClear = false // GLSL discard need this
 
 // create a data texture
@@ -116,7 +117,7 @@ renderOnScreen()
 
 function renderOnScreen() {
     shaderPass.uniforms.map.value = renderTarget.texture
-    renderer.setSize(window.innerWidth, window.innerHeight)
+    // renderer.setSize(window.innerWidth, window.innerHeight)
     renderer.setRenderTarget(null)
     fullScreenPass.render(renderer)
 }
@@ -145,7 +146,7 @@ function update(e) {
     // compute the next frame
     computeShader.uniforms.mouse.value.set(mouseX, mouseY)
     computeShader.uniforms.resolution.value.set(shape.w, shape.h)
-    renderer.setSize(shape.w, shape.h)
+    // renderer.setSize(shape.w, shape.h) // bottle neck, perhaps dont need this
     renderer.setRenderTarget(renderTarget)
     computeRenderer.render(renderer)
 

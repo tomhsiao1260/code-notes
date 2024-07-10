@@ -14,6 +14,7 @@ const maxLayer = shape.d * 2 - 1
 
 const canvas = document.querySelector('.webgl')
 const renderer = new THREE.WebGLRenderer({ canvas })
+renderer.setSize(window.innerWidth, window.innerHeight)
 renderer.autoClear = false // GLSL discard need this
 
 // create a data texture
@@ -199,7 +200,7 @@ function renderOnScreen() {
 
     shaderPass.uniforms.map.value = renderTarget.texture
     shaderPass.uniforms.layer.value = layer
-    renderer.setSize(window.innerWidth, window.innerHeight)
+    // renderer.setSize(window.innerWidth, window.innerHeight)
     renderer.setRenderTarget(null)
     fullScreenPass.render(renderer)
 }
@@ -237,7 +238,7 @@ function updateSketch(e) {
     // compute the next frame
     sketchShader.uniforms.mouse.value.set(mouseX, mouseY)
     sketchShader.uniforms.resolution.value.set(shape.w, shape.h)
-    renderer.setSize(shape.w, shape.h)
+    // renderer.setSize(shape.w, shape.h) // bottle neck, perhaps dont need this
     renderer.setRenderTarget(renderTarget, outputLayer)
     sketchRenderer.render(renderer)
 
@@ -262,7 +263,7 @@ function updateCellular(e) {
     cellularShader.uniforms.map.value = inputTarget.texture
     cellularShader.uniforms.resolution.value.set(shape.w, shape.h)
     cellularShader.uniforms.layer.value = iLayer
-    renderer.setSize(shape.w, shape.h)
+    // renderer.setSize(shape.w, shape.h) // bottle neck, perhaps dont need this
     renderer.setRenderTarget(outputTarget, oLayer)
     cellularRenderer.render(renderer)
 
