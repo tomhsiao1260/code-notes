@@ -72,6 +72,10 @@ git branch -D [branch]       刪除某個 local 分支，記得先 checkout 到�
 git push origin :[branch]    刪除某個 remote 追蹤分支 origin/[branch]
 
 -----------------------------------------------------------
+git reset --soft HEAD~1         commit 錯了 要移出來重新操作
+git rm [filename] --cached  -r  檔案移出 git 的追蹤
+
+-----------------------------------------------------------
 強迫將 main 以 develop 的專案覆蓋掉
 
 git checkout develop
